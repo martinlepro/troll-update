@@ -1,0 +1,30 @@
+{
+  "name": "troll-ssr-render-project",
+  "version": "1.0.0",
+  "description": "Un projet de troll avec Server-Side Rendering (SSR) déployé sur Render, géré via GitHub.",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts"
+  },
+  "keywords": [
+    "troll",
+    "ssr",
+    "render",
+    "express",
+    "typescript",
+    "web"
+  ],
+  "author": "Votre Nom ou Pseudo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
