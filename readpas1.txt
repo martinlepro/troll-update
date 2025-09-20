@@ -1,0 +1,4 @@
+Bienvenue dans TrollUpdate !
+Saisissez des mots clés dans la barre de recherche pour voir les réactions.
+Essayez "fail", "bug", "help" ou l'"easter egg".
+Amusez-vous bien !
