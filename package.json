@@ -2,10 +2,10 @@
   "name": "troll-ssr-render-project",
   "version": "1.0.0",
   "description": "Un projet de troll avec Server-Side Rendering (SSR) déployé sur Render, géré via GitHub.",
-  "main": "dist/src/server.js",     <-- MODIFIÉ ICI
+  "main": "dist/src/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/src/server.js", <-- MODIFIÉ ICI
+    "start": "node dist/src/server.js",
     "dev": "ts-node src/server.ts"
   },
   "keywords": [
