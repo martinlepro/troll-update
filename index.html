@@ -1,25 +1,53 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>TrollUpdate - Mise à jour Windows</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Troll Update</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    #container {
+      max-width: 500px;
+    }
+  </style>
 </head>
 <body>
-  <div id="overlay"></div>
-  <h1>Mise à jour Windows 10.0.2025.09.20</h1>
-  <div id="progress-bar"><div id="progress"></div></div>
-  <p id="status">Initialisation...</p>
-  <input type="text" id="search-bar" placeholder="Rechercher..." autocomplete="off" />
-  <div id="morpion-container"></div>
-  <div id="popup-container"></div>
-  <div id="image-troll" style="display:none;">
-    <p>Photo de l'ordinateur trouvé :</p>
-    <img src="meme.png" alt="Troll Image" />
+  <div id="container">
+    <h2>Tu peux choisir un nombre de 0 à (((((((10*5)+10)/5)-1)/2)+0.5)-2+2-4)/0)^0 + 7*2</h2>
+    <input type="text" id="inputBox" placeholder="Entre une commande" />
+    <br>
+    <button onclick="valider()">Valider</button>
   </div>
 
-  <audio id="error-sound" src="winstart.wav" preload="auto"></audio>
-  <script src="script.js"></script>
+  <script>
+    function valider() {
+      const valeur = document.getElementById("inputBox").value.trim().toLowerCase();
+      if (valeur === "update") {
+        window.location.href = "fakeupdate.html"; // Change si le nom de ton fichier est différent
+      } else {
+        alert("Commande invalide !");
+      }
+    }
+
+    document.getElementById("inputBox").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        valider();
+      }
+    });
+  </script>
 </body>
 </html>
