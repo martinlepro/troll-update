@@ -1,39 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mise à jour système - troll</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>TrollUpdate - Mise à jour Windows</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body onload="updateProgress()">
-  <h1>Mise à jour système</h1>
+<body>
+  <h1>Mise à jour Windows 10.0.2025.09.20</h1>
+  <div id="progress-bar"><div id="progress"></div></div>
+  <p id="status">Initialisation...</p>
+  <input type="text" id="search-bar" placeholder="Rechercher..." autocomplete="off" />
 
-  <!-- Barre de progression -->
-  <div id="progress-bar">
-    <div id="progress"></div>
-  </div>
-  <div id="status">Préparation de la mise à jour...</div>
-
-  <!-- Barre de recherche troll -->
-  <input type="text" id="search-bar" placeholder="Entrez un nombre entre 0 et (((((((10*5)+10)/5)-1)/2)+0.5)-2+2-4)/0)^0)+7*2">
-
-  <!-- Morpion -->
-  <div id="morpion-container" style="display:none;">
-    <h3>Jouez pendant que ça installe...</h3>
-    <div id="board"></div>
-  </div>
-
-  <!-- Popups troll -->
+  <!-- Nouveau conteneur pour les fausses popups, mieux que les alert() natives -->
   <div id="popup-container"></div>
 
-  <!-- Image troll -->
-  <div id="image-troll" style="display:none;">
-    <p>Erreur critique détectée</p>
-    <img src="trollface.png" alt="Trollface">
-  </div>
+  <!-- Conteneur pour le Morpion -->
+  <div id="morpion-container"></div>
 
-  <!-- Son d’erreur -->
-  <audio id="error-sound" src="error.mp3"></audio>
+  <!-- L'image de troll, cachée au début, affichée en cas de perte au morpion ou fin de troll -->
+  <!-- Assurez-vous d'avoir une image nommée 'troll_image.png' dans le même dossier ! -->
+  <img id="image-troll" src="troll_image.png" alt="Troll" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999; max-width: 80%; height: auto;" />
+
+  <!-- L'audio pour les sons d'erreur -->
+  <!-- Assurez-vous d'avoir un fichier 'winstart.wav' dans le même dossier ! -->
+  <audio id="error-audio" src="winstart.wav" preload="auto"></audio>
 
   <script src="script.js"></script>
 </body>
