@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2018",               // Version de JavaScript cible
+    "module": "commonjs",             // Format de module de sortie
+    "outDir": "./dist",               // Le code compilé ira dans le dossier 'dist'
+    "rootDir": "./",                  // La racine de vos fichiers source est la racine du projet
+    "strict": true,                   // Active toutes les vérifications de type strictes
+    "esModuleInterop": true,          // Permet l'import par défaut des modules CommonJS
+    "skipLibCheck": true,             // Saute la vérification des fichiers de déclaration des bibliothèques
+    "forceConsistentCasingInFileNames": true // S'assurer que les noms de fichiers ont une casse cohérente
+  },
+  "include": [
+    "server.ts"                       // Indique explicitement que seul 'server.ts' doit être compilé
+  ],
+  "exclude": [
+    "node_modules",                   // Exclut le dossier node_modules
+    "dist"                            // Exclut le dossier de sortie
+  ]
+}
