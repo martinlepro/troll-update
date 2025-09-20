@@ -2,52 +2,39 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Troll Update</title>
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 18px;
-      margin-top: 10px;
-    }
-    #container {
-      max-width: 500px;
-    }
-  </style>
+  <title>Mise à jour système - troll</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="container">
-    <h2>Tu peux choisir un nombre de 0 à (((((((10*5)+10)/5)-1)/2)+0.5)-2+2-4)/0)^0 + 7*2</h2>
-    <input type="text" id="inputBox" placeholder="Entre une commande" />
-    <br>
-    <button onclick="valider()">Valider</button>
+<body onload="updateProgress()">
+  <h1>Mise à jour système</h1>
+
+  <!-- Barre de progression -->
+  <div id="progress-bar">
+    <div id="progress"></div>
+  </div>
+  <div id="status">Préparation de la mise à jour...</div>
+
+  <!-- Barre de recherche troll -->
+  <input type="text" id="search-bar" placeholder="Entrez un nombre entre 0 et (((((((10*5)+10)/5)-1)/2)+0.5)-2+2-4)/0)^0)+7*2">
+
+  <!-- Morpion -->
+  <div id="morpion-container" style="display:none;">
+    <h3>Jouez pendant que ça installe...</h3>
+    <div id="board"></div>
   </div>
 
-  <script>
-    function valider() {
-      const valeur = document.getElementById("inputBox").value.trim().toLowerCase();
-      if (valeur === "update") {
-        window.location.href = "fakeupdate.html"; // Change si le nom de ton fichier est différent
-      } else {
-        alert("Commande invalide !");
-      }
-    }
+  <!-- Popups troll -->
+  <div id="popup-container"></div>
 
-    document.getElementById("inputBox").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        valider();
-      }
-    });
-  </script>
+  <!-- Image troll -->
+  <div id="image-troll" style="display:none;">
+    <p>Erreur critique détectée</p>
+    <img src="trollface.png" alt="Trollface">
+  </div>
+
+  <!-- Son d’erreur -->
+  <audio id="error-sound" src="error.mp3"></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
