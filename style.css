@@ -4,8 +4,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  width: 100%; /* AJOUTÉ: S'assure que le body prend toute la largeur */
-  background: #0078D4; /* Un bleu Windows classique */
+  width: 100%;
+  background: #0078D4;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
   overflow: hidden;
@@ -17,15 +17,15 @@ html, body {
 }
 
 #fullscreen-container {
-  width: 100vw; /* Utilise 100% de la largeur de la fenêtre */
-  height: 100vh; /* Utilise 100% de la hauteur de la fenêtre */
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   background: #0078D4;
-  position: relative; /* Pour positionner les éléments fixes à l'intérieur */
+  position: relative;
 }
 
 h1 {
@@ -34,24 +34,23 @@ h1 {
   display: none;
 }
 #main-title {
-    margin-bottom: 2vh; /* Unité relative */
-    font-size: 5vw; /* Unité relative */
+    margin-bottom: 2vh;
+    font-size: 5vw;
 }
 
-/* Base pour tous les éléments "fixed" pour gérer le z-index plus facilement */
 .fixed-element {
     position: fixed;
-    display: none; /* Masqué par défaut, affiché par JS */
-    z-index: 1000; /* Z-index de base, sera écrasé par des valeurs spécifiques */
+    display: none;
+    z-index: 1000;
 }
 
 
 #progress-bar {
   width: 80%;
   max-width: 600px;
-  height: 3vh; /* Unité relative */
+  height: 3vh;
   background: #004D99;
-  margin: 3vh auto; /* Unité relative */
+  margin: 3vh auto;
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 0 10px rgba(255,255,255,0.7) inset;
@@ -66,35 +65,34 @@ h1 {
 }
 #status {
   text-align: center;
-  font-size: 3vw; /* Unité relative */
-  margin-top: 2vh; /* Unité relative */
-  min-height: 4vh; /* Unité relative */
+  font-size: 3vw;
+  margin-top: 2vh;
+  min-height: 4vh;
 }
 
-/* --- Barre de recherche et bouton (maintenant au centre) --- */
 #search-bar-wrapper {
   display: none;
-  margin-top: 3vh; /* Unité relative */
+  margin-top: 3vh;
   width: 80%;
   max-width: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  z-index: 6000; /* Assure que le wrapper est au-dessus de tout */
+  z-index: 6000;
 }
 
 #search-bar {
   flex-grow: 1;
-  padding: 1vh; /* Unité relative */
-  font-size: 2.5vw; /* Unité relative */
+  padding: 1vh;
+  font-size: 2.5vw;
   border-radius: 5px;
   border: 2px solid white;
   outline: none;
   text-align: center;
   background: #004D99;
   color: white;
-  margin-right: 1vh; /* Unité relative */
+  margin-right: 1vh;
   display: block;
 }
 #search-bar:focus {
@@ -102,8 +100,8 @@ h1 {
 }
 
 #submit-search-btn {
-  padding: 1vh 2vw; /* Unité relative */
-  font-size: 2.5vw; /* Unité relative */
+  padding: 1vh 2vw;
+  font-size: 2.5vw;
   border-radius: 5px;
   border: 2px solid white;
   background: #006FB7;
@@ -120,48 +118,48 @@ h1 {
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES --- */
 
-/* POPUPS (Haut Gauche) */
+/* POPUPS (Haut Gauche - position inchangée) */
 #popup-container {
-  top: 1vh; /* Unité relative */
-  left: 1vw; /* Unité relative */
-  width: 25vw; /* Unité relative */
-  min-width: 200px; /* Minimum pour ne pas être trop petit */
+  top: 1vh;
+  left: 1vw;
+  width: 25vw;
+  min-width: 200px;
   z-index: 3000;
   pointer-events: none;
 }
 .fake-popup {
   background: #005FA8;
   border: 2px solid white;
-  padding: 1vh; /* Unité relative */
+  padding: 1vh;
   font-family: "Segoe UI", Arial, sans-serif;
   color: white;
   box-shadow: 0 0 15px rgba(255,255,255,0.7);
   animation: fadeOut 5s forwards;
   user-select: none;
   position: absolute;
-  width: 100%; /* Prend toute la largeur du popup-container */
+  width: 100%;
   border-radius: 3px;
-  font-size: 2vw; /* Unité relative */
+  font-size: 2vw;
 }
 @keyframes fadeOut {
   0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
   80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));} /* Utilise vw */
+  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
 }
 
 
-/* Calculatrice (Haut Droite) */
+/* Calculatrice (Haut Droite - position inchangée) */
 #calculator-container {
-  top: 1vh; /* Unité relative */
-  right: 1vw; /* Unité relative */
-  width: 20vw; /* Unité relative */
-  min-width: 200px; /* Minimum pour ne pas être trop petit */
+  top: 1vh;
+  right: 1vw;
+  width: 20vw;
+  min-width: 200px;
   background: #005FA8;
   border: 2px solid white;
-  padding: 1vh; /* Unité relative */
+  padding: 1vh;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 1.5vw; /* Unité relative */
+  font-size: 1.5vw;
   user-select: none;
   z-index: 4000;
   border-radius: 5px;
@@ -170,17 +168,17 @@ h1 {
 #calculator-container h3 {
   text-align: center;
   margin-top: 0;
-  margin-bottom: 1vh; /* Unité relative */
+  margin-bottom: 1vh;
 }
 #calc-display {
   width: 100%;
-  height: 4vh; /* Unité relative */
+  height: 4vh;
   background: #004D99;
   border: 1px solid white;
   color: white;
-  font-size: 2.5vw; /* Unité relative */
-  margin-bottom: 1vh; /* Unité relative */
-  padding: 0.5vh; /* Unité relative */
+  font-size: 2.5vw;
+  margin-bottom: 1vh;
+  padding: 0.5vh;
   box-sizing: border-box;
   text-align: right;
   border-radius: 3px;
@@ -188,16 +186,16 @@ h1 {
 #calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1vh; /* Unité relative */
+  grid-gap: 1vh;
 }
 .calc-button {
   background: #006FB7;
   border: 1px solid white;
   color: white;
-  font-size: 2.5vw; /* Unité relative */
+  font-size: 2.5vw;
   cursor: pointer;
   user-select: none;
-  padding: 1vh; /* Unité relative */
+  padding: 1vh;
   text-align: center;
   border-radius: 3px;
   transition: background 0.1s ease;
@@ -207,39 +205,39 @@ h1 {
   color: #0078D4;
 }
 
-/* Matrix Rain (Milieu Gauche) */
+/* Matrix Rain (Milieu Gauche - position inchangée, c'était déjà ça) */
 #matrix-rain-container {
     top: 50%;
-    left: 1vw; /* Unité relative */
+    left: 1vw;
     transform: translateY(-50%);
-    width: 25vw; /* Unité relative */
+    width: 25vw;
     min-width: 200px;
-    height: 30vh; /* Unité relative */
+    height: 30vh;
     min-height: 200px;
     overflow: hidden;
     background: rgba(0,0,0,0.3);
     border: 2px solid white;
     border-radius: 5px;
-    padding: 1vh; /* Unité relative */
+    padding: 1vh;
     font-family: monospace;
-    font-size: 2vw; /* Unité relative */
+    font-size: 2vw;
     line-height: 1.2;
     color: #00FF00;
     text-align: left;
     z-index: 1000;
 }
 
-/* Morpion (Milieu Droite) */
+/* Morpion (Milieu Droite - DÉPLACÉ UN PEU PLUS BAS) */
 #morpion-container {
-  top: 50%;
-  right: 1vw; /* Unité relative */
+  top: 60%; /* Était 50% */
+  right: 1vw;
   transform: translateY(-50%);
-  width: 20vw; /* Unité relative */
+  width: 20vw;
   min-width: 200px;
   background: #005FA8;
   border: 2px solid white;
-  padding: 1vh; /* Unité relative */
-  font-size: 1.5vw; /* Unité relative */
+  padding: 1vh;
+  font-size: 1.5vw;
   user-select: none;
   z-index: 2000;
   border-radius: 5px;
@@ -248,24 +246,24 @@ h1 {
 #morpion-container h3 {
   margin-top: 0;
   text-align: center;
-  font-size: 2vw; /* Unité relative */
+  font-size: 2vw;
 }
 #board {
   display: grid;
-  grid-template-columns: repeat(3, 6vw); /* Taille relative des cases */
-  grid-gap: 0.5vh; /* Unité relative */
+  grid-template-columns: repeat(3, 6vw);
+  grid-gap: 0.5vh;
   justify-content: center;
-  margin-top: 1vh; /* Unité relative */
+  margin-top: 1vh;
 }
 #board > div {
-  width: 6vw; /* Taille relative des cases */
-  height: 6vw; /* Taille relative des cases */
+  width: 6vw;
+  height: 6vw;
   background-color: #006FB7;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3vw; /* Unité relative */
+  font-size: 3vw;
   cursor: pointer;
   user-select: none;
   border-radius: 3px;
@@ -275,59 +273,59 @@ h1 {
   opacity: 0.7;
 }
 
-/* Rickroll (Bas Gauche) */
+/* Rickroll (Bas Gauche - position inchangée) */
 #rickroll-video {
-  bottom: 1vh; /* Unité relative */
-  left: 1vw; /* Unité relative */
-  width: 25vw; /* Unité relative */
-  height: auto; /* Maintient le ratio */
-  max-height: 25vh; /* Max hauteur relative */
+  bottom: 1vh;
+  left: 1vw;
+  width: 25vw;
+  height: auto;
+  max-height: 25vh;
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
 }
 
-/* Subway Surfer Video (Bas Droite) */
+/* Subway Surfer Video (Bas Droite - position inchangée) */
 #subway-surfer-video {
-  bottom: 1vh; /* Unité relative */
-  right: 1vw; /* Unité relative */
-  width: 25vw; /* Unité relative */
-  height: auto; /* Maintient le ratio */
-  max-height: 25vh; /* Max hauteur relative */
+  bottom: 1vh;
+  right: 1vw;
+  width: 25vw;
+  height: auto;
+  max-height: 25vh;
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
 }
 
-/* Image troll (Milieu) */
+/* Image troll (HAUT - DÉPLACÉ) */
 #image-troll {
-  bottom: 50%;
+  top: 1vh; /* Était bottom: 50% */
   left: 50%;
-  transform: translate(-50%, 50%);
+  transform: translateX(-50%); /* Ajusté pour centrer horizontalement */
   text-align: center;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 1.5vw; /* Unité relative */
+  font-size: 1.5vw;
   user-select: none;
-  z-index: 5000;
+  z-index: 5000; /* Z-index très élevé pour être bien visible */
 }
 #image-troll img {
-  max-width: 15vw; /* Unité relative */
-  max-height: 15vh; /* Unité relative */
+  max-width: 15vw;
+  max-height: 15vh;
   height: auto;
   border: 2px solid white;
-  margin-top: 0.5vh; /* Unité relative */
+  margin-top: 0.5vh;
   border-radius: 6px;
 }
 
-/* Texte dégoulinant (Milieu) */
+/* Texte dégoulinant (Milieu - position inchangée) */
 #degoulinant-text {
   position: fixed;
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 4vw; /* Unité relative */
+  font-size: 4vw;
   font-weight: bold;
   font-family: "Segoe UI", Arial, sans-serif;
   animation: degoulinement 5s forwards;
@@ -336,18 +334,18 @@ h1 {
   z-index: 5000;
 }
 
-/* NOUVEAU: Conteneur pour les messages d'alerte personnalisés */
+/* Alerte personnalisée (Milieu - position inchangée) */
 #custom-alert-container {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #005FA8; /* Fond bleu moyen */
+    background: #005FA8;
     border: 2px solid white;
     padding: 2vh;
-    width: 60vw; /* Largeur relative */
+    width: 60vw;
     max-width: 400px;
     box-shadow: 0 0 20px rgba(255,255,255,0.8);
-    z-index: 9000; /* Très haut pour être au-dessus de tout */
+    z-index: 9000;
     text-align: center;
     font-size: 2.5vw;
     line-height: 1.4;
