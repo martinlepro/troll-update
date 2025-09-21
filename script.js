@@ -11,9 +11,9 @@ const mainTitle = document.getElementById("main-title");
 const progressBarElement = document.getElementById("progress-bar");
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
-const searchBarWrapper = document.getElementById("search-bar-wrapper"); // Nouveau wrapper
+const searchBarWrapper = document.getElementById("search-bar-wrapper");
 const searchBar = document.getElementById("search-bar");
-const submitSearchBtn = document.getElementById("submit-search-btn"); // Nouveau bouton
+const submitSearchBtn = document.getElementById("submit-search-btn");
 const morpionContainer = document.getElementById("morpion-container");
 const popupContainer = document.getElementById("popup-container");
 const errorSound = document.getElementById("error-sound");
@@ -27,6 +27,7 @@ const calcButtons = document.getElementById("calc-buttons");
 let isTrollActive = false; // Flag pour savoir si le troll est démarré
 
 function requestFullscreenMode() {
+    console.log("Tentative de demande de plein écran.");
     if (fullscreenContainer.requestFullscreen) {
         fullscreenContainer.requestFullscreen().catch(err => {
             console.warn("Échec de la demande de plein écran:", err);
@@ -43,21 +44,26 @@ function requestFullscreenMode() {
 }
 
 function exitFullscreenMode() {
+    console.log("Tentative de sortie du plein écran.");
     if (document.exitFullscreen) {
         document.exitFullscreen();
     }
 }
 
 function handleFullscreenChange() {
+    console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
     if (!document.fullscreenElement && isTrollActive) {
+        console.log("Hors plein écran et troll actif, tentative de retour en plein écran.");
         requestFullscreenMode();
     }
 }
 
 function handleGlobalKeyDown(event) {
     if (event.key === "Escape" && isTrollActive) {
+        console.log("Touche Escape pressée, troll actif.");
         event.preventDefault();
         if (!document.fullscreenElement) {
+             console.log("Hors plein écran, tentative de retour en plein écran.");
              requestFullscreenMode();
         }
     }
@@ -65,6 +71,7 @@ function handleGlobalKeyDown(event) {
 
 function handleBeforeUnload(event) {
     if (isTrollActive) {
+        console.log("Tentative de quitter la page, troll actif.");
         event.returnValue = "Vous êtes sûr de vouloir quitter ? La mise à jour est en cours et cela pourrait endommager votre système.";
         return event.returnValue;
     }
@@ -74,7 +81,7 @@ function handleBeforeUnload(event) {
 function initializeTrollStartInteraction() {
   mainTitle.style.display = 'none';
   progressBarElement.style.display = 'none';
-  searchBarWrapper.style.display = 'none'; // Masquer le wrapper de la barre de recherche
+  searchBarWrapper.style.display = 'none';
   searchBar.disabled = true;
 
   status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
@@ -85,10 +92,11 @@ function initializeTrollStartInteraction() {
 }
 
 function handleInitialClick() {
+    console.log("Clic initial détecté, démarrage du troll.");
     status.style.cursor = 'default';
     mainTitle.style.display = 'block';
     progressBarElement.style.display = 'block';
-    searchBarWrapper.style.display = 'flex'; // Afficher le wrapper de la barre de recherche
+    searchBarWrapper.style.display = 'flex';
 
     requestFullscreenMode();
     startTrollMechanism();
@@ -96,6 +104,7 @@ function handleInitialClick() {
 
 function handleReEnterFullscreen() {
     if (isTrollActive && !document.fullscreenElement) {
+        console.log("Clic pour ré-entrer en plein écran détecté.");
         requestFullscreenMode();
     }
 }
@@ -103,13 +112,13 @@ function handleReEnterFullscreen() {
 function startTrollMechanism() {
     if (isTrollActive) return;
     isTrollActive = true;
+    console.log("Mécanisme de troll démarré.");
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     window.addEventListener('keydown', handleGlobalKeyDown);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    searchBar.disabled = true; // Reste désactivée pendant la progression initiale
-    submitSearchBtn.style.display = 'none'; // Le bouton submit est caché au début
+    searchBar.disabled = true;
 
     updateProgress();
 }
@@ -133,57 +142,69 @@ function updateProgress() {
 }
 
 function activateTrollEffectForLevel(level) {
+    console.log(`Activation de l'effet pour le niveau ${level}.`);
     switch (level) {
-        case 1: break;
+        case 1: break; // Niveau de base, géré par activateTrollEffects
         case 2:
             status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
             break;
         case 3:
             document.body.classList.add("cursor-pale");
+            console.log("Niveau 3: Curseur pâle activé.");
             break;
         case 4:
             showDegoulinantText();
+            console.log("Niveau 4: Texte dégoulinant activé.");
             break;
         case 5:
             playErrorSound(1);
+            console.log("Niveau 5: Son d'erreur activé.");
             break;
         case 6:
             playErrorSound(5);
+            console.log("Niveau 6: Sons d'erreur répétés activés.");
             break;
         case 7:
             showFakePopups(15);
+            console.log("Niveau 7: Popups activées.");
             break;
         case 8:
             morpionContainer.style.display = "block";
             initMorpion();
+            console.log("Niveau 8: Morpion activé.");
             break;
-        case 9:
-            break;
+        case 9: break; // Logique dans handleSearchInput
         case 10:
             rickrollVideo.style.display = "block";
             rickrollVideo.play();
+            console.log("Niveau 10: Rickroll activé.");
             break;
         case 11:
             imageTroll.style.display = "block";
+            console.log("Niveau 11: Image troll activée.");
             break;
         case 12:
             if (!activatedAlerts.has(12)) {
                 alert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)");
                 activatedAlerts.add(12);
+                console.log("Niveau 12: Alerte .vbs déclenchée.");
             }
             break;
         case 13:
             if (!activatedAlerts.has(13)) {
                 alert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)");
                 activatedAlerts.add(13);
+                console.log("Niveau 13: Alerte .bat déclenchée.");
             }
             break;
         case 14:
             enableCursorJitter();
+            console.log("Niveau 14: Jitter de fenêtre activé.");
             break;
         case 15:
             calculatorContainer.style.display = "block";
             initCalculator();
+            console.log("Niveau 15: Calculatrice activée.");
             break;
     }
 }
@@ -195,9 +216,14 @@ function activateTrollEffects(newLevel) {
     return;
   }
 
-  if (parsedNewLevel === trollLevel) return;
+  if (parsedNewLevel === trollLevel) {
+    console.log(`Niveau ${parsedNewLevel} déjà actif, pas de changement.`);
+    return;
+  }
+  console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`);
 
   if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
+    console.log("Reset complet demandé.");
     resetAll();
     activatedAlerts.clear();
     trollLevel = 0;
@@ -210,8 +236,8 @@ function activateTrollEffects(newLevel) {
   trollLevel = parsedNewLevel;
 
   if (trollLevel >= 1) {
-      searchBar.disabled = false; // La barre de recherche est activée
-      submitSearchBtn.style.display = 'inline-block'; // Le bouton submit est affiché
+      searchBar.disabled = false;
+      submitSearchBtn.style.display = 'inline-block';
       if (trollLevel === 1) {
           status.textContent = "Mise à jour terminée. Le système est en attente d'instructions.";
       }
@@ -226,6 +252,7 @@ function startTrollLevel(n) {
 }
 
 function resetAll() {
+  console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
 
   morpionContainer.style.display = "none";
@@ -256,9 +283,9 @@ function resetAll() {
   progressBar.style.width = '0%';
   progress = 0;
 
-  searchBarWrapper.style.display = 'flex'; // Afficher le wrapper
+  searchBarWrapper.style.display = 'flex';
   searchBar.disabled = true;
-  submitSearchBtn.style.display = 'none'; // Cacher le bouton
+  submitSearchBtn.style.display = 'none';
   searchBar.value = '';
 
   status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll.";
@@ -267,10 +294,175 @@ function resetAll() {
   activatedAlerts.clear();
 }
 
-// NOUVELLE FONCTION pour gérer la soumission de la barre de recherche
+function showDegoulinantText() {
+  if (!degoulinantText) { // S'assure de ne créer l'élément qu'une seule fois
+    degoulinantText = document.createElement("div");
+    degoulinantText.id = "degoulinant-text";
+    degoulinantText.textContent = "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
+    document.body.appendChild(degoulinantText);
+  }
+}
+
+function playErrorSound(times) {
+  let count = 0;
+  function play() {
+    errorSound.currentTime = 0;
+    errorSound.play();
+    count++;
+    if (count < times) setTimeout(play, 800);
+  }
+  play();
+}
+
+function showFakePopups(count) {
+  for (let i = 0; i < count; i++) {
+    const popup = document.createElement("div");
+    popup.classList.add("fake-popup");
+    popup.textContent = `Erreur critique 0x${Math
+      .floor(Math.random() * 9999)
+      .toString(16)
+      .toUpperCase()}`;
+
+    const offsetX = popupCount * 20;
+    const offsetY = popupCount * 20;
+
+    popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
+    popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
+
+    popup.style.top = `0px`;
+    popup.style.left = `0px`;
+
+    popupContainer.appendChild(popup);
+    popupCount++;
+  }
+}
+
+function initMorpion() {
+  // Reset morpionCells avant de recréer le plateau
+  morpionCells = Array(9).fill(""); // Assurez-vous que c'est un tableau de 9 chaînes vides
+
+  const boardElement = document.getElementById("board");
+  boardElement.innerHTML = ""; // Vide le contenu existant
+
+  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>"; // Réajoute le titre
+  morpionContainer.appendChild(boardElement); // Réajoute le plateau vidé
+
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement("div");
+    cell.dataset.index = i;
+    cell.addEventListener("click", () => {
+      if (!cell.classList.contains("used") && morpionCells[i] === "") {
+        cell.textContent = "X";
+        cell.classList.add("used");
+        morpionCells[i] = "X";
+
+        if (checkWinner(morpionCells) === null) {
+          setTimeout(() => {
+            const move = getBestMove(morpionCells);
+            if (move !== null) {
+              const computerCell = boardElement.children[move];
+              if (computerCell) {
+                computerCell.textContent = "O";
+                computerCell.classList.add("used");
+                morpionCells[move] = "O";
+              }
+            }
+            const winner = checkWinner(morpionCells);
+            if (winner !== null) { /* Handle winner */ }
+          }, 500);
+        }
+      }
+    });
+    boardElement.appendChild(cell);
+  }
+}
+
+
+function getBestMove(board) {
+  if (isGameOver(board)) return null;
+
+  let bestScore = -Infinity;
+  let move = null;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === "") {
+      board[i] = "O";
+      const score = minimax(board, false);
+      board[i] = "";
+      if (score > bestScore) {
+        bestScore = score;
+        move = i;
+      }
+    }
+  }
+  return move;
+}
+
+function minimax(board, isMaximizing) {
+  const winner = checkWinner(board);
+  if (winner !== null) {
+    if (winner === "O") return 10;
+    else if (winner === "X") return -10;
+    else return 0;
+  }
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === "") {
+        board[i] = "O";
+        bestScore = Math.max(bestScore, minimax(board, false));
+        board[i] = "";
+      }
+    }
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === "") {
+        board[i] = "X";
+        bestScore = Math.min(bestScore, minimax(board, true));
+        board[i] = "";
+      }
+    }
+    return bestScore;
+  }
+}
+
+function checkWinner(board) {
+  const wins = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6],
+  ];
+  for (const [a, b, c] of wins) {
+    if (
+      board[a] !== "" &&
+      board[a] === board[b] &&
+      board[a] === board[c]
+    )
+      return board[a];
+  }
+  if (board.every((cell) => cell !== "")) return "draw";
+  return null;
+}
+
+function isGameOver(board) {
+  return checkWinner(board) !== null;
+}
+
 function processSearchBarSubmission(value) {
     if (searchBar.disabled) {
-        return; // Ne rien faire si la barre est désactivée
+        console.warn("Tentative de soumission avec barre de recherche désactivée.");
+        return;
+    }
+    console.log(`Soumission barre de recherche: "${value}"`);
+
+    // --- NOUVEAU : Fonctionnalité "RESET ALL" ---
+    if (value === 'reset all') {
+        resetAll();
+        searchBar.value = '';
+        status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll.";
+        return;
     }
 
     if (trollLevel >= 15 && value === 'easter egg') {
@@ -286,7 +478,6 @@ function processSearchBarSubmission(value) {
         return;
     }
 
-    // Si ce n'est ni un easter egg ni un niveau, alors c'est du texte aléatoire
     if (/^[a-z]+$/.test(value)) {
         if (trollLevel >= 9) {
             const jokes = [
@@ -299,20 +490,19 @@ function processSearchBarSubmission(value) {
         } else {
             status.textContent = "Opération non reconnue.";
         }
+    } else if (value.length > 0) { // Si ce n'est pas une lettre/chiffre reconnu mais non vide
+        status.textContent = "Commande inconnue.";
     }
 }
 
-// Fonction existante handleSearchInput renommée pour clarifier son rôle "live"
 function handleSearchBarInputLive(e) {
-    // Si la barre est désactivée, ne pas traiter les inputs
     if (searchBar.disabled) {
-        e.target.value = ''; // Efface ce qui est tapé pendant que c'est désactivé
+        e.target.value = '';
         return;
     }
 
     const val = e.target.value.toLowerCase();
 
-    // Le Rickroll est un effet "live" qui peut se déclencher à chaque frappe de voyelle
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
         rickrollVideo.style.display = "block";
         rickrollVideo.play();
@@ -321,30 +511,92 @@ function handleSearchBarInputLive(e) {
         rickrollVideo.currentTime = 0;
         rickrollVideo.style.display = "none";
     }
-
-    // Le statut des blagues sera mis à jour seulement si l'utilisateur soumet (via bouton ou Entrée)
-    // ou si on garde une logique "live" plus agressive. Pour l'instant, c'est mieux avec soumission.
 }
 
-// Gestion de la touche Entrée du clavier physique/virtuel
 function handleSearchBarKeyDown(e) {
     if (e.key === 'Enter') {
-        e.preventDefault(); // Empêche le comportement par défaut de l'Entrée
+        e.preventDefault();
         processSearchBarSubmission(searchBar.value.toLowerCase());
-        searchBar.value = ''; // Efface le contenu après soumission
+        searchBar.value = '';
     }
 }
 
-// Gestion du clic sur le bouton "Entrée" dédié
 function handleSubmitSearchClick() {
     processSearchBarSubmission(searchBar.value.toLowerCase());
-    searchBar.value = ''; // Efface le contenu après soumission
+    searchBar.value = '';
+}
+
+let jitterInterval = null;
+function enableCursorJitter() {
+  jitterInterval = setInterval(() => {
+    const x = Math.random() * (window.screen.width - window.outerWidth);
+    const y = Math.random() * (window.screen.height - window.outerHeight);
+    window.moveTo(x, y);
+  }, 1000);
+}
+function disableCursorJitter() {
+  if (jitterInterval) {
+    clearInterval(jitterInterval);
+    jitterInterval = null;
+  }
+}
+
+function initCalculator() {
+  calcDisplay.value = "";
+
+  if (!calculatorInitialized) {
+    const buttons = [
+      "7", "8", "9", "/",
+      "4", "5", "6", "*",
+      "1", "2", "3", "-",
+      "0", ".", "=", "+"
+    ];
+
+    buttons.forEach(val => {
+      const btn = document.createElement("button");
+      btn.className = "calc-button";
+      btn.textContent = val;
+      if (val === "=") {
+        btn.dataset.action = "equals";
+      } else if (["+", "-", "*", "/"].includes(val)) {
+        btn.dataset.action = "operator";
+      } else {
+        btn.dataset.action = "number";
+      }
+      calcButtons.appendChild(btn);
+    });
+
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "calc-button";
+    clearBtn.textContent = "C";
+    clearBtn.dataset.action = "clear";
+    calcButtons.appendChild(clearBtn);
+
+    calcButtons.querySelectorAll(".calc-button").forEach((btn) => {
+      btn.onclick = () => {
+        const action = btn.dataset.action;
+        const buttonValue = btn.textContent;
+
+        if (action === "clear") {
+          calcDisplay.value = "";
+        } else if (action === "equals") {
+          try {
+            calcDisplay.value = new Function('return ' + calcDisplay.value)();
+          } catch {
+            calcDisplay.value = "Erreur";
+          }
+        } else {
+          calcDisplay.value += buttonValue;
+        }
+      };
+    });
+    calculatorInitialized = true;
+  }
 }
 
 
-// Démarrage
 searchBar.addEventListener("input", handleSearchBarInputLive);
-searchBar.addEventListener("keydown", handleSearchBarKeyDown); // Écouteur pour la touche Entrée
-submitSearchBtn.addEventListener("click", handleSubmitSearchClick); // Écouteur pour le bouton
+searchBar.addEventListener("keydown", handleSearchBarKeyDown);
+submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
