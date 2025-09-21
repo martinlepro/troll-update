@@ -5,7 +5,7 @@ let calculatorInitialized = false;
 let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
-let matrixRainInterval = null; // Pour contrôler l'effet 1 et 0
+let matrixRainInterval = null;
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -86,7 +86,7 @@ function initializeTrollStartInteraction() {
   searchBarWrapper.style.display = 'none';
   searchBar.disabled = true;
 
-  // Masquer les éléments fixes au démarrage pour ne pas les voir avant le plein écran
+  // Masquer TOUS les éléments fixes au démarrage pour ne pas les voir avant le plein écran
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
 
 
@@ -150,7 +150,6 @@ function activateTrollEffectForLevel(level) {
     console.log(`Activation de l'effet pour le niveau ${level}.`);
     switch (level) {
         case 1:
-            // Niveaux de base, principalement l'activation de la barre de recherche
             break;
         case 2:
             status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
@@ -178,21 +177,20 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 7: Popups activées.");
             break;
         case 8:
-            morpionContainer.style.display = "block";
+            morpionContainer.style.display = 'block'; // Afficher le Morpion
             initMorpion();
             console.log("Niveau 8: Morpion activé.");
             break;
         case 9:
-            // Les blagues de la barre de recherche sont gérées par handleSearchInput
             break;
         case 10:
-            rickrollVideo.style.display = "block";
+            rickrollVideo.style.display = 'block'; // Afficher le Rickroll
             rickrollVideo.play();
             console.log("Niveau 10: Rickroll activé.");
             break;
         case 11:
-            imageTroll.style.display = "block"; // Image Trollface (maintenant au niveau 11)
-            subwaySurferVideo.style.display = 'block'; // NOUVEAU: Subway Surfer (maintenant au niveau 11)
+            imageTroll.style.display = 'block'; // Afficher l'image Trollface
+            subwaySurferVideo.style.display = 'block'; // Afficher Subway Surfer
             subwaySurferVideo.play();
             console.log("Niveau 11: Image Troll et Subway Surfer activés.");
             break;
@@ -215,7 +213,7 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 14: Jitter de fenêtre activé.");
             break;
         case 15:
-            calculatorContainer.style.display = "block";
+            calculatorContainer.style.display = 'block'; // Afficher la Calculatrice
             initCalculator();
             console.log("Niveau 15: Calculatrice activée.");
             break;
@@ -268,26 +266,23 @@ function resetAll() {
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
 
-  morpionContainer.style.display = "none";
+  // Masquer tous les éléments fixes
+  document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
+
+
+  // Réinitialisation spécifique des éléments complexes
   const boardElement = document.getElementById("board");
   if (boardElement) boardElement.innerHTML = '';
   morpionCells = [];
 
-  popupContainer.style.display = 'none';
   popupContainer.innerHTML = "";
   popupCount = 0;
 
-  imageTroll.style.display = "none";
-  subwaySurferVideo.style.display = 'none';
   subwaySurferVideo.pause();
   subwaySurferVideo.currentTime = 0;
 
-
-  rickrollVideo.style.display = "none";
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
-
-  calculatorContainer.style.display = "none";
 
   if (degoulinantText) {
     degoulinantText.remove();
@@ -333,7 +328,7 @@ function startMatrixRain() {
             fullContent += line + '\n';
         }
         matrixRainContainer.textContent = fullContent;
-    }, 100); // Met à jour le contenu toutes les 100ms
+    }, 100);
 }
 
 
