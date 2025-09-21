@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Mise à jour système - troll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- AJOUTÉ: Pour le responsive -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,7 +18,7 @@
     <div id="status"></div>
 
     <!-- NOUVEAU: Conteneur pour l'effet 1 et 0 (Matrix Rain) -->
-    <div id="matrix-rain-container"></div>
+    <div id="matrix-rain-container" class="fixed-element"></div>
 
     <!-- CALCULATRICE (Haut Droite) -->
     <div id="calculator-container" class="fixed-element">
@@ -42,13 +43,13 @@
     </div>
 
     <!-- RICKROLL (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element" width="320" height="180" autoplay loop muted style="display:none;">
-      <source src="rickroll.mp4" type="video/mp4"> <!-- NOM DE FICHIER MIS À JOUR ICI -->
+    <video id="rickroll-video" class="fixed-element" autoplay loop muted style="display:none;">
+      <source src="rickroll.mp4" type="video/mp4">
     </video>
 
     <!-- SUBWAY SURFER VIDEO (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element" width="320" height="180" autoplay loop muted style="display:none;">
-        <source src="subwaysurfer.mp4" type="video/mp4"> <!-- NOM DE FICHIER MIS À JOUR ICI -->
+    <video id="subway-surfer-video" class="fixed-element" autoplay loop muted style="display:none;">
+        <source src="subwaysurfer.mp4" type="video/mp4">
     </video>
 
     <!-- Image troll (milieu) -->
@@ -62,6 +63,10 @@
 
     <!-- Son d’erreur -->
     <audio id="error-sound" src="error.mp3"></audio>
+
+    <!-- NOUVEAU: Conteneur pour les messages d'alerte personnalisés -->
+    <div id="custom-alert-container" class="fixed-element"></div>
+
   </div>
 
   <script src="script.js"></script>
