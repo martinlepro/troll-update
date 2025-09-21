@@ -3,6 +3,7 @@ let progress = 0;
 let degoulinantText = null;
 let calculatorInitialized = false;
 let morpionCells = [];
+let popupCount = 0; // Nouveau: Compteur pour gérer les popups qui descendent
 
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
@@ -27,21 +28,15 @@ function initializeTrollStart() {
 // --- Nouveau gestionnaire d'événement pour la touche Entrée ---
 function handleInitialEnter(event) {
   if (event.key === 'Enter') {
-    event.preventDefault(); // <-- AJOUTE CETTE LIGNE
+    event.preventDefault(); // Empêche le comportement par défaut de la touche Entrée
     document.removeEventListener('keydown', handleInitialEnter); // Retire cet écouteur
     searchBar.disabled = false; // Active la barre de recherche
-
-    searchBar.style.position = 'fixed';
-    searchBar.style.top = '40px';
-    searchBar.style.left = '50%';
-    searchBar.style.transform = 'translateX(-50%)';
-    searchBar.style.margin = '0';
+    searchBar.classList.add('fixed-search-bar'); // Ajoute une classe pour la position fixe
 
     status.textContent = "Préparation de la mise à jour...";
     updateProgress(); // Démarre le troll !
   }
 }
-
 
 function updateProgress() {
   if (progress < 100) {
@@ -52,7 +47,6 @@ function updateProgress() {
     setTimeout(updateProgress, 300);
   } else {
     status.textContent = "Mise à jour terminée !";
-    // Activation troll par défaut au niveau 1 pour starter
     if (trollLevel === 0) {
       trollLevel = 1;
       startTrollLevel(trollLevel);
@@ -60,7 +54,6 @@ function updateProgress() {
   }
 }
 
-// Fonction pour lancer un niveau de troll
 function startTrollLevel(n) {
   const newLevel = parseInt(n);
   if (isNaN(newLevel) || newLevel < 0 || newLevel > 15) {
@@ -72,14 +65,11 @@ function startTrollLevel(n) {
 
   trollLevel = newLevel;
 
-  resetAll(); // Réinitialise avant d'appliquer les nouveaux effets
+  resetAll();
 
-  if (trollLevel >= 1) {
-    // Niveau 1: Fausse mise à jour (déjà géré par updateProgress)
-  }
+  if (trollLevel >= 1) { /* Already handled */ }
   if (trollLevel >= 2) {
-    status.textContent =
-      "Mise à jour terminée - votre PC est infecté 😈";
+    status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
   }
   if (trollLevel >= 3) {
     document.body.classList.add("cursor-pale");
@@ -100,9 +90,7 @@ function startTrollLevel(n) {
     morpionContainer.style.display = "block";
     initMorpion();
   }
-  if (trollLevel >= 9) {
-    // L'écouteur est déjà sur searchBar, handleSearchInput gère déjà les blagues
-  }
+  if (trollLevel >= 9) { /* Handled by handleSearchInput */ }
   if (trollLevel >= 10) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
@@ -111,14 +99,10 @@ function startTrollLevel(n) {
     imageTroll.style.display = "block";
   }
   if (trollLevel >= 12) {
-    alert(
-      "Activation de troll.vbs - (faux script externe, ne fait rien en vrai)"
-    );
+    alert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)");
   }
   if (trollLevel >= 13) {
-    alert(
-      "Installation de script au démarrage Windows (faux install.bat, juste pour le troll)"
-    );
+    alert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)");
   }
   if (trollLevel >= 14) {
     enableCursorJitter();
@@ -134,6 +118,7 @@ function resetAll() {
 
   morpionContainer.style.display = "none";
   popupContainer.innerHTML = "";
+  popupCount = 0; // Réinitialise le compteur de popups
   imageTroll.style.display = "none";
   rickrollVideo.style.display = "none";
   rickrollVideo.pause();
@@ -155,8 +140,7 @@ function resetAll() {
 function showDegoulinantText() {
   degoulinantText = document.createElement("div");
   degoulinantText.id = "degoulinant-text";
-  degoulinantText.textContent =
-    "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
+  degoulinantText.textContent = "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
   document.body.appendChild(degoulinantText);
 }
 
@@ -171,6 +155,7 @@ function playErrorSound(times) {
   play();
 }
 
+// Modifié: showFakePopups pour l'effet de descente
 function showFakePopups(count) {
   for (let i = 0; i < count; i++) {
     const popup = document.createElement("div");
@@ -179,7 +164,21 @@ function showFakePopups(count) {
       .floor(Math.random() * 9999)
       .toString(16)
       .toUpperCase()}`;
+
+    // Calculer un offset pour chaque popup
+    const offsetX = popupCount * 20; // Décalage de 20px vers la droite
+    const offsetY = popupCount * 20; // Décalage de 20px vers le bas
+
+    // Appliquer les offsets comme des propriétés CSS personnalisées
+    popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
+    popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
+
+    // Positionner la popup
+    popup.style.top = `0px`; // Commence au top de popup-container
+    popup.style.left = `0px`; // Commence au left de popup-container
+
     popupContainer.appendChild(popup);
+    popupCount++; // Incrémente le compteur pour la prochaine popup
   }
 }
 
@@ -309,11 +308,6 @@ function handleSearchInput(e) {
     }
   }
 
-  // La mise à jour est déjà démarrée par handleInitialEnter
-  // if (progress === 0 && val.length > 0) {
-  //   updateProgress();
-  // }
-
   const niveau = parseInt(val);
   if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
     startTrollLevel(niveau);
@@ -334,7 +328,7 @@ function handleSearchInput(e) {
   if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
-  } else if (trollLevel < 10) { // S'assurer que le rickroll s'arrête si le niveau est inférieur à 10
+  } else if (trollLevel < 10) {
     rickrollVideo.pause();
     rickrollVideo.currentTime = 0;
     rickrollVideo.style.display = "none";
@@ -409,9 +403,7 @@ function initCalculator() {
   }
 }
 
-// Attacher l'écouteur pour la barre de recherche une seule fois au chargement
 searchBar.addEventListener("input", handleSearchInput);
 
 // Démarrer l'état initial en attendant la touche Entrée
 initializeTrollStart();
-
