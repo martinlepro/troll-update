@@ -134,46 +134,37 @@ h1 {
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES (VERSION PC) --- */
 
-/* POPUPS (Haut Gauche) */
-#popup-container {
+/* MODIFIÉ: Image troll (Haut Gauche) */
+#image-troll {
   top: 1vh;
   left: 1vw;
-  width: 25vw;
-  min-width: 200px;
-  z-index: 3000;
-  pointer-events: none; /* Toujours non interactif sur le container global */
-}
-.fake-popup {
-  background: #005FA8;
-  border: 2px solid white;
-  padding: 1vh;
-  font-family: "Segoe UI", Arial, sans-serif;
+  right: unset; /* Assurez que la propriété right n'est pas définie */
+  transform: none; /* Supprimer le translate */
+  text-align: center;
   color: white;
-  box-shadow: 0 0 15px rgba(255,255,255,0.7);
-  animation: fadeOut 5s forwards; /* Réactivé */
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 1.5vw;
   user-select: none;
-  position: absolute;
-  width: 100%;
-  border-radius: 3px;
-  font-size: 2vw;
-  pointer-events: all; /* Permettre l'interaction sur les popups individuels (pour le bouton fermer) */
+  z-index: 5000;
 }
-.fake-popup .close-button { /* Bouton de fermeture spécifique pour chaque popup */
-    font-size: 1.5vw; /* Plus petit que les autres */
-    pointer-events: all; /* Important pour qu'il soit cliquable */
+#image-troll p { /* NOUVEAU: Style pour le texte de l'image troll */
+    margin-bottom: 0.5vh;
+    font-size: 2vw;
 }
-
-@keyframes fadeOut {
-  0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
+#image-troll img {
+  max-width: 15vw;
+  max-height: 15vh;
+  height: auto;
+  border: 2px solid white;
+  margin-top: 0.5vh;
+  border-radius: 6px;
 }
 
-
-/* Calculatrice (Haut Droite) */
+/* MODIFIÉ: Calculatrice (Sous l'image troll, en Haut Gauche) */
 #calculator-container {
-  top: 1vh;
-  right: 1vw;
+  top: 20vh; /* Ajusté pour être sous l'image troll (environ 15vh + un peu de marge) */
+  left: 1vw;
+  right: unset;
   width: 20vw;
   min-width: 200px;
   background: #005FA8;
@@ -186,7 +177,8 @@ h1 {
   z-index: 4000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(255,255,255,0.5);
-  position: fixed; /* Assure que le bouton X est relatif à lui */
+  position: fixed;
+  transform: none; /* Supprimer le translate */
 }
 #calculator-container h3 {
   text-align: center;
@@ -228,33 +220,47 @@ h1 {
   color: #0078D4;
 }
 
-/* MODIFIÉ: Matrix Rain (Milieu Droit) */
-#matrix-rain-container {
-    top: 50%;
-    right: 1vw; /* Déplacé à droite */
-    left: unset; /* Assurer que left n'est pas défini */
-    transform: translateY(-50%);
-    width: 25vw;
-    min-width: 200px;
-    height: 30vh;
-    min-height: 200px;
-    overflow: hidden;
-    background: rgba(0,0,0,0.3);
-    border: 2px solid white;
-    border-radius: 5px;
-    padding: 1vh;
-    font-family: monospace;
-    font-size: 2vw;
-    line-height: 1.2;
-    color: #00FF00;
-    text-align: left;
-    z-index: 1000;
+/* MODIFIÉ: POPUPS (Sous la calculatrice, en Haut Gauche) */
+#popup-container {
+  top: 45vh; /* Ajusté pour être sous la calculatrice */
+  left: 1vw;
+  right: unset;
+  width: 25vw;
+  min-width: 200px;
+  z-index: 3000;
+  pointer-events: none; /* Toujours non interactif sur le container global */
+}
+.fake-popup {
+  background: #005FA8;
+  border: 2px solid white;
+  padding: 1vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: white;
+  box-shadow: 0 0 15px rgba(255,255,255,0.7);
+  animation: fadeOut 5s forwards; /* Réactivé */
+  user-select: none;
+  position: absolute;
+  width: 100%;
+  border-radius: 3px;
+  font-size: 2vw;
+  pointer-events: all; /* Permettre l'interaction sur les popups individuels (pour le bouton fermer) */
+}
+.fake-popup .close-button { /* Bouton de fermeture spécifique pour chaque popup */
+    font-size: 1.5vw; /* Plus petit que les autres */
+    pointer-events: all; /* Important pour qu'il soit cliquable */
+}
+@keyframes fadeOut {
+  0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
+  80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
+  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
 }
 
-/* Morpion (Milieu Droite) */
+
+/* MODIFIÉ: Morpion (Milieu Gauche) */
 #morpion-container {
-  top: 60%;
-  right: 1vw;
+  top: 50%;
+  left: 1vw;
+  right: unset; /* S'assurer que right n'est pas défini */
   transform: translateY(-50%);
   width: 20vw;
   min-width: 200px;
@@ -266,7 +272,7 @@ h1 {
   z-index: 2000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(255,255,255,0.5);
-  position: fixed; /* Assure que le bouton X est relatif à lui */
+  position: fixed;
 }
 #morpion-container h3 {
   margin-top: 0;
@@ -298,10 +304,35 @@ h1 {
   opacity: 0.7;
 }
 
-/* Rickroll (Bas Gauche) */
-#rickroll-video {
+/* MODIFIÉ: Matrix Rain (Milieu Droit) */
+#matrix-rain-container {
+    top: 50%;
+    right: 1vw;
+    left: unset; /* Assurez que left n'est pas défini */
+    transform: translateY(-50%);
+    width: 25vw;
+    min-width: 200px;
+    height: 30vh;
+    min-height: 200px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 1vh;
+    font-family: monospace;
+    font-size: 2vw;
+    line-height: 1.2;
+    color: #00FF00;
+    text-align: left;
+    z-index: 1000;
+}
+
+
+/* MODIFIÉ: Subway Surfer Video (Bas Gauche) */
+#subway-surfer-video {
   bottom: 1vh;
   left: 1vw;
+  right: unset; /* Assurez que right n'est pas défini */
   width: 25vw;
   height: auto;
   max-height: 25vh;
@@ -310,42 +341,19 @@ h1 {
   z-index: 4500;
 }
 
-/* Subway Surfer Video (Bas Droite) */
-#subway-surfer-video {
+/* MODIFIÉ: Rickroll (Bas Droite) */
+#rickroll-video {
   bottom: 1vh;
   right: 1vw;
-  width: 20vw;
+  left: unset; /* Assurez que left n'est pas défini */
+  width: 25vw;
   height: auto;
-  max-height: 20vh;
+  max-height: 25vh;
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
 }
 
-/* Image troll (HAUT) */
-#image-troll {
-  top: 1vh;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: white;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 1.5vw;
-  user-select: none;
-  z-index: 5000;
-}
-#image-troll p { /* NOUVEAU: Style pour le texte de l'image troll */
-    margin-bottom: 0.5vh;
-    font-size: 2vw;
-}
-#image-troll img {
-  max-width: 15vw;
-  max-height: 15vh;
-  height: auto;
-  border: 2px solid white;
-  margin-top: 0.5vh;
-  border-radius: 6px;
-}
 
 /* Texte dégoulinant (Milieu) */
 #degoulinant-text {
@@ -402,6 +410,7 @@ body.cursor-pale {
 
 /* ========================================================= */
 /* --- MODIFIÉ: Media Queries pour les petits écrans (Mobile) --- */
+/* (Ceci remplacera ou complétera les styles ci-dessus pour les écrans < 768px) */
 /* ========================================================= */
 @media (max-width: 768px) {
     /* NOUVEAU: Masquer les boutons de fermeture sur mobile */
@@ -451,30 +460,36 @@ body.cursor-pale {
     }
 
     /* --- Positionnement et taille des "troll" fixed-elements pour mobile --- */
+    /* Ils gardent leurs positions relatives, mais sont réduits en taille pour tenir sur l'écran. */
+    /* Des chevauchements peuvent persister en fonction de la taille de l'écran. */
 
-    /* POPUPS (Haut Gauche) */
-    #popup-container {
-        width: 45vw;
-        min-width: unset;
-        font-size: 3vw;
-        /* Conserve top: 1vh; left: 1vw; */
+    /* MODIFIÉ: Image troll (Haut Gauche) pour mobile */
+    #image-troll {
+        top: 1vh;
+        left: 1vw;
+        right: unset;
+        transform: none;
+        max-width: 25vw; /* Plus petit */
+        max-height: 10vh; /* Plus petit */
     }
-    .fake-popup {
-        font-size: 3vw;
-        padding: 1vh;
-        margin-bottom: 0.5vh;
-        /* Animation reste activée, pas d'override ici */
-        opacity: 1; /* Pour assurer que l'animation commence bien */
-        position: relative; /* Repositionner en relatif dans le conteneur */
-        top: unset; left: unset; transform: none; /* Annuler les transformations spécifiques à l'animation */
+    #image-troll p { /* Style pour le texte de l'image troll sur mobile */
+        font-size: 3.5vw;
+    }
+    #image-troll img {
+        max-width: 25vw; /* Image elle-même plus petite */
+        max-height: 8vh;
     }
 
-    /* Calculatrice (Haut Droite) */
+
+    /* MODIFIÉ: Calculatrice (Sous l'image troll, Haut Gauche) pour mobile */
     #calculator-container {
-        width: 45vw;
+        top: 15vh; /* Ajusté pour être sous l'image troll */
+        left: 1vw;
+        right: unset;
+        transform: none;
+        width: 45vw; /* Plus petit */
         min-width: unset;
-        font-size: 2.5vw;
-        /* Conserve top: 1vh; right: 1vw; */
+        font-size: 2.5vw; /* Taille globale de la police réduite */
     }
     #calculator-container h3 {
         font-size: 3.5vw;
@@ -489,68 +504,80 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* MODIFIÉ: Matrix Rain (Milieu Droit) pour mobile */
-    #matrix-rain-container {
-        width: 45vw;
-        height: 25vh;
+    /* MODIFIÉ: POPUPS (Sous la calculatrice, Haut Gauche) pour mobile */
+    #popup-container {
+        top: 35vh; /* Ajusté pour être sous la calculatrice */
+        left: 1vw;
+        right: unset;
+        transform: none;
+        width: 45vw; /* Plus petit */
         min-width: unset;
-        min-height: unset;
+        font-size: 3vw;
+    }
+    .fake-popup {
         font-size: 3vw;
         padding: 1vh;
-        /* Conserve top: 50%; right: 1vw; transform: translateY(-50%); */
-        left: unset; /* S'assurer que left est unset */
+        margin-bottom: 0.5vh;
+        opacity: 1; /* Pour assurer que l'animation commence bien */
+        position: relative; /* Repositionner en relatif dans le conteneur */
+        top: unset; left: unset; transform: none; /* Annuler les transformations spécifiques à l'animation */
     }
 
-    /* Morpion (Milieu Gauche -> repositionné pour éviter chevauchement avec matrix rain) */
-    /* On le déplace à gauche car le matrix rain est à droite */
+    /* MODIFIÉ: Morpion (Milieu Gauche) pour mobile */
     #morpion-container {
-        top: 60%;
-        left: 1vw; /* Déplacé à gauche */
-        right: unset; /* S'assurer que right est unset */
+        top: 50%;
+        left: 1vw;
+        right: unset;
         transform: translateY(-50%);
-        width: 45vw;
+        width: 45vw; /* Plus petit */
         min-width: unset;
-        font-size: 2.5vw;
+        font-size: 2.5vw; /* Taille globale de la police réduite */
     }
     #morpion-container h3 {
         font-size: 3.5vw;
     }
     #board {
-        grid-template-columns: repeat(3, 13vw);
+        grid-template-columns: repeat(3, 13vw); /* Cellules du morpion plus petites */
         grid-gap: 0.8vh;
     }
     #board > div {
         width: 13vw;
         height: 13vw;
-        font-size: 6vw;
+        font-size: 6vw; /* "X" et "O" visibles */
     }
 
-    /* Rickroll (Bas Gauche) */
-    #rickroll-video {
+    /* MODIFIÉ: Matrix Rain (Milieu Droit) pour mobile */
+    #matrix-rain-container {
+        top: 50%;
+        right: 1vw;
+        left: unset;
+        transform: translateY(-50%);
         width: 45vw;
-        max-height: 18vh;
-        /* Conserve bottom: 1vh; left: 1vw; */
+        height: 25vh; /* Hauteur réduite */
+        min-width: unset;
+        min-height: unset;
+        font-size: 3vw; /* Taille du texte 0 et 1 lisible */
+        padding: 1vh;
     }
 
-    /* Subway Surfer Video (Bas Droite) */
+    /* MODIFIÉ: Subway Surfer Video (Bas Gauche) pour mobile */
     #subway-surfer-video {
+        bottom: 1vh;
+        left: 1vw;
+        right: unset;
         width: 45vw;
         max-height: 18vh;
-        /* Conserve bottom: 1vh; right: 1vw; */
     }
 
-    /* Image troll (HAUT Centré) */
-    #image-troll {
-        font-size: 3.5vw;
-        /* Conserve top: 1vh; left: 50%; transform: translateX(-50%); */
+    /* MODIFIÉ: Rickroll (Bas Droite) pour mobile */
+    #rickroll-video {
+        bottom: 1vh;
+        right: 1vw;
+        left: unset;
+        width: 45vw;
+        max-height: 18vh;
     }
-    #image-troll p { /* Style pour le texte de l'image troll sur mobile */
-        font-size: 3.5vw;
-    }
-    #image-troll img {
-        max-width: 30vw;
-        max-height: 15vh;
-    }
+
 
     /* Texte dégoulinant (Milieu Centré) */
     #degoulinant-text {
