@@ -1,8 +1,8 @@
 let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
-let calculatorInitialized = false; // Nouveau flag pour la calculatrice
-let morpionCells = []; // Pour stocker les cellules du morpion
+let calculatorInitialized = false;
+let morpionCells = [];
 
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
@@ -11,10 +11,38 @@ const morpionContainer = document.getElementById("morpion-container");
 const popupContainer = document.getElementById("popup-container");
 const errorSound = document.getElementById("error-sound");
 const imageTroll = document.getElementById("image-troll");
-const rickrollVideo = document.getElementById("rickroll-video"); // Correction: Utilisera rickrollVideo
+const rickrollVideo = document.getElementById("rickroll-video");
 const calculatorContainer = document.getElementById("calculator-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
+
+// --- Nouvelle fonction pour gérer l'état initial avant le démarrage du troll ---
+function initializeTrollStart() {
+  searchBar.disabled = true; // Désactive la barre de recherche au début
+  status.textContent = "Appuyez sur ENTRÉE pour commencer le grand troll...";
+
+  document.addEventListener('keydown', handleInitialEnter);
+}
+
+// --- Nouveau gestionnaire d'événement pour la touche Entrée ---
+function handleInitialEnter(event) {
+  if (event.key === 'Enter') {
+    document.removeEventListener('keydown', handleInitialEnter); // Retire cet écouteur
+    searchBar.disabled = false; // Active la barre de recherche
+    searchBar.classList.add('fixed-search-bar'); // Ajoute une classe pour la position fixe
+
+    // Modifie le CSS de la barre de recherche directement ou via une classe
+    // Pour que cela fonctionne bien avec le style actuel :
+    searchBar.style.position = 'fixed';
+    searchBar.style.top = '40px'; // Garde la même hauteur que le margin-top initial
+    searchBar.style.left = '50%';
+    searchBar.style.transform = 'translateX(-50%)';
+    searchBar.style.margin = '0'; // Annule le margin pour éviter les conflits
+
+    status.textContent = "Préparation de la mise à jour...";
+    updateProgress(); // Démarre le troll !
+  }
+}
 
 function updateProgress() {
   if (progress < 100) {
@@ -35,20 +63,17 @@ function updateProgress() {
 
 // Fonction pour lancer un niveau de troll
 function startTrollLevel(n) {
-  // S'assurer que le niveau est un nombre et qu'il est valide
   const newLevel = parseInt(n);
   if (isNaN(newLevel) || newLevel < 0 || newLevel > 15) {
     console.warn("Tentative d'activer un niveau de troll invalide :", n);
     return;
   }
 
-  // Ne pas réinitialiser si on est déjà au même niveau
   if (trollLevel === newLevel) return;
 
   trollLevel = newLevel;
 
-  // Réinitialiser tout à chaque changement de niveau
-  resetAll();
+  resetAll(); // Réinitialise avant d'appliquer les nouveaux effets
 
   if (trollLevel >= 1) {
     // Niveau 1: Fausse mise à jour (déjà géré par updateProgress)
@@ -80,15 +105,13 @@ function startTrollLevel(n) {
     // L'écouteur est déjà sur searchBar, handleSearchInput gère déjà les blagues
   }
   if (trollLevel >= 10) {
-    // Rickroll dès qu'une voyelle est tapée (activé dans handleSearchInput)
-    rickrollVideo.style.display = "block"; // Correction: rickrollVideo
+    rickrollVideo.style.display = "block";
     rickrollVideo.play();
   }
   if (trollLevel >= 11) {
     imageTroll.style.display = "block";
   }
   if (trollLevel >= 12) {
-    // simulation d’activation troll.vbs (popup faux système)
     alert(
       "Activation de troll.vbs - (faux script externe, ne fait rien en vrai)"
     );
@@ -104,40 +127,32 @@ function startTrollLevel(n) {
   if (trollLevel >= 15) {
     calculatorContainer.style.display = "block";
     initCalculator();
-    // La logique de fermeture avec "easter egg" est gérée par handleSearchInput
   }
 }
 
-// Remise à zéro des effets entre niveaux
 function resetAll() {
-  // Curseur normal
   document.body.classList.remove("cursor-pale");
 
-  // Cacher tout
   morpionContainer.style.display = "none";
   popupContainer.innerHTML = "";
   imageTroll.style.display = "none";
-  rickrollVideo.style.display = "none"; // Correction: rickrollVideo
+  rickrollVideo.style.display = "none";
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
   calculatorContainer.style.display = "none";
 
-  // Enlever texte dégoulinant s’il existe
   if (degoulinantText) {
     degoulinantText.remove();
     degoulinantText = null;
   }
 
-  // Stop jitter si actif
   disableCursorJitter();
 
-  // Reset morpion
-  morpionCells = []; // Réinitialise l'état des cellules pour le minimax
+  morpionCells = [];
   const boardElement = document.getElementById("board");
-  if (boardElement) boardElement.innerHTML = ''; // Vide le plateau visuellement
+  if (boardElement) boardElement.innerHTML = '';
 }
 
-// Texte dégoulinant animé au centre
 function showDegoulinantText() {
   degoulinantText = document.createElement("div");
   degoulinantText.id = "degoulinant-text";
@@ -146,7 +161,6 @@ function showDegoulinantText() {
   document.body.appendChild(degoulinantText);
 }
 
-// Jouer le son d’erreur n fois
 function playErrorSound(times) {
   let count = 0;
   function play() {
@@ -158,7 +172,6 @@ function playErrorSound(times) {
   play();
 }
 
-// Afficher des popups d'erreurs
 function showFakePopups(count) {
   for (let i = 0; i < count; i++) {
     const popup = document.createElement("div");
@@ -171,27 +184,24 @@ function showFakePopups(count) {
   }
 }
 
-// Morpion imbattable
 function initMorpion() {
-  const boardElement = document.getElementById("board"); // Utilise l'élément existant
-  boardElement.innerHTML = ""; // Vide le contenu pour réinitialiser les cellules
+  const boardElement = document.getElementById("board");
+  boardElement.innerHTML = "";
 
-  // Reset morpion container children (in case re-init)
   morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
-  morpionContainer.appendChild(boardElement); // Ré-ajoute le board à son container
+  morpionContainer.appendChild(boardElement);
 
-  morpionCells = []; // Réinitialise l'array des cellules
+  morpionCells = [];
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
-    cell.dataset.index = i; // Ajoute un index pour faciliter la gestion
+    cell.dataset.index = i;
     cell.addEventListener("click", () => {
       if (!cell.classList.contains("used") && morpionCells[i] === "") {
         cell.textContent = "X";
         cell.classList.add("used");
-        morpionCells[i] = "X"; // Met à jour l'état interne
+        morpionCells[i] = "X";
 
-        if (checkWinner(morpionCells) === null) { // Seulement si le jeu n'est pas terminé
-          // Ordinateur joue après un court délai
+        if (checkWinner(morpionCells) === null) {
           setTimeout(() => {
             const move = getBestMove(morpionCells);
             if (move !== null) {
@@ -199,25 +209,22 @@ function initMorpion() {
               if (computerCell) {
                 computerCell.textContent = "O";
                 computerCell.classList.add("used");
-                morpionCells[move] = "O"; // Met à jour l'état interne
+                morpionCells[move] = "O";
               }
             }
-            // Vérifier si le jeu est terminé après le coup de l'ordinateur
             const winner = checkWinner(morpionCells);
             if (winner !== null) {
-              // Optionnel: afficher un message de fin de partie
               // alert(winner === 'draw' ? 'Match Nul !' : `Le joueur ${winner} a gagné !`);
             }
-          }, 500); // Délai pour que le coup de l'ordi ne soit pas instantané
+          }, 500);
         }
       }
     });
     boardElement.appendChild(cell);
-    morpionCells.push(""); // Initialise l'état des cellules à vide
+    morpionCells.push("");
   }
 }
 
-// Minimax pour morpion imbattable
 function getBestMove(board) {
   if (isGameOver(board)) return null;
 
@@ -242,10 +249,10 @@ function minimax(board, isMaximizing) {
   if (winner !== null) {
     if (winner === "O") return 10;
     else if (winner === "X") return -10;
-    else return 0; // Draw
+    else return 0;
   }
 
-  if (isMaximizing) { // Maximizing player is 'O' (AI)
+  if (isMaximizing) {
     let bestScore = -Infinity;
     for (let i = 0; i < board.length; i++) {
       if (board[i] === "") {
@@ -255,7 +262,7 @@ function minimax(board, isMaximizing) {
       }
     }
     return bestScore;
-  } else { // Minimizing player is 'X' (Human)
+  } else {
     let bestScore = Infinity;
     for (let i = 0; i < board.length; i++) {
       if (board[i] === "") {
@@ -270,9 +277,9 @@ function minimax(board, isMaximizing) {
 
 function checkWinner(board) {
   const wins = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // lignes
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // colonnes
-    [0, 4, 8], [2, 4, 6], // diagonales
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6],
   ];
   for (const [a, b, c] of wins) {
     if (
@@ -290,38 +297,31 @@ function isGameOver(board) {
   return checkWinner(board) !== null;
 }
 
-// Gestion des messages moqueurs (niveau 9) et de la fermeture (niveau 15)
 function handleSearchInput(e) {
   const val = e.target.value.toLowerCase();
 
-  // Logique spécifique pour le niveau 15 : gestion de l'easter egg pour fermer
   if (trollLevel >= 15) {
     if (val === 'easter egg') {
       alert('Bien joué ! Le troll se ferme.');
-      window.close(); // Ferme la fenêtre du navigateur
-      return; // Ne pas exécuter le reste du code
-    } else if (val.length > 0) { // Si l'utilisateur tape autre chose et n'est pas l'easter egg
-      // Garde l'alerte pour le troll, mais tu peux l'ajuster si tu veux une interaction plus subtile
-      // alert("Impossible de fermer la fenêtre sauf avec 'easter egg' ou à la fin du troll.");
-      // Pour un troll plus subtil, on peut juste changer le status.textContent
+      window.close();
+      return;
+    } else if (val.length > 0) {
       status.textContent = "Ceci est un piège ! (sauf 'easter egg' 😉)";
     }
   }
 
-  // Lancer la mise à jour seulement une fois, au premier input
-  if (progress === 0 && val.length > 0) { // S'assure que la barre de recherche n'est pas vide
-    updateProgress();
-  }
+  // La mise à jour est déjà démarrée par handleInitialEnter
+  // if (progress === 0 && val.length > 0) {
+  //   updateProgress();
+  // }
 
-  // Si c’est un niveau de troll entre 1 et 15
   const niveau = parseInt(val);
   if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
     startTrollLevel(niveau);
-    e.target.value = ''; // Optionnel: effacer la barre après avoir entré un niveau
-    return; // Quitte ici pour éviter les blagues/rickroll si c'est un niveau valide
+    e.target.value = '';
+    return;
   }
 
-  // Si c’est juste un texte classique (autre chose)
   if (/^[a-z]+$/.test(val)) {
     const jokes = [
       "Tu tapes du texte, Kevin ? Sérieux ?",
@@ -332,24 +332,19 @@ function handleSearchInput(e) {
     status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
   }
 
-  // Rickroll si une voyelle est tapée et le niveau est >= 10
   if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
-  } else if (trollLevel < 10) {
+  } else if (trollLevel < 10) { // S'assurer que le rickroll s'arrête si le niveau est inférieur à 10
     rickrollVideo.pause();
     rickrollVideo.currentTime = 0;
     rickrollVideo.style.display = "none";
   }
 }
 
-// Mouvement aléatoire curseur ou fenêtre (niveau 14)
 let jitterInterval = null;
 function enableCursorJitter() {
-  // Optionnel: Faire bouger la fenêtre plutôt que le curseur pour un effet plus "fort"
   jitterInterval = setInterval(() => {
-    // Si tu veux faire bouger le curseur, il faut manipuler l'API du curseur, ce qui est limité
-    // La méthode window.moveTo est plus pour bouger la fenêtre du navigateur
     const x = Math.random() * (window.screen.width - window.outerWidth);
     const y = Math.random() * (window.screen.height - window.outerHeight);
     window.moveTo(x, y);
@@ -362,12 +357,9 @@ function disableCursorJitter() {
   }
 }
 
-// Calculatrice troll (niveau 15)
 function initCalculator() {
   calcDisplay.value = "";
 
-  // Créer les boutons de la calculatrice s'ils n'existent pas encore
-  // et s'assurer que les écouteurs d'événements ne sont attachés qu'une seule fois
   if (!calculatorInitialized) {
     const buttons = [
       "7", "8", "9", "/",
@@ -380,7 +372,6 @@ function initCalculator() {
       const btn = document.createElement("button");
       btn.className = "calc-button";
       btn.textContent = val;
-      // Utilise des attributs data-action pour les opérateurs et equals/clear
       if (val === "=") {
         btn.dataset.action = "equals";
       } else if (["+", "-", "*", "/"].includes(val)) {
@@ -391,14 +382,12 @@ function initCalculator() {
       calcButtons.appendChild(btn);
     });
 
-    // Ajout d'un bouton clear séparé
     const clearBtn = document.createElement("button");
     clearBtn.className = "calc-button";
     clearBtn.textContent = "C";
     clearBtn.dataset.action = "clear";
     calcButtons.appendChild(clearBtn);
 
-    // Attache les écouteurs d'événements ICI, et seulement ici
     calcButtons.querySelectorAll(".calc-button").forEach((btn) => {
       btn.onclick = () => {
         const action = btn.dataset.action;
@@ -408,26 +397,21 @@ function initCalculator() {
           calcDisplay.value = "";
         } else if (action === "equals") {
           try {
-            // Utilisation de Function pour évaluer pour éviter eval() directement sur l'entrée utilisateur
-            // Ceci reste risqué pour de vraies applications, mais acceptable pour un troll
             calcDisplay.value = new Function('return ' + calcDisplay.value)();
           } catch {
             calcDisplay.value = "Erreur";
           }
-        } else { // number or operator
+        } else {
           calcDisplay.value += buttonValue;
         }
       };
     });
-    calculatorInitialized = true; // Marque la calculatrice comme initialisée
+    calculatorInitialized = true;
   }
-  // Si déjà initialisée, on ne fait rien de plus que vider l'affichage au début de la fonction.
 }
-
 
 // Attacher l'écouteur pour la barre de recherche une seule fois au chargement
 searchBar.addEventListener("input", handleSearchInput);
 
-// Démarrer la barre de progression au chargement de la page
-// La logique de démarrage du troll (trollLevel 1) est dans updateProgress une fois terminée
-updateProgress();
+// Démarrer l'état initial en attendant la touche Entrée
+initializeTrollStart();
