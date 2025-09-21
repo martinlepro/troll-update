@@ -4,19 +4,17 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  /* Ce background #0078D4 sera le fond "par défaut" du body */
   background: #0078D4; /* Un bleu Windows classique */
-  color: white; /* Texte blanc */
-  font-family: "Segoe UI", Arial, sans-serif; /* Police plus proche de Windows */
-  overflow: hidden; /* Cache les barres de défilement */
+  color: white;
+  font-family: "Segoe UI", Arial, sans-serif;
+  overflow: hidden;
   user-select: none;
-  display: flex; /* Utilise flexbox pour centrer le contenu verticalement */
-  justify-content: center; /* Centre horizontalement */
-  align-items: center; /* Centre verticalement */
-  flex-direction: column; /* Organise les éléments en colonne */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-/* Nouveau style pour le conteneur plein écran */
 #fullscreen-container {
   width: 100%;
   height: 100%;
@@ -24,9 +22,8 @@ html, body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center; /* Centre le texte */
-  background: #0078D4; /* <--- AJOUTE CETTE LIGNE ICI !!! */
-  /* C'est crucial pour que l'arrière-plan reste bleu en mode plein écran */
+  text-align: center;
+  background: #0078D4; /* S'assure que le fond reste bleu en plein écran */
 }
 
 h1 {
@@ -42,42 +39,70 @@ h1 {
   width: 80%;
   max-width: 600px;
   height: 30px;
-  background: #004D99; /* Un bleu plus foncé pour la barre */
+  background: #004D99;
   margin: 30px auto;
-  border-radius: 5px; /* Arrondis un peu moins marqués */
+  border-radius: 5px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(255,255,255,0.7) inset; /* Ombre blanche */
-  display: none; /* Masquée au démarrage, affichée par JS */
+  box-shadow: 0 0 10px rgba(255,255,255,0.7) inset;
+  display: none;
 }
 #progress {
   height: 100%;
   width: 0;
-  background: white; /* Barre de progression blanche */
+  background: white;
   border-radius: 5px;
   transition: width 0.3s ease;
 }
 #status {
   text-align: center;
-  font-size: 24px; /* Rend le texte du statut plus grand pour l'instruction de clic */
+  font-size: 24px;
   margin-top: 15px;
   min-height: 24px;
 }
-#search-bar {
-  display: block; /* Sera masquée/affichée par JS */
+
+/* Wrapper pour la barre de recherche et le bouton */
+#search-bar-wrapper {
+  display: none; /* Masqué au démarrage, affiché par JS */
   margin: 20px auto 40px auto; /* Marge ajustée car la calculatrice est au-dessus */
-  width: 50%;
-  max-width: 400px;
+  width: 80%; /* Prend plus de place pour le bouton */
+  max-width: 500px; /* Plus large pour accueillir le bouton */
+  display: flex; /* Utilise flexbox pour aligner la barre et le bouton */
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Pour z-index */
+  z-index: 6000; /* Assure que le wrapper est au-dessus de tout */
+}
+
+#search-bar {
+  flex-grow: 1; /* Prend l'espace restant */
   padding: 10px;
   font-size: 18px;
   border-radius: 5px;
-  border: 2px solid white; /* Bordure blanche */
+  border: 2px solid white;
   outline: none;
   text-align: center;
-  background: #004D99; /* Fond bleu foncé */
-  color: white; /* Texte blanc */
+  background: #004D99;
+  color: white;
+  margin-right: 10px; /* Espace entre la barre et le bouton */
 }
 #search-bar:focus {
-  box-shadow: 0 0 8px rgba(255,255,255,0.8); /* Ombre blanche au focus */
+  box-shadow: 0 0 8px rgba(255,255,255,0.8);
+}
+
+#submit-search-btn {
+  padding: 10px 15px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: 2px solid white;
+  background: #006FB7; /* Un bleu plus clair pour le bouton */
+  color: white;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.1s ease;
+}
+#submit-search-btn:active {
+  background: white;
+  color: #0078D4;
 }
 
 #morpion-container {
@@ -85,8 +110,8 @@ h1 {
   top: 20%;
   right: 10px;
   width: 220px;
-  background: #005FA8; /* Bleu moyen */
-  border: 2px solid white; /* Bordure blanche */
+  background: #005FA8;
+  border: 2px solid white;
   padding: 10px;
   font-size: 14px;
   display: none;
@@ -107,15 +132,15 @@ h1 {
 #board > div {
   width: 50px;
   height: 50px;
-  background-color: #006FB7; /* Bleu plus clair pour les cases */
-  color: white; /* Texte blanc */
+  background-color: #006FB7;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   cursor: pointer;
   user-select: none;
-  border-radius: 3px; /* Légers arrondis */
+  border-radius: 3px;
 }
 #board > div.used {
   cursor: default;
@@ -131,12 +156,12 @@ h1 {
   pointer-events: none;
 }
 .fake-popup {
-  background: #005FA8; /* Fond bleu moyen pour les popups */
-  border: 2px solid white; /* Bordure blanche */
+  background: #005FA8;
+  border: 2px solid white;
   padding: 10px;
-  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
-  color: white; /* Texte blanc */
-  box-shadow: 0 0 15px rgba(255,255,255,0.7); /* Ombre blanche légèrement transparente */
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: white;
+  box-shadow: 0 0 15px rgba(255,255,255,0.7);
   animation: fadeOut 5s forwards;
   user-select: none;
   position: absolute;
@@ -154,10 +179,10 @@ h1 {
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white; /* Texte blanc */
+  color: white;
   font-size: 28px;
   font-weight: bold;
-  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
+  font-family: "Segoe UI", Arial, sans-serif;
   animation: degoulinement 5s forwards;
   user-select: none;
   pointer-events: none;
@@ -168,7 +193,7 @@ h1 {
   100% { filter: blur(3px); opacity: 0; transform: translate(-50%, 100%); }
 }
 body.cursor-pale {
-  cursor: url('cursor-pale.cur'), auto; /* Il faudra un .cur adapté au thème */
+  cursor: url('cursor-pale.cur'), auto;
 }
 #image-troll {
   position: fixed;
@@ -176,15 +201,15 @@ body.cursor-pale {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  color: white; /* Texte blanc */
-  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
+  color: white;
+  font-family: "Segoe UI", Arial, sans-serif;
   font-size: 14px;
   user-select: none;
   z-index: 5000;
 }
 #image-troll img {
   max-width: 150px;
-  border: 2px solid white; /* Bordure blanche */
+  border: 2px solid white;
   margin-top: 5px;
   border-radius: 6px;
 }
@@ -251,4 +276,3 @@ body.cursor-pale {
   border-radius: 6px;
   z-index: 4500;
 }
-
