@@ -302,10 +302,11 @@ function handleSearchInput(e) {
     status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
   }
 
-  if (/[aeiouy]/.test(val)) {
-    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
-  }
+if (/[aeiouy]/.test(val)) {
+  rickrollVideo.style.display = "block";
+  rickrollVideo.play();
 }
+
 
 // Activation du troll "impossible de fermer" (niveau 15)
 function handleCloseTroll(e) {
@@ -364,4 +365,5 @@ searchBar.addEventListener("input", handleSearchInput);
 
 // Start with progress bar
 updateProgress();
+
 
