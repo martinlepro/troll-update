@@ -116,7 +116,7 @@ h1 {
   color: #0078D4;
 }
 
-/* NOUVEAU: Styles pour les boutons de fermeture */
+/* Styles pour les boutons de fermeture */
 .close-button {
     position: absolute;
     top: 5px;
@@ -160,7 +160,7 @@ h1 {
   border-radius: 6px;
 }
 
-/* NOUVEAU: POPUPS (Sous l'image troll, en Haut Gauche) */
+/* POPUPS (Sous l'image troll, en Haut Gauche) */
 #popup-container {
   top: 20vh; /* Ajusté pour être sous l'image troll (environ 15vh + un peu de marge) */
   left: 1vw;
@@ -196,10 +196,10 @@ h1 {
 }
 
 
-/* MODIFIÉ: Calculatrice (Haut Droite) */
+/* Calculatrice (Haut Droite) */
 #calculator-container {
-  top: 1vh; /* Revenu en haut */
-  right: 1vw; /* Revenu à droite */
+  top: 1vh;
+  right: 1vw;
   left: unset; /* Assurer que left est bien unset */
   width: 20vw;
   min-width: 200px;
@@ -259,7 +259,7 @@ h1 {
 /* Morpion (Milieu Gauche) */
 #morpion-container {
   top: 50%;
-  left: 1vw;
+  left: 1vw; /* POSITIONNEMENT CONFIRMÉ: Morpion à GAUCHE */
   right: unset;
   transform: translateY(-50%);
   width: 20vw;
@@ -307,7 +307,7 @@ h1 {
 /* Matrix Rain (Milieu Droit) */
 #matrix-rain-container {
     top: 50%;
-    right: 1vw;
+    right: 1vw; /* POSITIONNEMENT CONFIRMÉ: Matrix Rain à DROITE */
     left: unset;
     transform: translateY(-50%);
     width: 25vw;
@@ -328,7 +328,7 @@ h1 {
 }
 
 
-/* MODIFIÉ: Subway Surfer Video (Bas Gauche) */
+/* Subway Surfer Video (Bas Gauche) */
 #subway-surfer-video {
   bottom: 1vh;
   left: 1vw;
@@ -341,7 +341,7 @@ h1 {
   z-index: 4500;
 }
 
-/* MODIFIÉ: Rickroll (Bas Droite) */
+/* Rickroll (Bas Droite) */
 #rickroll-video {
   bottom: 1vh;
   right: 1vw;
@@ -409,7 +409,7 @@ body.cursor-pale {
 
 
 /* ========================================================= */
-/* --- MODIFIÉ: Media Queries pour les petits écrans (Mobile) --- */
+/* --- Media Queries pour les petits écrans (Mobile) --- */
 /* ========================================================= */
 @media (max-width: 768px) {
     /* Masquer les boutons de fermeture sur mobile */
@@ -478,10 +478,10 @@ body.cursor-pale {
     }
 
 
-    /* NOUVEAU: Calculatrice (Haut Droite) pour mobile */
+    /* Calculatrice (Haut Droite) pour mobile */
     #calculator-container {
-        top: 1vh; /* En haut */
-        right: 1vw; /* À droite */
+        top: 1vh;
+        right: 1vw;
         left: unset;
         transform: none;
         width: 45vw;
@@ -501,7 +501,7 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* NOUVEAU: POPUPS (Sous l'image troll, Haut Gauche) pour mobile */
+    /* POPUPS (Sous l'image troll, Haut Gauche) pour mobile */
     #popup-container {
         top: 15vh; /* Ajusté pour être sous l'image troll */
         left: 1vw;
@@ -523,7 +523,7 @@ body.cursor-pale {
     /* Morpion (Milieu Gauche) pour mobile */
     #morpion-container {
         top: 50%;
-        left: 1vw;
+        left: 1vw; /* POSITIONNEMENT CONFIRMÉ: Morpion à GAUCHE pour mobile */
         right: unset;
         transform: translateY(-50%);
         width: 45vw;
@@ -546,7 +546,7 @@ body.cursor-pale {
     /* Matrix Rain (Milieu Droit) pour mobile */
     #matrix-rain-container {
         top: 50%;
-        right: 1vw;
+        right: 1vw; /* POSITIONNEMENT CONFIRMÉ: Matrix Rain à DROITE pour mobile */
         left: unset;
         transform: translateY(-50%);
         width: 45vw;
