@@ -7,7 +7,7 @@ let popupCount = 0;
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
-const progressBarElement = document.getElementById("progress-bar"); // Renommé pour éviter conflit avec 'progress'
+const progressBarElement = document.getElementById("progress-bar");
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
 const searchBar = document.getElementById("search-bar");
@@ -48,8 +48,8 @@ function exitFullscreenMode() {
 }
 
 function handleFullscreenChange() {
+    // Si on n'est plus en plein écran ET le troll est actif, on essaie de revenir
     if (!document.fullscreenElement && isTrollActive) {
-        // Si on n'est plus en plein écran ET le troll est actif, on essaie de revenir
         requestFullscreenMode();
     }
 }
@@ -73,25 +73,38 @@ function handleBeforeUnload(event) {
 
 // --- INITIALISATION DU TROLL AVEC INTERACTION ---
 function initializeTrollStartInteraction() {
-  mainTitle.style.display = 'none'; // Assurez-vous que le titre est masqué
-  progressBarElement.style.display = 'none'; // Assurez-vous que la barre de progression est masquée
-  searchBar.style.display = 'none'; // Masquer la barre de recherche au début
-  searchBar.disabled = true; // S'assurer qu'elle est désactivée
+  mainTitle.style.display = 'none';
+  progressBarElement.style.display = 'none';
+  searchBar.style.display = 'none';
+  searchBar.disabled = true;
 
   status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
-  status.style.cursor = 'pointer'; // Indiquer que c'est cliquable
+  status.style.cursor = 'pointer';
 
+  // Ajoute l'écouteur de clic au document entier pour le démarrage initial
   document.addEventListener('click', handleInitialClick, { once: true });
+
+  // Ajoute un écouteur de clic pour le ré-entrée en mode plein écran APRÈS le démarrage
+  // Il sera toujours actif tant que le troll est actif
+  document.addEventListener('click', handleReEnterFullscreen); // NOUVEAU
 }
 
 function handleInitialClick() {
-    status.style.cursor = 'default'; // Restaurer le curseur par défaut
-    mainTitle.style.display = 'block'; // Afficher le titre
-    progressBarElement.style.display = 'block'; // Afficher la barre de progression
-    searchBar.style.display = 'block'; // Afficher la barre de recherche
+    status.style.cursor = 'default';
+    mainTitle.style.display = 'block';
+    progressBarElement.style.display = 'block';
+    searchBar.style.display = 'block';
 
     requestFullscreenMode(); // Demande le plein écran
     startTrollMechanism(); // Démarre la logique du troll
+}
+
+// NOUVELLE FONCTION pour gérer les clics après le démarrage, pour ré-entrer en plein écran
+function handleReEnterFullscreen() {
+    // Si le troll est actif et que nous ne sommes pas en plein écran, tente d'y retourner.
+    if (isTrollActive && !document.fullscreenElement) {
+        requestFullscreenMode();
+    }
 }
 
 function startTrollMechanism() {
@@ -121,10 +134,10 @@ function updateProgress() {
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
     setTimeout(updateProgress, 300);
   } else {
-    status.textContent = "Mise à jour terminée. Démarrage des services."; // Message plus neutre et réaliste pour Niveau 1
+    status.textContent = "Mise à jour terminée. Démarrage des services.";
     if (trollLevel === 0) {
       trollLevel = 1;
-      startTrollLevel(trollLevel); // Passe au niveau 1 (mise à jour de base)
+      startTrollLevel(trollLevel);
     }
   }
 }
@@ -148,7 +161,6 @@ function startTrollLevel(n) {
     status.textContent = "Mise à jour terminée. Le système est en attente d'instructions."; // Nouveau statut pour le niveau 1
   }
 
-  // Les niveaux de troll spécifiques commencent après
   if (trollLevel >= 2) {
     status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
   }
