@@ -8,14 +8,34 @@ html, body {
   background: #0078D4; /* Un bleu Windows classique */
   color: white; /* Texte blanc */
   font-family: "Segoe UI", Arial, sans-serif; /* Police plus proche de Windows */
-  overflow: hidden;
+  overflow: hidden; /* Cache les barres de défilement */
   user-select: none;
+  display: flex; /* Utilise flexbox pour centrer le contenu verticalement */
+  justify-content: center; /* Centre horizontalement */
+  align-items: center; /* Centre verticalement */
+  flex-direction: column; /* Organise les éléments en colonne */
 }
+
+/* Nouveau style pour le conteneur plein écran */
+#fullscreen-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Centre le texte */
+}
+
 h1 {
-  text-align: center;
-  margin-top: 50px;
+  /* Pas de margin-top fixe, laissé au flexbox pour le centrage */
+  margin-top: 0;
   font-weight: normal;
 }
+#main-title {
+    margin-bottom: 20px; /* Ajoute un peu d'espace sous le titre principal */
+}
+
 #progress-bar {
   width: 80%;
   max-width: 600px;
@@ -56,8 +76,6 @@ h1 {
 #search-bar:focus {
   box-shadow: 0 0 8px rgba(255,255,255,0.8); /* Ombre blanche au focus */
 }
-
-/* La barre de recherche n'a plus de style '.fixed-search-bar' car elle est dans le flux normal */
 
 #morpion-container {
   position: fixed;
@@ -101,7 +119,6 @@ h1 {
   opacity: 0.7;
 }
 
-/* Modifications pour les popups */
 #popup-container {
   position: absolute;
   top: 10%;
@@ -123,7 +140,6 @@ h1 {
   width: 300px;
   border-radius: 3px;
 }
-/* Keyframes ajustées pour les popups avec offset dynamique */
 @keyframes fadeOut {
   0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
   80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
@@ -170,21 +186,20 @@ body.cursor-pale {
   border-radius: 6px;
 }
 
-/* Styles pour la calculatrice (maintenant dans le flux normal mais masquée) */
 #calculator-container {
-  display: none; /* Toujours masquée par défaut */
-  width: 250px; /* Légèrement plus large */
-  margin: 30px auto 0 auto; /* Centrée, au-dessus de la barre de recherche */
-  background: #005FA8; /* Fond bleu moyen */
-  border: 2px solid white; /* Bordure blanche */
+  display: none;
+  width: 250px;
+  margin: 30px auto 0 auto;
+  background: #005FA8;
+  border: 2px solid white;
   padding: 10px;
-  color: white; /* Texte blanc */
-  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
+  color: white;
+  font-family: "Segoe UI", Arial, sans-serif;
   font-size: 14px;
   user-select: none;
   z-index: 4000;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(255,255,255,0.5); /* Légère ombre */
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
 }
 #calculator-container h3 {
   text-align: center;
@@ -193,11 +208,11 @@ body.cursor-pale {
 }
 #calc-display {
   width: 100%;
-  height: 35px; /* Un peu plus haute */
-  background: #004D99; /* Fond bleu foncé */
-  border: 1px solid white; /* Bordure blanche */
-  color: white; /* Texte blanc */
-  font-size: 20px; /* Plus grande */
+  height: 35px;
+  background: #004D99;
+  border: 1px solid white;
+  color: white;
+  font-size: 20px;
   margin-bottom: 10px;
   padding: 5px;
   box-sizing: border-box;
@@ -207,13 +222,13 @@ body.cursor-pale {
 #calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 8px; /* Espacement plus grand */
+  grid-gap: 8px;
 }
 .calc-button {
-  background: #006FB7; /* Fond bleu plus clair */
-  border: 1px solid white; /* Bordure blanche */
-  color: white; /* Texte blanc */
-  font-size: 20px; /* Plus grande */
+  background: #006FB7;
+  border: 1px solid white;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
   user-select: none;
   padding: 10px;
@@ -222,14 +237,14 @@ body.cursor-pale {
   transition: background 0.1s ease;
 }
 .calc-button:active {
-  background: white; /* Bouton actif devient blanc */
-  color: #0078D4; /* Texte bleu sur fond blanc */
+  background: white;
+  color: #0078D4;
 }
-#rickroll-video { /* Changé de #rickroll en #rickroll-video */
+#rickroll-video {
   position: fixed;
   top: 10px;
   left: 10px;
-  border: 2px solid white; /* Bordure blanche */
+  border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
 }
