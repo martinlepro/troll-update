@@ -24,6 +24,7 @@
     <!-- CALCULATRICE (Haut Droite) -->
     <div id="calculator-container" class="fixed-element">
       <h3>Calculatrice</h3>
+      <span class="close-button" data-target="calculator-container">&times;</span><!-- NOUVEAU: Bouton de fermeture -->
       <input type="text" id="calc-display" disabled />
       <div id="calc-buttons"></div>
     </div>
@@ -31,6 +32,7 @@
     <!-- MORPION (Milieu Droite) -->
     <div id="morpion-container" class="fixed-element">
       <h3>Jouez pendant que ça installe...</h3>
+      <span class="close-button" data-target="morpion-container">&times;</span><!-- NOUVEAU: Bouton de fermeture -->
       <div id="board"></div>
     </div>
 
@@ -55,7 +57,7 @@
 
     <!-- Image troll (milieu) -->
     <div id="image-troll" style="display:none;" class="fixed-element">
-      <p>Erreur critique détectée</p>
+      <p>Image trouvé sur votre ordinateur :</p><!-- NOUVEAU: Texte pour l'image troll -->
       <img src="trollface.png" alt="Trollface">
     </div>
 
