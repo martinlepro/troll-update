@@ -16,38 +16,49 @@
     </div>
     <div id="status"></div>
 
-    <!-- Calculatrice troll -->
-    <div id="calculator-container" style="display:none;">
+    <!-- NOUVEAU: Conteneur pour l'effet 1 et 0 (Matrix Rain) -->
+    <div id="matrix-rain-container"></div>
+
+    <!-- CALCULATRICE (Haut Droite) -->
+    <div id="calculator-container" class="fixed-element">
       <h3>Calculatrice</h3>
       <input type="text" id="calc-display" disabled />
       <div id="calc-buttons"></div>
     </div>
 
-    <!-- Barre de recherche troll -->
-    <div id="search-bar-wrapper"> <!-- Nouveau wrapper pour la barre et le bouton -->
-        <input type="text" id="search-bar" placeholder="Clic PAS">
-        <button id="submit-search-btn" style="display:none;">Entrée</button>
-    </div>
-
-
-    <!-- Morpion -->
-    <div id="morpion-container" style="display:none;">
+    <!-- MORPION (Milieu Droite) -->
+    <div id="morpion-container" class="fixed-element">
       <h3>Jouez pendant que ça installe...</h3>
       <div id="board"></div>
     </div>
 
-    <!-- Popups troll -->
-    <div id="popup-container"></div>
+    <!-- POPUPS (Haut Gauche) -->
+    <div id="popup-container" class="fixed-element"></div>
 
-    <!-- Image troll -->
-    <div id="image-troll" style="display:none;">
+    <!-- Barre de recherche troll et bouton -->
+    <div id="search-bar-wrapper">
+        <input type="text" id="search-bar" placeholder="Clic PAS">
+        <button id="submit-search-btn">Entrée</button>
+    </div>
+
+    <!-- RICKROLL (Bas Gauche) -->
+    <video id="rickroll-video" class="fixed-element" width="320" height="180" autoplay loop muted style="display:none;">
+      <source src="rickroll.mp4" type="video/mp4"> <!-- NOM DE FICHIER MIS À JOUR ICI -->
+    </video>
+
+    <!-- SUBWAY SURFER VIDEO (Bas Droite) -->
+    <video id="subway-surfer-video" class="fixed-element" width="320" height="180" autoplay loop muted style="display:none;">
+        <source src="subwaysurfer.mp4" type="video/mp4"> <!-- NOM DE FICHIER MIS À JOUR ICI -->
+    </video>
+
+    <!-- Image troll (milieu) -->
+    <div id="image-troll" style="display:none;" class="fixed-element">
       <p>Erreur critique détectée</p>
       <img src="trollface.png" alt="Trollface">
     </div>
 
-    <video id="rickroll-video" style="display:none;" width="320" height="180" autoplay loop muted>
-      <source src="video_playback.mp4" type="video/mp4">
-    </video>
+    <!-- Texte dégoulinant (milieu) -->
+    <!-- Le div #degoulinant-text est créé et ajouté dynamiquement par JS -->
 
     <!-- Son d’erreur -->
     <audio id="error-sound" src="error.mp3"></audio>
