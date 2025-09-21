@@ -69,7 +69,7 @@ h1 {
   display: flex; /* Utilise flexbox pour aligner la barre et le bouton */
   justify-content: center;
   align-items: center;
-  position: relative; /* Pour z-index */
+  position: relative; /* Nécessaire pour que z-index fonctionne */
   z-index: 6000; /* Assure que le wrapper est au-dessus de tout */
 }
 
@@ -84,10 +84,13 @@ h1 {
   background: #004D99;
   color: white;
   margin-right: 10px; /* Espace entre la barre et le bouton */
+  /* Assurons-nous qu'elle n'est pas masquée par d'autres propriétés display */
+  display: block; /* S'assurer qu'elle est toujours affichée au sein du flex-container */
 }
 #search-bar:focus {
   box-shadow: 0 0 8px rgba(255,255,255,0.8);
 }
+
 
 #submit-search-btn {
   padding: 10px 15px;
