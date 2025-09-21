@@ -6,7 +6,15 @@ let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
 let matrixRainInterval = null;
-let popupInterval = null; // NOUVEAU: Pour gérer l'intervalle de réapparition des popups
+let popupInterval = null; // Pour gérer l'intervalle de réapparition des popups
+
+// NOUVEAU: Variables pour le système de redémarrage
+let errorCounter = 0;
+const RESTART_ERROR_THRESHOLD = 5; // Le nombre d'erreurs avant de déclencher le redémarrage
+let restartSequenceActive = false; // Drapeau pour indiquer si une séquence de redémarrage est en cours
+let spinnerSpeedInterval = null; // Pour contrôler l'intervalle de vitesse du spinner
+let currentProgressTimeout = null; // Pour stocker le timeout de updateProgress afin de pouvoir l'arrêter
+
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -27,6 +35,11 @@ const calculatorContainer = document.getElementById("calculator-container");
 const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
+
+// NOUVEAU: Éléments pour le spinner de redémarrage
+const windowsRestartSpinnerElement = document.getElementById("windows-restart-spinner");
+const spinningCircleElement = windowsRestartSpinnerElement ? windowsRestartSpinnerElement.querySelector(".spinning-circle") : null;
+
 
 // Tableau de messages troll pour les popups
 const trollMessages = [
@@ -192,19 +205,79 @@ function startTrollMechanism() {
 
 // --- Fonctions de progression et d'activation des niveaux de troll ---
 
+// MODIFIÉ: S'assure que la progression ne se met pas à jour pendant un redémarrage.
 function updateProgress() {
-  if (progress < 100) {
-    progress += Math.random() * 5;
-    if (progress > 100) progress = 100;
-    progressBar.style.width = progress + "%";
-    status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
-    setTimeout(updateProgress, 300);
-  } else {
-    status.textContent = "Mise à jour terminée. Démarrage des services.";
-    console.log("Progression à 100%. Démarrage du niveau 1.");
-    if (trollLevel === 0) {
-      activateTrollEffects(1);
+    if (restartSequenceActive) return; // Ne pas mettre à jour la barre si un redémarrage est en cours
+
+    if (progress < 100) {
+        progress += Math.random() * 5;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + "%";
+        status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
+        currentProgressTimeout = setTimeout(updateProgress, 300); // Stocker le timeout
+    } else {
+        status.textContent = "Mise à jour terminée. Démarrage des services.";
+        console.log("Progression à 100%. Démarrage du niveau 1.");
+        if (trollLevel === 0) { // Si aucun niveau n'est actif, passer au niveau 1
+            activateTrollEffects(1);
+        }
+        currentProgressTimeout = null; // La progression est terminée
     }
+}
+
+
+// MODIFIÉ: S'assure que les effets de troll ne s'activent pas pendant un redémarrage.
+function activateTrollEffects(newLevel) {
+    if (restartSequenceActive) {
+        console.log("Ignorer l'activation de troll pendant la séquence de redémarrage.");
+        return;
+    }
+  const parsedNewLevel = parseInt(newLevel);
+  console.log(`Appel à activateTrollEffects avec newLevel: ${newLevel}, parsedNewLevel: ${parsedNewLevel}`);
+  if (isNaN(parsedNewLevel) || parsedNewLevel < 0 || parsedNewLevel > 15) {
+    console.warn("Tentative d'activer un niveau de troll invalide :", newLevel);
+    return;
+  }
+
+  if (parsedNewLevel === trollLevel) {
+    console.log(`Niveau ${parsedNewLevel} déjà actif, pas de changement.`);
+    return;
+  }
+  console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`);
+
+  if (trollLevel >= 14) {
+      disableCursorJitter();
+      console.log("Jitter (Niveau 14) temporairement désactivé pour changement de niveau.");
+  }
+
+
+  if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
+    console.log("Reset complet demandé.");
+    resetAll();
+    activatedAlerts.clear();
+    trollLevel = 0;
+  }
+
+  for (let i = trollLevel + 1; i <= parsedNewLevel; i++) {
+    activateTrollEffectForLevel(i);
+  }
+
+  trollLevel = parsedNewLevel;
+
+  if (trollLevel >= 1) {
+      searchBar.disabled = false;
+      submitSearchBtn.style.display = 'inline-block';
+      if (trollLevel === 1 && !restartSequenceActive) { // NOUVEAU: Ne pas écraser le message de redémarrage si actif
+          status.textContent = "Mise à jour terminée. Le système est en attente d'instructions.";
+      }
+  } else {
+      searchBar.disabled = true;
+      submitSearchBtn.style.display = 'none';
+  }
+
+  if (trollLevel >= 14 && !document.fullscreenElement) {
+      enableCursorJitter();
+      console.log("Jitter (Niveau 14) réactivé après changement de niveau (hors plein écran).");
   }
 }
 
@@ -287,64 +360,17 @@ function activateTrollEffectForLevel(level) {
     }
 }
 
-function activateTrollEffects(newLevel) {
-  const parsedNewLevel = parseInt(newLevel);
-  console.log(`Appel à activateTrollEffects avec newLevel: ${newLevel}, parsedNewLevel: ${parsedNewLevel}`);
-  if (isNaN(parsedNewLevel) || parsedNewLevel < 0 || parsedNewLevel > 15) {
-    console.warn("Tentative d'activer un niveau de troll invalide :", newLevel);
-    return;
-  }
-
-  if (parsedNewLevel === trollLevel) {
-    console.log(`Niveau ${parsedNewLevel} déjà actif, pas de changement.`);
-    return;
-  }
-  console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`);
-
-  if (trollLevel >= 14) {
-      disableCursorJitter();
-      console.log("Jitter (Niveau 14) temporairement désactivé pour changement de niveau.");
-  }
-
-
-  if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
-    console.log("Reset complet demandé.");
-    resetAll();
-    activatedAlerts.clear();
-    trollLevel = 0;
-  }
-
-  for (let i = trollLevel + 1; i <= parsedNewLevel; i++) {
-    activateTrollEffectForLevel(i);
-  }
-
-  trollLevel = parsedNewLevel;
-
-  if (trollLevel >= 1) {
-      searchBar.disabled = false;
-      submitSearchBtn.style.display = 'inline-block';
-      if (trollLevel === 1) {
-          status.textContent = "Mise à jour terminée. Le système est en attente d'instructions.";
-      }
-  } else {
-      searchBar.disabled = true;
-      submitSearchBtn.style.display = 'none';
-  }
-
-  if (trollLevel >= 14 && !document.fullscreenElement) {
-      enableCursorJitter();
-      console.log("Jitter (Niveau 14) réactivé après changement de niveau (hors plein écran).");
-  }
-}
-
 function startTrollLevel(n) {
   activateTrollEffects(n);
 }
 
+
+// MODIFIÉ: S'assure de réinitialiser les variables du système de redémarrage.
 function resetAll() {
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
 
+  // Masque tous les éléments 'fixed-element'
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
@@ -355,13 +381,12 @@ function resetAll() {
 
   popupContainer.innerHTML = "";
   popupCount = 0;
-  // NOUVEAU: Arrêter l'intervalle des popups lors du reset
   if (popupInterval) {
       clearInterval(popupInterval);
       popupInterval = null;
       console.log("Intervalle des popups arrêté.");
   }
-
+  popupContainer.style.display = 'none'; // S'assurer que le conteneur de popups est caché
 
   subwaySurferVideo.pause();
   subwaySurferVideo.currentTime = 0;
@@ -378,6 +403,10 @@ function resetAll() {
 
   disableCursorJitter();
 
+  // NOUVEAU: Cacher le spinner de redémarrage et arrêter sa boucle
+  if (windowsRestartSpinnerElement) windowsRestartSpinnerElement.style.display = 'none';
+  stopRestartSpinnerSpeedLoop();
+
   mainTitle.style.display = 'block';
   progressBarElement.style.display = 'block';
   progressBar.style.width = '0%';
@@ -393,6 +422,14 @@ function resetAll() {
   trollLevel = 0;
   activatedAlerts.clear();
   customAlertContainer.style.display = 'none';
+
+  // NOUVEAU: Réinitialiser les variables du système de redémarrage
+  errorCounter = 0;
+  restartSequenceActive = false;
+  if (currentProgressTimeout) { // S'assurer qu'aucun ancien timeout n'est actif
+      clearTimeout(currentProgressTimeout);
+      currentProgressTimeout = null;
+  }
 }
 
 function startMatrixRain() {
@@ -463,54 +500,189 @@ function showDegoulinantText() {
   }
 }
 
+// MODIFIÉ: La fonction playErrorSound va maintenant incrémenter un compteur d'erreurs et déclencher
+// la séquence de redémarrage si le seuil est atteint.
 function playErrorSound(times) {
-  let count = 0;
-  function play() {
-    if (errorSound) {
-        errorSound.currentTime = 0;
-        errorSound.play().catch(e => console.warn("Erreur de lecture audio:", e));
-        count++;
-        if (count < times) setTimeout(play, 800);
-    } else {
-        console.warn("Element audio 'error-sound' non trouvé.");
+    if (restartSequenceActive) return; // Ne pas compter les erreurs pendant le redémarrage
+
+    let count = 0;
+    function play() {
+        if (errorSound) {
+            errorSound.currentTime = 0;
+            errorSound.play().catch(e => console.warn("Erreur de lecture audio:", e));
+            count++;
+            if (count < times) {
+                setTimeout(play, 800);
+            } else { // Une fois que tous les sons demandés ont été joués
+                errorCounter++; // Incrémenter le compteur d'erreurs global
+                console.log(`Erreur ${errorCounter}/${RESTART_ERROR_THRESHOLD}.`);
+                if (errorCounter >= RESTART_ERROR_THRESHOLD) {
+                    triggerRestartSequence(); // Déclencher la séquence de redémarrage
+                }
+            }
+        } else {
+            console.warn("Element audio 'error-sound' non trouvé.");
+        }
     }
-  }
-  play();
-  console.log(`Son d'erreur joué ${times} fois.`);
+    play();
+    console.log(`Son d'erreur demandé ${times} fois.`);
 }
 
+
+// MODIFIÉ: La popup apparaîtra avec un délai, jouera l'animation de 1 seconde et le son d'erreur.
 function showFakePopups(count) {
-  for (let i = 0; i < count; i++) {
-    const popup = document.createElement("div");
-    popup.classList.add("fake-popup");
+    if (restartSequenceActive) return; // Ne pas afficher de popups pendant le redémarrage
 
-    const randomMessage = trollMessages[Math.floor(Math.random() * trollMessages.length)];
-    popup.textContent = randomMessage;
+    for (let i = 0; i < count; i++) {
+        // NOUVEAU: Retarder l'apparition de chaque popup de 0.2s
+        setTimeout(() => {
+            const popup = document.createElement("div");
+            popup.classList.add("fake-popup");
 
-    const closeBtn = document.createElement("span");
-    closeBtn.classList.add("close-button");
-    closeBtn.textContent = "×";
-    closeBtn.onclick = () => {
-        popup.remove();
-        console.log("Popup fermée manuellement.");
-    };
-    popup.appendChild(closeBtn);
+            const randomMessage = trollMessages[Math.floor(Math.random() * trollMessages.length)];
+            popup.textContent = randomMessage;
 
-    const offsetX = popupCount * 20;
-    const offsetY = popupCount * 20;
+            const closeBtn = document.createElement("span");
+            closeBtn.classList.add("close-button");
+            closeBtn.textContent = "×";
+            closeBtn.onclick = () => {
+                popup.remove();
+                console.log("Popup fermée manuellement.");
+            };
+            popup.appendChild(closeBtn);
 
-    popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
-    popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
+            // Positionnement aléatoire pour éviter un empilement trop parfait
+            const randomX = Math.random() * (popupContainer.offsetWidth - 200); // 200px est une largeur min estimée pour la popup
+            popup.style.left = `${randomX > 0 ? randomX : 0}px`;
+            popup.style.top = `${Math.random() * 50}px`; // Légèrement aléatoire en hauteur
 
-    popup.style.animation = 'none';
-    popup.offsetHeight;
-    popup.style.animation = 'fadeOut 5s forwards';
+            // NOUVEAU: Appliquer la nouvelle animation et la gérer
+            popup.style.animation = 'popupFloatAndFade 1s forwards'; // Animation de 1 seconde
 
-    popupContainer.appendChild(popup);
-    popupCount++;
-  }
-  console.log(`${count} fausses popups affichées.`);
+            popupContainer.appendChild(popup);
+            popupCount++;
+            console.log(`Popup n°${popupCount} affichée.`);
+
+            // NOUVEAU: Jouer le son d'erreur à l'apparition de chaque popup
+            playErrorSound(1);
+
+            // NOUVEAU: Supprimer la popup après 1 seconde
+            setTimeout(() => {
+                if (popup.parentNode) { // Vérifier si la popup existe toujours (pas fermée manuellement)
+                    popup.remove();
+                }
+            }, 1000); // La popup est supprimée après 1 seconde
+        }, i * 200); // Délai de 200ms entre chaque popup d'un même lot
+    }
+    console.log(`${count} fausses popups demandées.`);
 }
+
+
+// NOUVELLE FONCTION : Déclenchement de la séquence de redémarrage
+function triggerRestartSequence() {
+    if (restartSequenceActive) return; // Empêche les activations multiples
+    restartSequenceActive = true;
+    errorCounter = 0; // Réinitialise le compteur d'erreurs pour la prochaine fois
+    console.log("Séquence de redémarrage déclenchée !");
+
+    // Arrêter la progression normale si elle est en cours
+    if (currentProgressTimeout) {
+        clearTimeout(currentProgressTimeout);
+        currentProgressTimeout = null;
+    }
+
+    // Cacher les éléments UI principaux du troll en cours
+    mainTitle.style.display = 'none';
+    progressBarElement.style.display = 'none';
+    searchBarWrapper.style.display = 'none';
+    popupContainer.style.display = 'none'; // Cacher les popups existantes
+    morpionContainer.style.display = 'none'; // Cacher le morpion
+    calculatorContainer.style.display = 'none'; // Cacher la calculatrice
+    rickrollVideo.style.display = 'none'; // Cacher les vidéos
+    subwaySurferVideo.style.display = 'none';
+    imageTroll.style.display = 'none';
+    if (degoulinantText) degoulinantText.style.display = 'none';
+    stopMatrixRain();
+
+
+    status.textContent = "La mise à jour a échoué ; redémarrage en cours...";
+    status.style.fontSize = '3vw'; // S'assurer que le texte est bien visible
+    status.style.display = 'block'; // S'assurer que le status est visible
+
+    setTimeout(() => {
+        status.textContent = "redémarrage de l'ordina4te2tur ¡"; // Le texte avec la typo
+        
+        if (windowsRestartSpinnerElement) {
+            windowsRestartSpinnerElement.style.display = 'block';
+            startRestartSpinnerSpeedLoop(); // Démarrer l'animation de vitesse du spinner
+        }
+
+        // Simuler la durée du redémarrage (par exemple, 15 secondes pour le spinner et les messages)
+        setTimeout(() => {
+            console.log("Séquence de redémarrage terminée. Reprise de la progression.");
+            if (windowsRestartSpinnerElement) windowsRestartSpinnerElement.style.display = 'none';
+            stopRestartSpinnerSpeedLoop(); // Arrêter l'ajustement de la vitesse du spinner
+
+            // Réinitialiser la progression et relancer la barre principale
+            progress = 0;
+            status.textContent = `Redémarrage terminé. Reprise de la mise à jour... 0%`; // Message initial de reprise
+            mainTitle.style.display = 'block';
+            progressBarElement.style.display = 'block';
+            progressBar.style.width = '0%';
+
+            restartSequenceActive = false; // Permettre de redéclencher le redémarrage
+            updateProgress(); // Relancer la barre de progression
+            // Réactiver les effets du niveau de troll actuel. Cela réaffichera la barre de recherche etc.
+            // Si trollLevel est 0, il sera activé à 1 lorsque la barre de progression atteindra 100%.
+            if (trollLevel > 0) {
+                 activateTrollEffects(trollLevel);
+            } else { // Si trollLevel était 0, il faut réactiver la barre de recherche après le redémarrage
+                searchBarWrapper.style.display = 'flex';
+                searchBar.disabled = false;
+                submitSearchBtn.style.display = 'inline-block';
+                status.textContent = "Système opérationnel. Entrez un niveau pour activer le troll.";
+            }
+
+        }, 15000); // Le spinner sera visible et changera de vitesse pendant 15 secondes
+    }, 3000); // Le deuxième message apparaît 3 secondes après le premier
+}
+
+// NOUVELLE FONCTION : Gérer la vitesse du spinner de redémarrage
+function startRestartSpinnerSpeedLoop() {
+    if (!spinningCircleElement) return;
+    let currentSpeed = 2000; // 2s (2000ms) pour une rotation complète (vitesse initiale)
+    let direction = 1; // 1 pour accélérer, -1 pour ralentir
+    const minSpeed = 300; // 0.3s (très rapide)
+    const maxSpeed = 3000; // 3s (très lent)
+    const step = 200; // Augmentation/diminution de la vitesse
+
+    spinnerSpeedInterval = setInterval(() => {
+        currentSpeed += direction * step;
+
+        if (currentSpeed <= minSpeed) {
+            currentSpeed = minSpeed;
+            direction = 1; // Commence à accélérer à nouveau
+        } else if (currentSpeed >= maxSpeed) {
+            currentSpeed = maxSpeed;
+            direction = -1; // Commence à ralentir
+        }
+        spinningCircleElement.style.animationDuration = `${currentSpeed / 1000}s`;
+    }, 500); // Vérifier et ajuster la vitesse toutes les 500ms
+    console.log("Boucle de vitesse du spinner démarrée.");
+}
+
+function stopRestartSpinnerSpeedLoop() {
+    if (spinnerSpeedInterval) {
+        clearInterval(spinnerSpeedInterval);
+        spinnerSpeedInterval = null;
+        if (spinningCircleElement) {
+            spinningCircleElement.style.animationDuration = '2s'; // Réinitialiser à la vitesse par défaut
+        }
+    }
+    console.log("Boucle de vitesse du spinner arrêtée.");
+}
+
+
 
 function initMorpion() {
   morpionCells = Array(9).fill("");
