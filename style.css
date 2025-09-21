@@ -71,7 +71,7 @@ h1 {
 }
 
 #search-bar-wrapper {
-  display: none; /* Initialement caché, sera affiché par JS */
+  display: none;
   margin-top: 3vh;
   width: 80%;
   max-width: 500px;
@@ -109,11 +109,27 @@ h1 {
   cursor: pointer;
   outline: none;
   transition: background 0.1s ease;
-  display: none; /* Initialement caché, sera affiché par JS */
+  display: none;
 }
 #submit-search-btn:active {
   background: white;
   color: #0078D4;
+}
+
+/* NOUVEAU: Styles pour les boutons de fermeture */
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 2vw; /* Ajusté pour PC */
+    color: white;
+    cursor: pointer;
+    z-index: 9999; /* Toujours au-dessus */
+    font-weight: bold;
+    line-height: 1; /* Assure un alignement correct de l'X */
+}
+.close-button:hover {
+    color: #FF0000;
 }
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES (VERSION PC) --- */
@@ -125,7 +141,7 @@ h1 {
   width: 25vw;
   min-width: 200px;
   z-index: 3000;
-  pointer-events: none;
+  pointer-events: none; /* Toujours non interactif sur le container global */
 }
 .fake-popup {
   background: #005FA8;
@@ -134,13 +150,19 @@ h1 {
   font-family: "Segoe UI", Arial, sans-serif;
   color: white;
   box-shadow: 0 0 15px rgba(255,255,255,0.7);
-  animation: fadeOut 5s forwards;
+  animation: fadeOut 5s forwards; /* Réactivé */
   user-select: none;
   position: absolute;
   width: 100%;
   border-radius: 3px;
   font-size: 2vw;
+  pointer-events: all; /* Permettre l'interaction sur les popups individuels (pour le bouton fermer) */
 }
+.fake-popup .close-button { /* Bouton de fermeture spécifique pour chaque popup */
+    font-size: 1.5vw; /* Plus petit que les autres */
+    pointer-events: all; /* Important pour qu'il soit cliquable */
+}
+
 @keyframes fadeOut {
   0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
   80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
@@ -164,6 +186,7 @@ h1 {
   z-index: 4000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(255,255,255,0.5);
+  position: fixed; /* Assure que le bouton X est relatif à lui */
 }
 #calculator-container h3 {
   text-align: center;
@@ -205,10 +228,11 @@ h1 {
   color: #0078D4;
 }
 
-/* Matrix Rain (Milieu Gauche) */
+/* MODIFIÉ: Matrix Rain (Milieu Droit) */
 #matrix-rain-container {
     top: 50%;
-    left: 1vw;
+    right: 1vw; /* Déplacé à droite */
+    left: unset; /* Assurer que left n'est pas défini */
     transform: translateY(-50%);
     width: 25vw;
     min-width: 200px;
@@ -242,6 +266,7 @@ h1 {
   z-index: 2000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(255,255,255,0.5);
+  position: fixed; /* Assure que le bouton X est relatif à lui */
 }
 #morpion-container h3 {
   margin-top: 0;
@@ -309,6 +334,10 @@ h1 {
   user-select: none;
   z-index: 5000;
 }
+#image-troll p { /* NOUVEAU: Style pour le texte de l'image troll */
+    margin-bottom: 0.5vh;
+    font-size: 2vw;
+}
 #image-troll img {
   max-width: 15vw;
   max-height: 15vh;
@@ -373,35 +402,39 @@ body.cursor-pale {
 
 /* ========================================================= */
 /* --- MODIFIÉ: Media Queries pour les petits écrans (Mobile) --- */
-/* (Ceci remplacera ou complétera les styles ci-dessus pour les écrans < 768px) */
 /* ========================================================= */
 @media (max-width: 768px) {
+    /* NOUVEAU: Masquer les boutons de fermeture sur mobile */
+    .close-button {
+        display: none;
+    }
+
     /* Ajustements généraux pour l'affichage principal */
     #fullscreen-container {
-        justify-content: flex-start; /* Aligner le contenu en haut pour laisser plus de place en bas/milieu */
+        justify-content: flex-start;
         padding-top: 3vh;
     }
 
     #main-title {
-        font-size: 7vw; /* Titre principal plus grand pour mobile */
+        font-size: 7vw;
         margin-bottom: 3vh;
     }
 
     #progress-bar {
-        width: 85%; /* Barre de progression légèrement plus large */
+        width: 85%;
         height: 3.5vh;
         margin: 3.5vh auto;
     }
     #status {
-        font-size: 5vw; /* Texte de statut plus lisible */
+        font-size: 5vw;
         margin-top: 2.5vh;
         min-height: 5vh;
     }
 
     #search-bar-wrapper {
-        width: 90%; /* Barre de recherche plus large */
+        width: 90%;
         margin-top: 4vh;
-        flex-direction: column; /* Empiler input et bouton pour les petits écrans */
+        flex-direction: column;
     }
     #search-bar {
         flex-grow: unset;
@@ -409,7 +442,7 @@ body.cursor-pale {
         font-size: 4vw;
         padding: 1.5vh;
         margin-right: 0;
-        margin-bottom: 1.5vh; /* Marge en bas si empilé */
+        margin-bottom: 1.5vh;
     }
     #submit-search-btn {
         width: 100%;
@@ -417,14 +450,12 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* --- Positionnement et taille des "troll" fixed-elements --- */
-    /* Ils gardent leurs positions relatives, mais sont réduits en taille pour tenir sur l'écran. */
-    /* Des chevauchements peuvent persister en fonction de la taille de l'écran. */
+    /* --- Positionnement et taille des "troll" fixed-elements pour mobile --- */
 
     /* POPUPS (Haut Gauche) */
     #popup-container {
-        width: 45vw; /* Plus petit */
-        min-width: unset; /* Supprimer les min-width/height pour permettre un scaling fluide */
+        width: 45vw;
+        min-width: unset;
         font-size: 3vw;
         /* Conserve top: 1vh; left: 1vw; */
     }
@@ -432,17 +463,17 @@ body.cursor-pale {
         font-size: 3vw;
         padding: 1vh;
         margin-bottom: 0.5vh;
-        animation: none; /* Désactiver l'animation de fadeOut pour faciliter le débogage de la position */
-        opacity: 1 !important; /* Forcer la visibilité */
+        /* Animation reste activée, pas d'override ici */
+        opacity: 1; /* Pour assurer que l'animation commence bien */
         position: relative; /* Repositionner en relatif dans le conteneur */
         top: unset; left: unset; transform: none; /* Annuler les transformations spécifiques à l'animation */
     }
 
     /* Calculatrice (Haut Droite) */
     #calculator-container {
-        width: 45vw; /* Plus petit */
+        width: 45vw;
         min-width: unset;
-        font-size: 2.5vw; /* Taille globale de la police réduite */
+        font-size: 2.5vw;
         /* Conserve top: 1vh; right: 1vw; */
     }
     #calculator-container h3 {
@@ -458,64 +489,72 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* Matrix Rain (Milieu Gauche) */
+    /* MODIFIÉ: Matrix Rain (Milieu Droit) pour mobile */
     #matrix-rain-container {
-        width: 45vw; /* Plus petit */
-        height: 25vh; /* Hauteur réduite */
+        width: 45vw;
+        height: 25vh;
         min-width: unset;
         min-height: unset;
-        font-size: 3vw; /* Taille du texte 0 et 1 lisible */
+        font-size: 3vw;
         padding: 1vh;
-        /* Conserve top: 50%; left: 1vw; transform: translateY(-50%); */
+        /* Conserve top: 50%; right: 1vw; transform: translateY(-50%); */
+        left: unset; /* S'assurer que left est unset */
     }
 
-    /* Morpion (Milieu Droite) */
+    /* Morpion (Milieu Gauche -> repositionné pour éviter chevauchement avec matrix rain) */
+    /* On le déplace à gauche car le matrix rain est à droite */
     #morpion-container {
-        width: 45vw; /* Plus petit */
+        top: 60%;
+        left: 1vw; /* Déplacé à gauche */
+        right: unset; /* S'assurer que right est unset */
+        transform: translateY(-50%);
+        width: 45vw;
         min-width: unset;
-        font-size: 2.5vw; /* Taille globale de la police réduite */
-        /* Conserve top: 60%; right: 1vw; transform: translateY(-50%); */
+        font-size: 2.5vw;
     }
     #morpion-container h3 {
         font-size: 3.5vw;
     }
     #board {
-        grid-template-columns: repeat(3, 13vw); /* Cellules du morpion plus petites */
+        grid-template-columns: repeat(3, 13vw);
         grid-gap: 0.8vh;
     }
     #board > div {
         width: 13vw;
         height: 13vw;
-        font-size: 6vw; /* "X" et "O" visibles */
+        font-size: 6vw;
     }
 
     /* Rickroll (Bas Gauche) */
     #rickroll-video {
-        width: 45vw; /* Plus petit */
-        max-height: 18vh; /* Hauteur maximale réduite */
+        width: 45vw;
+        max-height: 18vh;
         /* Conserve bottom: 1vh; left: 1vw; */
     }
 
     /* Subway Surfer Video (Bas Droite) */
     #subway-surfer-video {
-        width: 45vw; /* Plus petit */
-        max-height: 18vh; /* Hauteur maximale réduite */
+        width: 45vw;
+        max-height: 18vh;
         /* Conserve bottom: 1vh; right: 1vw; */
     }
 
     /* Image troll (HAUT Centré) */
     #image-troll {
-        font-size: 3.5vw; /* Texte de l'image troll plus grand */
+        font-size: 3.5vw;
         /* Conserve top: 1vh; left: 50%; transform: translateX(-50%); */
     }
+    #image-troll p { /* Style pour le texte de l'image troll sur mobile */
+        font-size: 3.5vw;
+    }
     #image-troll img {
-        max-width: 30vw; /* Image plus grande */
+        max-width: 30vw;
         max-height: 15vh;
     }
 
     /* Texte dégoulinant (Milieu Centré) */
     #degoulinant-text {
-        font-size: 6vw; /* Texte visible */
+        font-size: 6vw;
         width: 90vw;
         /* Conserve top: 40%; left: 50%; transform: translate(-50%, -50%); */
     }
@@ -523,7 +562,7 @@ body.cursor-pale {
     /* Alerte personnalisée (Milieu Centré) */
     #custom-alert-container {
         width: 80vw;
-        max-width: unset; /* Permettre au width de s'appliquer pleinement */
+        max-width: unset;
         font-size: 4vw;
         padding: 2.5vh;
         /* Conserve top: 50%; left: 50%; transform: translate(-50%, -50%); */
@@ -533,7 +572,7 @@ body.cursor-pale {
         padding: 1.2vh 2.5vw;
     }
 
-    /* Cacher le jitter de la souris sur mobile, car peu d'intérêt et potentiellement perturbant */
+    /* Cacher le jitter de la souris sur mobile */
     body.cursor-pale {
         cursor: auto;
     }
