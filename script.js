@@ -5,7 +5,7 @@ let calculatorInitialized = false;
 let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
-let matrixRainInterval = null; // Pour contrôler l'effet 1 et 0
+let matrixRainInterval = null;
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -17,33 +17,35 @@ const searchBar = document.getElementById("search-bar");
 const submitSearchBtn = document.getElementById("submit-search-btn");
 const morpionContainer = document.getElementById("morpion-container");
 const popupContainer = document.getElementById("popup-container");
-const errorSound = document.getElementById("error-sound");
+const errorSound = document.getElementById("error.mp3"); // S'assurer que le nom correspond à ton fichier si tu l'as renommé
 const imageTroll = document.getElementById("image-troll");
 const rickrollVideo = document.getElementById("rickroll-video");
 const subwaySurferVideo = document.getElementById("subway-surfer-video");
 const matrixRainContainer = document.getElementById("matrix-rain-container");
 const calculatorContainer = document.getElementById("calculator-container");
-const customAlertContainer = document.getElementById("custom-alert-container"); // NOUVEAU: Alerte personnalisée
+const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 
 
 // --- LOGIQUE POUR LE PLEIN ÉCRAN ET LES TOUCHES DE SORTIE ---
-let isTrollActive = false; // Flag pour savoir si le troll est démarré
-let hasEnteredFullscreenOnce = false; // AJOUTÉ: Pour gérer l'erreur de Permissions check failed
+let isTrollActive = false;
+let hasEnteredFullscreenOnce = false;
 
 function requestFullscreenMode() {
     console.log("Tentative de demande de plein écran.");
     if (fullscreenContainer.requestFullscreen) {
         fullscreenContainer.requestFullscreen().then(() => {
-            hasEnteredFullscreenOnce = true; // Plein écran réussi au moins une fois
+            hasEnteredFullscreenOnce = true;
             console.log("Plein écran activé.");
+            // NOUVEAU: Si le niveau 14 est actif, désactiver le jitter en entrant en plein écran
+            if (trollLevel >= 14) {
+                disableCursorJitter();
+                console.log("Jitter (Niveau 14) désactivé en mode plein écran.");
+            }
         }).catch(err => {
             console.warn("Échec de la demande de plein écran:", err);
-            // Si le plein écran échoue, mais que le troll n'est pas encore actif
-            // et que ce n'est pas une erreur de permission (déjà en plein écran par ex.)
-            // on continue quand même le troll.
-            if (!isTrollActive && err.name !== "AbortError") { // AbortError si déjà en plein écran
+            if (!isTrollActive && err.name !== "AbortError") {
                 startTrollMechanism();
             }
         });
@@ -66,8 +68,13 @@ function exitFullscreenMode() {
 
 function handleFullscreenChange() {
     console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
-    if (!document.fullscreenElement && isTrollActive) {
+    if (!document.fullscreenElement && isTrollActive) { // On est sorti du plein écran
         console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic.");
+        // NOUVEAU: Si le niveau 14 est actif, réactiver le jitter après être sorti du plein écran
+        if (trollLevel >= 14 && !jitterInterval) { // trollLevel >= 14 et jitter est actuellement inactif
+            enableCursorJitter();
+            console.log("Jitter (Niveau 14) réactivé après sortie du plein écran.");
+        }
     }
 }
 
@@ -235,7 +242,7 @@ function activateTrollEffectForLevel(level) {
             }
             break;
         case 14:
-            enableCursorJitter();
+            enableCursorJitter(); // Le jitter est activé ici
             console.log("Niveau 14: Jitter de fenêtre activé.");
             break;
         case 15:
@@ -259,6 +266,14 @@ function activateTrollEffects(newLevel) {
   }
   console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`);
 
+  // NOUVEAU: Appel de disableCursorJitter() avant tout changement de niveau
+  // pour éviter des conflits pendant la transition ou si le jitter doit être stoppé.
+  if (trollLevel >= 14) { // Si le jitter était actif
+      disableCursorJitter();
+      console.log("Jitter (Niveau 14) temporairement désactivé pour changement de niveau.");
+  }
+
+
   if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
     console.log("Reset complet demandé.");
     resetAll();
@@ -281,6 +296,12 @@ function activateTrollEffects(newLevel) {
   } else {
       searchBar.disabled = true;
       submitSearchBtn.style.display = 'none';
+  }
+
+  // NOUVEAU: Si le niveau 14 est activé ET qu'on n'est pas en plein écran, réactiver le jitter
+  if (trollLevel >= 14 && !document.fullscreenElement) {
+      enableCursorJitter();
+      console.log("Jitter (Niveau 14) réactivé après changement de niveau (hors plein écran).");
   }
 }
 
@@ -315,7 +336,7 @@ function resetAll() {
   stopMatrixRain();
   matrixRainContainer.innerHTML = '';
 
-  disableCursorJitter();
+  disableCursorJitter(); // NOUVEAU: Assure que le jitter est désactivé au reset.
 
   mainTitle.style.display = 'block';
   progressBarElement.style.display = 'block';
@@ -614,16 +635,36 @@ function handleSubmitSearchClick() {
 
 let jitterInterval = null;
 function enableCursorJitter() {
+  // NOUVEAU: Ne démarrer le jitter que si on n'est PAS en plein écran.
+  // Si on est en plein écran, le jitter sera désactivé par requestFullscreenMode.then()
+  // et réactivé par handleFullscreenChange.
+  if (document.fullscreenElement) {
+      console.log("Tentative d'activer le jitter en plein écran, ignoré.");
+      return;
+  }
+  if (jitterInterval) return; // Éviter de créer plusieurs intervalles
+
   jitterInterval = setInterval(() => {
-    const x = Math.random() * (window.screen.width - window.outerWidth);
-    const y = Math.random() * (window.screen.height - window.outerHeight);
-    window.moveTo(x, y);
+    // NOUVEAU: Vérifier à chaque tick si on est toujours hors plein écran.
+    // Cela rend le jitter plus réactif au changement d'état.
+    if (!document.fullscreenElement) {
+        const x = Math.random() * (window.screen.width - window.outerWidth);
+        const y = Math.random() * (window.screen.height - window.outerHeight);
+        window.moveTo(x, y);
+    } else {
+        // Si on passe en plein écran pendant que le jitter était actif,
+        // désactiver l'intervalle pour éviter les conflits.
+        disableCursorJitter();
+        console.log("Jitter (Niveau 14) désactivé car passé en plein écran.");
+    }
   }, 1000);
 }
+
 function disableCursorJitter() {
   if (jitterInterval) {
     clearInterval(jitterInterval);
     jitterInterval = null;
+    console.log("Jitter (Niveau 14) désactivé.");
   }
 }
 
