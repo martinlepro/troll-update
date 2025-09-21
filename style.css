@@ -4,9 +4,10 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #00008B; /* Bleu foncé classique type écran bleu */
+  /* Un bleu clair mais suffisant pour le texte blanc */
+  background: #0078D4; /* Un bleu Windows classique */
   color: white; /* Texte blanc */
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Segoe UI", Arial, sans-serif; /* Police plus proche de Windows */
   overflow: hidden;
   user-select: none;
 }
@@ -19,17 +20,17 @@ h1 {
   width: 80%;
   max-width: 600px;
   height: 30px;
-  background: #00004F; /* Bleu plus foncé pour la barre */
+  background: #004D99; /* Un bleu plus foncé pour la barre */
   margin: 30px auto;
-  border-radius: 10px;
+  border-radius: 5px; /* Arrondis un peu moins marqués */
   overflow: hidden;
-  box-shadow: 0 0 10px white inset; /* Ombre blanche */
+  box-shadow: 0 0 10px rgba(255,255,255,0.7) inset; /* Ombre blanche */
 }
 #progress {
   height: 100%;
   width: 0;
   background: white; /* Barre de progression blanche */
-  border-radius: 10px;
+  border-radius: 5px;
   transition: width 0.3s ease;
 }
 #status {
@@ -40,7 +41,7 @@ h1 {
 }
 #search-bar {
   display: block;
-  margin: 40px auto 20px auto;
+  margin: 20px auto 40px auto; /* Marge ajustée car la calculatrice est au-dessus */
   width: 50%;
   max-width: 400px;
   padding: 10px;
@@ -49,28 +50,21 @@ h1 {
   border: 2px solid white; /* Bordure blanche */
   outline: none;
   text-align: center;
-  background: #00004F; /* Fond bleu foncé */
+  background: #004D99; /* Fond bleu foncé */
   color: white; /* Texte blanc */
 }
 #search-bar:focus {
-  box-shadow: 0 0 8px white; /* Ombre blanche au focus */
+  box-shadow: 0 0 8px rgba(255,255,255,0.8); /* Ombre blanche au focus */
 }
 
-/* Style pour la barre de recherche fixe après l'appui sur Entrée */
-.fixed-search-bar {
-    position: fixed !important; /* Force la position fixe */
-    top: 40px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    margin: 0 !important;
-}
+/* La barre de recherche n'a plus de style '.fixed-search-bar' car elle est dans le flux normal */
 
 #morpion-container {
   position: fixed;
   top: 20%;
   right: 10px;
   width: 220px;
-  background: #00006F; /* Bleu moyen */
+  background: #005FA8; /* Bleu moyen */
   border: 2px solid white; /* Bordure blanche */
   padding: 10px;
   font-size: 14px;
@@ -92,7 +86,7 @@ h1 {
 #board > div {
   width: 50px;
   height: 50px;
-  background-color: #00007F; /* Bleu plus clair pour les cases */
+  background-color: #006FB7; /* Bleu plus clair pour les cases */
   color: white; /* Texte blanc */
   display: flex;
   align-items: center;
@@ -100,6 +94,7 @@ h1 {
   font-size: 24px;
   cursor: pointer;
   user-select: none;
+  border-radius: 3px; /* Légers arrondis */
 }
 #board > div.used {
   cursor: default;
@@ -108,26 +103,25 @@ h1 {
 
 /* Modifications pour les popups */
 #popup-container {
-  position: absolute; /* Conteneur des popups en position absolue */
+  position: absolute;
   top: 10%;
   left: 10%;
-  width: 300px; /* Largeur du conteneur des popups */
+  width: 300px;
   z-index: 3000;
   pointer-events: none;
-  /* overflow: hidden; /* Décommente si tu veux cacher ce qui dépasse */
 }
 .fake-popup {
-  background: #00006F; /* Fond bleu moyen pour les popups */
+  background: #005FA8; /* Fond bleu moyen pour les popups */
   border: 2px solid white; /* Bordure blanche */
   padding: 10px;
-  font-family: "Courier New", monospace;
+  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
   color: white; /* Texte blanc */
   box-shadow: 0 0 15px rgba(255,255,255,0.7); /* Ombre blanche légèrement transparente */
   animation: fadeOut 5s forwards;
   user-select: none;
-  position: absolute; /* Chaque popup est positionnée absolument */
-  width: 300px; /* Largeur de chaque popup */
-  /* top et left seront définis par JavaScript pour l'effet de descente */
+  position: absolute;
+  width: 300px;
+  border-radius: 3px;
 }
 /* Keyframes ajustées pour les popups avec offset dynamique */
 @keyframes fadeOut {
@@ -144,7 +138,7 @@ h1 {
   color: white; /* Texte blanc */
   font-size: 28px;
   font-weight: bold;
-  font-family: monospace;
+  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
   animation: degoulinement 5s forwards;
   user-select: none;
   pointer-events: none;
@@ -155,8 +149,7 @@ h1 {
   100% { filter: blur(3px); opacity: 0; transform: translate(-50%, 100%); }
 }
 body.cursor-pale {
-  /* Le fichier .cur doit être créé/téléchargé en conséquence, avec un thème bleu/blanc */
-  cursor: url('cursor-pale.cur'), auto;
+  cursor: url('cursor-pale.cur'), auto; /* Il faudra un .cur adapté au thème */
 }
 #image-troll {
   position: fixed;
@@ -165,7 +158,7 @@ body.cursor-pale {
   transform: translateX(-50%);
   text-align: center;
   color: white; /* Texte blanc */
-  font-family: monospace;
+  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
   font-size: 14px;
   user-select: none;
   z-index: 5000;
@@ -176,52 +169,63 @@ body.cursor-pale {
   margin-top: 5px;
   border-radius: 6px;
 }
-#calculator {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  background: #00006F; /* Fond bleu moyen */
+
+/* Styles pour la calculatrice (maintenant dans le flux normal mais masquée) */
+#calculator-container {
+  display: none; /* Toujours masquée par défaut */
+  width: 250px; /* Légèrement plus large */
+  margin: 30px auto 0 auto; /* Centrée, au-dessus de la barre de recherche */
+  background: #005FA8; /* Fond bleu moyen */
   border: 2px solid white; /* Bordure blanche */
   padding: 10px;
-  width: 220px;
   color: white; /* Texte blanc */
-  font-family: monospace;
+  font-family: "Segoe UI", Arial, sans-serif; /* Police Windows */
   font-size: 14px;
   user-select: none;
   z-index: 4000;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5); /* Légère ombre */
+}
+#calculator-container h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 #calc-display {
   width: 100%;
-  height: 30px;
-  background: #00004F; /* Fond bleu foncé */
-  border: 2px solid white; /* Bordure blanche */
+  height: 35px; /* Un peu plus haute */
+  background: #004D99; /* Fond bleu foncé */
+  border: 1px solid white; /* Bordure blanche */
   color: white; /* Texte blanc */
-  font-size: 18px;
+  font-size: 20px; /* Plus grande */
   margin-bottom: 10px;
   padding: 5px;
   box-sizing: border-box;
   text-align: right;
+  border-radius: 3px;
 }
 #calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 5px;
+  grid-gap: 8px; /* Espacement plus grand */
 }
 .calc-button {
-  background: #00007F; /* Fond bleu plus clair */
+  background: #006FB7; /* Fond bleu plus clair */
   border: 1px solid white; /* Bordure blanche */
   color: white; /* Texte blanc */
-  font-size: 18px;
+  font-size: 20px; /* Plus grande */
   cursor: pointer;
   user-select: none;
   padding: 10px;
   text-align: center;
+  border-radius: 3px;
+  transition: background 0.1s ease;
 }
 .calc-button:active {
   background: white; /* Bouton actif devient blanc */
-  color: #00008B; /* Texte bleu sur fond blanc */
+  color: #0078D4; /* Texte bleu sur fond blanc */
 }
-#rickroll {
+#rickroll-video { /* Changé de #rickroll en #rickroll-video */
   position: fixed;
   top: 10px;
   left: 10px;
