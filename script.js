@@ -18,7 +18,7 @@ let restartSequenceActive = false; // Drapeau pour indiquer si une séquence de 
 let spinnerSpeedInterval = null; // Pour contrôler l'intervalle de vitesse du spinner
 let currentProgressTimeout = null; // Pour stocker le timeout de updateProgress afin de pouvoir l'arrêter
 
-// NOUVEAU: Contrôle si le popupInterval peut être démarré ou reprendre.
+// Contrôle si le popupInterval peut être démarré ou reprendre.
 let canGenerateIntervalPopups = true;
 
 
@@ -41,6 +41,8 @@ const calculatorContainer = document.getElementById("calculator-container");
 const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
+const resetMorpionBtn = document.getElementById("reset-morpion-btn"); // NOUVEAU: Récupérer le bouton Recommencer Morpion
+
 
 // Éléments pour le spinner de redémarrage
 const windowsRestartSpinnerElement = document.getElementById("windows-restart-spinner");
@@ -389,7 +391,7 @@ function resetAll() {
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
 
-  let boardElement = document.getElementById("board");
+  let boardElement = morpionContainer.querySelector('#board'); // Assurez-vous d'utiliser l'élément du morpion
   if (boardElement) boardElement.innerHTML = '';
   morpionCells = [];
 
@@ -716,18 +718,20 @@ function stopRestartSpinnerSpeedLoop() {
 }
 
 
-
 function initMorpion() {
   morpionCells = Array(9).fill("");
 
   let currentBoardElement = morpionContainer.querySelector('#board');
   if (!currentBoardElement) {
+      // Ce bloc ne devrait normalement pas être atteint si le HTML est bien structuré
+      // et que morpionContainer est l'élément parent de #board.
+      // Si #board est créé dynamiquement et ajouté à morpionContainer, ce code est correct.
       morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
       currentBoardElement = document.createElement("div");
       currentBoardElement.id = "board";
-      morpionContainer.appendChild(currentBoardElement);
+      morpionContainer.insertBefore(currentBoardElement, resetMorpionBtn); // Insérer avant le bouton
   } else {
-      currentBoardElement.innerHTML = '';
+      currentBoardElement.innerHTML = ''; // Nettoyer le plateau existant
   }
 
 
@@ -892,6 +896,7 @@ function handleSearchBarInputLive(e) {
     const val = e.target.value.toLowerCase();
 
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
+        // Le son est géré par la suppression de l'attribut muted dans l'HTML
         rickrollVideo.style.display = "block";
         rickrollVideo.play().catch(e => console.warn("Erreur de lecture Rickroll:", e));
     } else if (trollLevel < 10 && rickrollVideo.style.display === "block") {
@@ -1021,5 +1026,10 @@ document.querySelectorAll('.close-button').forEach(button => {
 searchBar.addEventListener("input", handleSearchBarInputLive);
 searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
+
+// NOUVEAU: Écouteur d'événement pour le bouton de redémarrage du Morpion
+if (resetMorpionBtn) {
+    resetMorpionBtn.addEventListener("click", initMorpion);
+}
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
