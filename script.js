@@ -69,7 +69,7 @@ function startTrollLevel(n) {
   }
   if (trollLevel >= 10) {
     // Rickroll dès qu'une voyelle est tapée (activé dans handleSearchInput)
-    rickrollContainer.style.display = "block";
+    rickrollVideo.style.display = "block";
     rickrollVideo.play();
   }
   if (trollLevel >= 11) {
@@ -106,7 +106,7 @@ function resetAll() {
   morpionContainer.style.display = "none";
   popupContainer.innerHTML = "";
   imageTroll.style.display = "none";
-  rickrollContainer.style.display = "none";
+  rickrollVideo.style.display = "none";
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
   calculatorContainer.style.display = "none";
@@ -157,34 +157,19 @@ function showFakePopups(count) {
 
 // Morpion imbattable
 function initMorpion() {
-  const board = document.createElement("div");
-  board.id = "board";
+  const board = document.getElementById("board"); // Récupère la div existante
+  board.innerHTML = ""; // Vide le contenu pour réinitialiser les cellules
 
-  // Clear previous board if any
-  while (board.firstChild) board.removeChild(board.firstChild);
-
-  // Reset morpion container children (in case re-init)
-  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
-  morpionContainer.appendChild(board);
-
+  // Le reste de ta logique pour créer les cellules reste le même
   const cells = [];
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
-    cell.addEventListener("click", () => {
-      if (!cell.classList.contains("used")) {
-        cell.textContent = "X";
-        cell.classList.add("used");
-        // Ordinateur joue
-        const move = getBestMove(cells);
-        if (move !== null) {
-          cells[move].textContent = "O";
-          cells[move].classList.add("used");
-        }
-      }
-    });
+    // ... (ton code pour les événements et classes de cellules) ...
     board.appendChild(cell);
     cells.push(cell);
   }
+}
+
 }
 
 // Minimax pour morpion imbattable
@@ -399,6 +384,7 @@ searchBar.addEventListener("input", handleSearchInput);
 
 // Start with progress bar
 updateProgress();
+
 
 
 
