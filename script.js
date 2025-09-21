@@ -273,10 +273,15 @@ function isGameOver(board) {
 function handleSearchInput(e) {
   const val = e.target.value.toLowerCase();
 
-  if (val === "easter egg") {
-    alert("Bien joué ! Le troll se ferme.");
+  if (val === 'easter egg') {
+    alert('Bien joué ! Le troll se ferme.');
     window.close();
     return;
+  }
+
+  // Lancer la mise à jour seulement une fois, au premier input
+  if (progress === 0) {
+    updateProgress();
   }
 
   // Si c’est un niveau de troll entre 1 et 15
@@ -286,18 +291,19 @@ function handleSearchInput(e) {
     return;
   }
 
-  if (trollLevel >= 9) {
+  // Si c’est juste un texte classique (autre chose)
+  if (/^[a-z]+$/.test(val)) {
     const jokes = [
       "Tu tapes du texte, Kevin ? Sérieux ?",
       "Je vois ce que tu fais... ce n'est pas très malin.",
       "Arrête de chercher, ce n'est qu'un troll !",
-      "T'as pas mieux à faire ?",
+      "T'as pas mieux à faire ?"
     ];
     status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
   }
 
-  if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
-    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+  if (/[aeiouy]/.test(val)) {
+    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
   }
 }
 
@@ -358,3 +364,4 @@ searchBar.addEventListener("input", handleSearchInput);
 
 // Start with progress bar
 updateProgress();
+
