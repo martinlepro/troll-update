@@ -118,7 +118,7 @@ h1 {
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES --- */
 
-/* POPUPS (Haut Gauche - position inchangée) */
+/* POPUPS (Haut Gauche) */
 #popup-container {
   top: 1vh;
   left: 1vw;
@@ -148,7 +148,7 @@ h1 {
 }
 
 
-/* Calculatrice (Haut Droite - position inchangée) */
+/* Calculatrice (Haut Droite) */
 #calculator-container {
   top: 1vh;
   right: 1vw;
@@ -205,9 +205,9 @@ h1 {
   color: #0078D4;
 }
 
-/* Matrix Rain (Milieu Gauche - position inchangée, c'était déjà ça) */
+/* Matrix Rain (Milieu Gauche - DÉPLACÉ) */
 #matrix-rain-container {
-    top: 50%;
+    top: 50%; /* Rester au milieu verticalement */
     left: 1vw;
     transform: translateY(-50%);
     width: 25vw;
@@ -227,9 +227,9 @@ h1 {
     z-index: 1000;
 }
 
-/* Morpion (Milieu Droite - DÉPLACÉ UN PEU PLUS BAS) */
+/* Morpion (Milieu Droite) */
 #morpion-container {
-  top: 60%; /* Était 50% */
+  top: 60%;
   right: 1vw;
   transform: translateY(-50%);
   width: 20vw;
@@ -273,7 +273,7 @@ h1 {
   opacity: 0.7;
 }
 
-/* Rickroll (Bas Gauche - position inchangée) */
+/* Rickroll (Bas Gauche) */
 #rickroll-video {
   bottom: 1vh;
   left: 1vw;
@@ -285,13 +285,13 @@ h1 {
   z-index: 4500;
 }
 
-/* Subway Surfer Video (Bas Droite - position inchangée) */
+/* Subway Surfer Video (Bas Droite - REDIMENSIONNÉ) */
 #subway-surfer-video {
   bottom: 1vh;
   right: 1vw;
-  width: 25vw;
+  width: 20vw; /* RÉDUIT pour être plus petit et laisser de la place */
   height: auto;
-  max-height: 25vh;
+  max-height: 20vh; /* RÉDUIT */
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
@@ -299,15 +299,15 @@ h1 {
 
 /* Image troll (HAUT - DÉPLACÉ) */
 #image-troll {
-  top: 1vh; /* Était bottom: 50% */
+  top: 1vh;
   left: 50%;
-  transform: translateX(-50%); /* Ajusté pour centrer horizontalement */
+  transform: translateX(-50%);
   text-align: center;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 1.5vw;
   user-select: none;
-  z-index: 5000; /* Z-index très élevé pour être bien visible */
+  z-index: 5000;
 }
 #image-troll img {
   max-width: 15vw;
@@ -318,7 +318,7 @@ h1 {
   border-radius: 6px;
 }
 
-/* Texte dégoulinant (Milieu - position inchangée) */
+/* Texte dégoulinant (Milieu) */
 #degoulinant-text {
   position: fixed;
   top: 40%;
@@ -334,7 +334,7 @@ h1 {
   z-index: 5000;
 }
 
-/* Alerte personnalisée (Milieu - position inchangée) */
+/* Alerte personnalisée (Milieu) */
 #custom-alert-container {
     top: 50%;
     left: 50%;
