@@ -71,11 +71,11 @@ h1 {
 }
 
 #search-bar-wrapper {
-  display: none; /* MODIFIÉ: Initialement caché, sera affiché par JS */
+  display: none; /* Initialement caché, sera affiché par JS */
   margin-top: 3vh;
   width: 80%;
   max-width: 500px;
-  display: flex; /* MODIFIÉ: Affiché par défaut en flex, mais sera contrôlé par JS */
+  display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -109,14 +109,14 @@ h1 {
   cursor: pointer;
   outline: none;
   transition: background 0.1s ease;
-  display: none; /* MODIFIÉ: Initialement caché, sera affiché par JS */
+  display: none; /* Initialement caché, sera affiché par JS */
 }
 #submit-search-btn:active {
   background: white;
   color: #0078D4;
 }
 
-/* --- POSITIONS DES ÉLÉMENTS FIXES --- */
+/* --- POSITIONS DES ÉLÉMENTS FIXES (VERSION PC) --- */
 
 /* POPUPS (Haut Gauche) */
 #popup-container {
@@ -373,211 +373,168 @@ body.cursor-pale {
 
 /* ========================================================= */
 /* --- MODIFIÉ: Media Queries pour les petits écrans (Mobile) --- */
+/* (Ceci remplacera ou complétera les styles ci-dessus pour les écrans < 768px) */
 /* ========================================================= */
 @media (max-width: 768px) {
     /* Ajustements généraux pour l'affichage principal */
     #fullscreen-container {
-        justify-content: flex-start; /* Aligner le contenu en haut pour laisser de la place aux trolls */
-        padding-top: 5vh;
+        justify-content: flex-start; /* Aligner le contenu en haut pour laisser plus de place en bas/milieu */
+        padding-top: 3vh;
     }
 
     #main-title {
-        font-size: 8vw; /* Rendre le titre principal très grand */
-        margin-bottom: 4vh;
+        font-size: 7vw; /* Titre principal plus grand pour mobile */
+        margin-bottom: 3vh;
     }
 
     #progress-bar {
-        width: 90%; /* Barre de progression plus large */
-        height: 4vh;
-        margin: 4vh auto;
+        width: 85%; /* Barre de progression légèrement plus large */
+        height: 3.5vh;
+        margin: 3.5vh auto;
     }
     #status {
-        font-size: 6vw; /* Texte de statut très lisible */
-        margin-top: 3vh;
-        min-height: 7vh;
+        font-size: 5vw; /* Texte de statut plus lisible */
+        margin-top: 2.5vh;
+        min-height: 5vh;
     }
 
     #search-bar-wrapper {
-        width: 90%; /* Barre de recherche large */
-        margin-top: 5vh;
-        flex-direction: column; /* Empiler input et bouton si l'espace est limité */
+        width: 90%; /* Barre de recherche plus large */
+        margin-top: 4vh;
+        flex-direction: column; /* Empiler input et bouton pour les petits écrans */
     }
     #search-bar {
-        flex-grow: unset; /* Annuler la croissance */
-        width: 100%; /* Occuper toute la largeur */
-        font-size: 5vw; /* Taille du texte dans la barre de recherche */
-        padding: 2vh;
-        margin-right: 0; /* Pas de marge à droite si empilé */
-        margin-bottom: 2vh; /* Marge en bas si empilé */
+        flex-grow: unset;
+        width: 100%;
+        font-size: 4vw;
+        padding: 1.5vh;
+        margin-right: 0;
+        margin-bottom: 1.5vh; /* Marge en bas si empilé */
     }
     #submit-search-btn {
-        width: 100%; /* Bouton prend toute la largeur */
-        font-size: 5vw; /* Taille du texte du bouton */
-        padding: 2vh;
+        width: 100%;
+        font-size: 4vw;
+        padding: 1.5vh;
     }
 
-    /* --- Positionnement et taille des "troll" fixed-elements pour être visibles --- */
+    /* --- Positionnement et taille des "troll" fixed-elements --- */
+    /* Ils gardent leurs positions relatives, mais sont réduits en taille pour tenir sur l'écran. */
+    /* Des chevauchements peuvent persister en fonction de la taille de l'écran. */
 
-    .fixed-element {
-        /* Par défaut, on va les centrer et les faire prendre beaucoup de place pour qu'ils soient VUS */
-        position: fixed; /* Reste fixe */
-        left: 50%; /* Centré horizontalement */
-        transform: translateX(-50%); /* Ajustement pour un centrage parfait */
-        width: 90vw; /* Prend 90% de la largeur de l'écran */
-        z-index: 1000; /* Assure qu'ils sont au-dessus du fond */
-        /* Chaque élément sera ensuite repositionné verticalement ou ajusté */
-    }
-
-    /* Matrix Rain (Milieu / Haut - pour qu'il soit bien visible) */
-    #matrix-rain-container {
-        top: 15vh; /* Plus haut sur l'écran pour ne pas être écrasé */
-        height: 30vh; /* Prend 30% de la hauteur */
-        min-width: unset; /* Supprime les minimums qui peuvent causer des problèmes */
-        min-height: unset;
-        font-size: 4vw; /* Taille du texte des 0 et 1 (s'il est trop petit, augmente à 5vw) */
-        line-height: 1.2;
-        padding: 2vh; /* Marge intérieure */
-        box-sizing: border-box; /* Inclure le padding dans la largeur/hauteur */
-    }
-
-    /* Popups (Haut Gauche -> centré et plus grand) */
+    /* POPUPS (Haut Gauche) */
     #popup-container {
-        top: 2vh;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90vw; /* Prend presque toute la largeur */
-        min-width: unset;
-        pointer-events: none; /* Toujours pas interactif */
+        width: 45vw; /* Plus petit */
+        min-width: unset; /* Supprimer les min-width/height pour permettre un scaling fluide */
+        font-size: 3vw;
+        /* Conserve top: 1vh; left: 1vw; */
     }
     .fake-popup {
-        font-size: 4vw; /* Texte des popups plus grand */
-        padding: 2vh;
-        margin-bottom: 1vh; /* Espacement entre les popups */
-        animation: none; /* Désactiver l'animation de fadeOut pour les laisser affichés pour le débogage */
-        opacity: 1 !important; /* Forcer l'opacité à 1 */
-        position: relative; /* Les empiler normalement */
-        top: unset;
-        left: unset;
-        transform: none;
+        font-size: 3vw;
+        padding: 1vh;
+        margin-bottom: 0.5vh;
+        animation: none; /* Désactiver l'animation de fadeOut pour faciliter le débogage de la position */
+        opacity: 1 !important; /* Forcer la visibilité */
+        position: relative; /* Repositionner en relatif dans le conteneur */
+        top: unset; left: unset; transform: none; /* Annuler les transformations spécifiques à l'animation */
     }
-    /* Note: Si les popups se superposent, tu peux ajuster leur positionnement en JS pour qu'ils s'empilent */
 
-
-    /* Calculatrice (Haut Droite -> centré et plus grand) */
+    /* Calculatrice (Haut Droite) */
     #calculator-container {
-        top: 55vh; /* Positionnement pour ne pas chevaucher le Matrix Rain */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90vw;
+        width: 45vw; /* Plus petit */
         min-width: unset;
-        font-size: 3.5vw;
-        padding: 2vh;
+        font-size: 2.5vw; /* Taille globale de la police réduite */
+        /* Conserve top: 1vh; right: 1vw; */
     }
     #calculator-container h3 {
-        font-size: 5vw;
-        margin-bottom: 2vh;
+        font-size: 3.5vw;
     }
     #calc-display {
-        height: 6vh;
-        font-size: 5vw;
-        padding: 1vh;
+        height: 5vh;
+        font-size: 4vw;
+        padding: 0.5vh;
     }
     .calc-button {
-        font-size: 5vw;
-        padding: 2vh;
+        font-size: 4vw;
+        padding: 1.5vh;
     }
 
-    /* Morpion (Milieu Droite -> centré et plus grand) */
-    #morpion-container {
-        top: 15vh; /* Un peu plus bas que le Matrix Rain pour éviter le chevauchement, ajuste si besoin */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90vw;
+    /* Matrix Rain (Milieu Gauche) */
+    #matrix-rain-container {
+        width: 45vw; /* Plus petit */
+        height: 25vh; /* Hauteur réduite */
         min-width: unset;
-        font-size: 3.5vw;
-        padding: 2vh;
-        margin-top: 20px; /* Ajoute un peu de marge si nécessaire */
+        min-height: unset;
+        font-size: 3vw; /* Taille du texte 0 et 1 lisible */
+        padding: 1vh;
+        /* Conserve top: 50%; left: 1vw; transform: translateY(-50%); */
+    }
+
+    /* Morpion (Milieu Droite) */
+    #morpion-container {
+        width: 45vw; /* Plus petit */
+        min-width: unset;
+        font-size: 2.5vw; /* Taille globale de la police réduite */
+        /* Conserve top: 60%; right: 1vw; transform: translateY(-50%); */
     }
     #morpion-container h3 {
-        font-size: 5vw;
+        font-size: 3.5vw;
     }
     #board {
-        grid-template-columns: repeat(3, 25vw); /* Cellules du morpion très grandes */
-        grid-gap: 1vh;
+        grid-template-columns: repeat(3, 13vw); /* Cellules du morpion plus petites */
+        grid-gap: 0.8vh;
     }
     #board > div {
-        width: 25vw;
-        height: 25vw;
-        font-size: 10vw; /* "X" et "O" géants */
+        width: 13vw;
+        height: 13vw;
+        font-size: 6vw; /* "X" et "O" visibles */
     }
 
-
-    /* Rickroll (Bas Gauche -> centré et plus grand) */
+    /* Rickroll (Bas Gauche) */
     #rickroll-video {
-        bottom: 2vh; /* En bas de l'écran */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90vw; /* Prend presque toute la largeur */
-        height: auto;
-        max-height: 40vh; /* Hauteur maximale pour ne pas être trop envahissant */
+        width: 45vw; /* Plus petit */
+        max-height: 18vh; /* Hauteur maximale réduite */
+        /* Conserve bottom: 1vh; left: 1vw; */
     }
 
-    /* Subway Surfer Video (Bas Droite -> centré et plus grand) */
+    /* Subway Surfer Video (Bas Droite) */
     #subway-surfer-video {
-        bottom: 2vh; /* En bas de l'écran, peut chevaucher le Rickroll si les deux sont actifs */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90vw;
-        height: auto;
-        max-height: 40vh;
+        width: 45vw; /* Plus petit */
+        max-height: 18vh; /* Hauteur maximale réduite */
+        /* Conserve bottom: 1vh; right: 1vw; */
     }
-    /* Note : Si rickroll et subway surfer sont actifs en même temps, ils vont se chevaucher. */
-    /* Tu pourrais les placer l'un au-dessus de l'autre si tu veux les voir distinctement. */
-    /* Exemple: */
-    /* #rickroll-video { bottom: 45vh; } */
-    /* #subway-surfer-video { bottom: 2vh; } */
 
-
-    /* Image troll (milieu -> centré et plus grand) */
+    /* Image troll (HAUT Centré) */
     #image-troll {
-        top: 10vh; /* Positionné plus haut */
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 5vw; /* Texte de l'image troll plus grand */
-        width: 90vw;
+        font-size: 3.5vw; /* Texte de l'image troll plus grand */
+        /* Conserve top: 1vh; left: 50%; transform: translateX(-50%); */
     }
     #image-troll img {
-        max-width: 60vw; /* Image plus grande */
-        max-height: 30vh;
+        max-width: 30vw; /* Image plus grande */
+        max-height: 15vh;
     }
 
-    /* Texte dégoulinant (Milieu -> centré et très grand) */
+    /* Texte dégoulinant (Milieu Centré) */
     #degoulinant-text {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 8vw; /* Texte géant pour ne pas le rater */
+        font-size: 6vw; /* Texte visible */
         width: 90vw;
-        text-align: center;
+        /* Conserve top: 40%; left: 50%; transform: translate(-50%, -50%); */
     }
 
-    /* Alerte personnalisée (Milieu -> centré et plus grand) */
+    /* Alerte personnalisée (Milieu Centré) */
     #custom-alert-container {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90vw;
-        max-width: 500px; /* Maintien une max-width pour ne pas être trop étiré sur tablette */
+        width: 80vw;
+        max-width: unset; /* Permettre au width de s'appliquer pleinement */
         font-size: 4vw;
-        padding: 3vh;
+        padding: 2.5vh;
+        /* Conserve top: 50%; left: 50%; transform: translate(-50%, -50%); */
     }
     #custom-alert-container button {
-        font-size: 4vw;
-        padding: 1.5vh 3vw;
+        font-size: 3.5vw;
+        padding: 1.2vh 2.5vw;
     }
 
     /* Cacher le jitter de la souris sur mobile, car peu d'intérêt et potentiellement perturbant */
     body.cursor-pale {
-        cursor: auto; /* Revenir au curseur normal sur mobile */
+        cursor: auto;
     }
 }
