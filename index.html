@@ -14,8 +14,15 @@
   </div>
   <div id="status">Préparation de la mise à jour...</div>
 
+  <!-- Calculatrice troll (maintenant au-dessus de la barre de recherche) -->
+  <div id="calculator-container" style="display:none;">
+    <h3>Calculatrice</h3>
+    <input type="text" id="calc-display" disabled />
+    <div id="calc-buttons"></div>
+  </div>
+
   <!-- Barre de recherche troll -->
-  <input type="text" id="search-bar" placeholder="Entrez un nombre entre 1 et 15 ou un mot-clé secret">
+  <input type="text" id="search-bar" placeholder="Clic PAS"> <!-- Placeholder changé -->
 
   <!-- Morpion -->
   <div id="morpion-container" style="display:none;">
@@ -32,16 +39,9 @@
     <img src="trollface.png" alt="Trollface">
   </div>
 
-<div id="calculator-container" style="display:none;">
-  <h3>Calculatrice</h3>
-  <input type="text" id="calc-display" disabled />
-  <div id="calc-buttons"></div>
-</div>
-
 <video id="rickroll-video" style="display:none;" width="320" height="180" autoplay loop muted>
   <source src="video_playback.mp4" type="video/mp4">
 </video>
-
 
   <!-- Son d’erreur -->
   <audio id="error-sound" src="error.mp3"></audio>
@@ -49,4 +49,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
