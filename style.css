@@ -24,6 +24,7 @@ html, body {
   align-items: center;
   text-align: center;
   background: #0078D4; /* S'assure que le fond reste bleu en plein écran */
+  position: relative; /* Pour positionner les éléments fixes à l'intérieur */
 }
 
 h1 {
@@ -33,6 +34,12 @@ h1 {
 }
 #main-title {
     margin-bottom: 20px;
+}
+
+/* Base pour tous les éléments "fixed" pour gérer le z-index plus facilement */
+.fixed-element {
+    position: fixed;
+    display: none; /* Masqué par défaut, affiché par JS */
 }
 
 #progress-bar {
@@ -60,21 +67,21 @@ h1 {
   min-height: 24px;
 }
 
-/* Wrapper pour la barre de recherche et le bouton */
+/* --- Barre de recherche et bouton (maintenant au centre) --- */
 #search-bar-wrapper {
   display: none; /* Masqué au démarrage, affiché par JS */
-  margin: 20px auto 40px auto; /* Marge ajustée car la calculatrice est au-dessus */
-  width: 80%; /* Prend plus de place pour le bouton */
-  max-width: 500px; /* Plus large pour accueillir le bouton */
-  display: flex; /* Utilise flexbox pour aligner la barre et le bouton */
+  margin-top: 20px; /* Espace par rapport aux éléments au-dessus */
+  width: 80%;
+  max-width: 500px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; /* Nécessaire pour que z-index fonctionne */
+  position: relative;
   z-index: 6000; /* Assure que le wrapper est au-dessus de tout */
 }
 
 #search-bar {
-  flex-grow: 1; /* Prend l'espace restant */
+  flex-grow: 1;
   padding: 10px;
   font-size: 18px;
   border-radius: 5px;
@@ -83,77 +90,36 @@ h1 {
   text-align: center;
   background: #004D99;
   color: white;
-  margin-right: 10px; /* Espace entre la barre et le bouton */
-  /* Assurons-nous qu'elle n'est pas masquée par d'autres propriétés display */
-  display: block; /* S'assurer qu'elle est toujours affichée au sein du flex-container */
+  margin-right: 10px;
+  display: block;
 }
 #search-bar:focus {
   box-shadow: 0 0 8px rgba(255,255,255,0.8);
 }
-
 
 #submit-search-btn {
   padding: 10px 15px;
   font-size: 18px;
   border-radius: 5px;
   border: 2px solid white;
-  background: #006FB7; /* Un bleu plus clair pour le bouton */
+  background: #006FB7;
   color: white;
   cursor: pointer;
   outline: none;
   transition: background 0.1s ease;
+  display: none; /* Masqué par défaut */
 }
 #submit-search-btn:active {
   background: white;
   color: #0078D4;
 }
 
-#morpion-container {
-  position: fixed;
-  top: 20%;
-  right: 10px;
-  width: 220px;
-  background: #005FA8;
-  border: 2px solid white;
-  padding: 10px;
-  font-size: 14px;
-  display: none;
-  user-select: none;
-  z-index: 2000;
-}
-#morpion-container h3 {
-  margin-top: 0;
-  text-align: center;
-}
-#board {
-  display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-gap: 5px;
-  justify-content: center;
-  margin-top: 10px;
-}
-#board > div {
-  width: 50px;
-  height: 50px;
-  background-color: #006FB7;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  cursor: pointer;
-  user-select: none;
-  border-radius: 3px;
-}
-#board > div.used {
-  cursor: default;
-  opacity: 0.7;
-}
+/* --- POSITIONS DES ÉLÉMENTS FIXES --- */
 
+/* POPUPS (Haut Gauche) */
 #popup-container {
-  position: absolute;
-  top: 10%;
-  left: 10%;
+  top: 10px;
+  left: 10px;
   width: 300px;
   z-index: 3000;
   pointer-events: none;
@@ -167,7 +133,7 @@ h1 {
   box-shadow: 0 0 15px rgba(255,255,255,0.7);
   animation: fadeOut 5s forwards;
   user-select: none;
-  position: absolute;
+  position: absolute; /* Reste absolu par rapport à popup-container */
   width: 300px;
   border-radius: 3px;
 }
@@ -177,50 +143,11 @@ h1 {
   100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 50px), var(--popup-offset-y, 0));}
 }
 
-#degoulinant-text {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
-  font-family: "Segoe UI", Arial, sans-serif;
-  animation: degoulinement 5s forwards;
-  user-select: none;
-  pointer-events: none;
-  z-index: 5000;
-}
-@keyframes degoulinement {
-  0% { filter: blur(0); opacity: 1; }
-  100% { filter: blur(3px); opacity: 0; transform: translate(-50%, 100%); }
-}
-body.cursor-pale {
-  cursor: url('cursor-pale.cur'), auto;
-}
-#image-troll {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: white;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
-  user-select: none;
-  z-index: 5000;
-}
-#image-troll img {
-  max-width: 150px;
-  border: 2px solid white;
-  margin-top: 5px;
-  border-radius: 6px;
-}
-
+/* Calculatrice (Haut Droite) */
 #calculator-container {
-  display: none;
+  top: 10px;
+  right: 10px;
   width: 250px;
-  margin: 30px auto 0 auto;
   background: #005FA8;
   border: 2px solid white;
   padding: 10px;
@@ -271,11 +198,137 @@ body.cursor-pale {
   background: white;
   color: #0078D4;
 }
+
+/* Matrix Rain (Milieu Gauche) */
+#matrix-rain-container {
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%); /* Centrage vertical */
+    width: 250px;
+    height: 300px; /* Hauteur pour le défilement */
+    overflow: hidden; /* Important pour masquer les 1/0 qui sortent */
+    background: rgba(0,0,0,0.3); /* Légèrement transparent */
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 16px;
+    line-height: 1.2;
+    color: #00FF00; /* Vert Matrix classique */
+    text-align: left;
+    z-index: 1000; /* Derrière les popups, morpion, etc. */
+}
+.matrix-line {
+    white-space: nowrap; /* Empêche les retours à la ligne */
+    /* L'animation est gérée par JS pour le texte content, pas une animation CSS sur les spans */
+}
+
+
+/* Morpion (Milieu Droite) */
+#morpion-container {
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%); /* Centrage vertical */
+  width: 220px;
+  background: #005FA8;
+  border: 2px solid white;
+  padding: 10px;
+  font-size: 14px;
+  user-select: none;
+  z-index: 2000;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+#morpion-container h3 {
+  margin-top: 0;
+  text-align: center;
+}
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  grid-gap: 5px;
+  justify-content: center;
+  margin-top: 10px;
+}
+#board > div {
+  width: 50px;
+  height: 50px;
+  background-color: #006FB7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 3px;
+}
+#board > div.used {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* Rickroll (Bas Gauche) */
 #rickroll-video {
-  position: fixed;
-  top: 10px;
+  bottom: 10px;
   left: 10px;
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
 }
+
+/* Subway Surfer Video (Bas Droite) */
+#subway-surfer-video {
+  bottom: 10px;
+  right: 10px;
+  border: 2px solid white;
+  border-radius: 6px;
+  z-index: 4500;
+}
+
+/* Image troll (Milieu) */
+#image-troll {
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  text-align: center;
+  color: white;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+  user-select: none;
+  z-index: 5000;
+}
+#image-troll img {
+  max-width: 150px;
+  border: 2px solid white;
+  margin-top: 5px;
+  border-radius: 6px;
+}
+
+/* Texte dégoulinant (Milieu) */
+#degoulinant-text {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  font-family: "Segoe UI", Arial, sans-serif;
+  animation: degoulinement 5s forwards;
+  user-select: none;
+  pointer-events: none;
+  z-index: 5000;
+}
+@keyframes degoulinement {
+  0% { filter: blur(0); opacity: 1; }
+  100% { filter: blur(3px); opacity: 0; transform: translate(-50%, 100%); }
+}
+
+body.cursor-pale {
+  cursor: url('cursor-pale.cur'), auto;
+}
+
+  z-index: 4500;
+}
+
