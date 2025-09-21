@@ -259,7 +259,7 @@ h1 {
 /* Morpion (Milieu Gauche) */
 #morpion-container {
   top: 50%;
-  left: 1vw; /* POSITIONNEMENT CONFIRMÉ: Morpion à GAUCHE */
+  left: 1vw; /* CONFIRMÉ: Morpion à GAUCHE */
   right: unset;
   transform: translateY(-50%);
   width: 20vw;
@@ -307,7 +307,7 @@ h1 {
 /* Matrix Rain (Milieu Droit) */
 #matrix-rain-container {
     top: 50%;
-    right: 1vw; /* POSITIONNEMENT CONFIRMÉ: Matrix Rain à DROITE */
+    right: 1vw; /* CONFIRMÉ: Matrix Rain à DROITE */
     left: unset;
     transform: translateY(-50%);
     width: 25vw;
@@ -523,7 +523,7 @@ body.cursor-pale {
     /* Morpion (Milieu Gauche) pour mobile */
     #morpion-container {
         top: 50%;
-        left: 1vw; /* POSITIONNEMENT CONFIRMÉ: Morpion à GAUCHE pour mobile */
+        left: 1vw; /* CONFIRMÉ: Morpion à GAUCHE pour mobile */
         right: unset;
         transform: translateY(-50%);
         width: 45vw;
@@ -546,7 +546,7 @@ body.cursor-pale {
     /* Matrix Rain (Milieu Droit) pour mobile */
     #matrix-rain-container {
         top: 50%;
-        right: 1vw; /* POSITIONNEMENT CONFIRMÉ: Matrix Rain à DROITE pour mobile */
+        right: 1vw; /* CONFIRMÉ: Matrix Rain à DROITE pour mobile */
         left: unset;
         transform: translateY(-50%);
         width: 45vw;
