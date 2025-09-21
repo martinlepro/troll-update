@@ -477,8 +477,11 @@ function showFakePopups(count) {
     popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
     popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
 
-    popup.style.top = `0px`; // MODIFIÉ: Initialisation à 0px pour la propriété top
-    popup.style.left = `0px`; // MODIFIÉ: Initialisation à 0px pour la propriété left
+    // MODIFIÉ: Initialisation à 0px pour la propriété top et left des popups individuelles
+    // C'est important car les popups à l'intérieur du container .fake-popup vont se positionner
+    // de manière relative à leur conteneur #popup-container grâce aux règles CSS de la media query.
+    popup.style.top = `0px`;
+    popup.style.left = `0px`;
 
     popupContainer.appendChild(popup);
     popupCount++;
@@ -754,8 +757,9 @@ function initCalculator() {
           calcDisplay.value = "";
         } else if (action === "equals") {
           try {
-            calcDisplay.value = new Function('return ' + calcDisplay.value.replace(/×/g, '*') + ' === undefined ? "" : ' + calcDisplay.value.replace(/×/g, '*') )(); // MODIFIÉ: Gérer le × et undefined
-            if (calcDisplay.value === "Infinity" || calcDisplay.value === "-Infinity") calcDisplay.value = "Erreur"; // MODIFIÉ: Gérer l'infini
+            // MODIFIÉ: Gérer le × et undefined, les erreurs mathématiques
+            calcDisplay.value = new Function('return ' + calcDisplay.value.replace(/×/g, '*') + ' === undefined ? "" : ' + calcDisplay.value.replace(/×/g, '*') )();
+            if (calcDisplay.value === "Infinity" || calcDisplay.value === "-Infinity" || isNaN(calcDisplay.value)) calcDisplay.value = "Erreur";
           } catch {
             calcDisplay.value = "Erreur";
           }
