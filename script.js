@@ -3,7 +3,7 @@ let progress = 0;
 let degoulinantText = null;
 let calculatorInitialized = false;
 let morpionCells = [];
-let popupCount = 0; // Nouveau: Compteur pour gérer les popups qui descendent
+let popupCount = 0; // Compteur pour gérer les popups qui descendent
 
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
@@ -17,26 +17,8 @@ const calculatorContainer = document.getElementById("calculator-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 
-// --- Nouvelle fonction pour gérer l'état initial avant le démarrage du troll ---
-function initializeTrollStart() {
-  searchBar.disabled = true; // Désactive la barre de recherche au début
-  status.textContent = "Appuyez sur ENTRÉE pour commencer le grand troll...";
-
-  document.addEventListener('keydown', handleInitialEnter);
-}
-
-// --- Nouveau gestionnaire d'événement pour la touche Entrée ---
-function handleInitialEnter(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault(); // Empêche le comportement par défaut de la touche Entrée
-    document.removeEventListener('keydown', handleInitialEnter); // Retire cet écouteur
-    searchBar.disabled = false; // Active la barre de recherche
-    searchBar.classList.add('fixed-search-bar'); // Ajoute une classe pour la position fixe
-
-    status.textContent = "Préparation de la mise à jour...";
-    updateProgress(); // Démarre le troll !
-  }
-}
+// --- Plus de fonction initializeTrollStart ni handleInitialEnter ---
+// Le troll démarre directement au chargement de la page pour ressembler à une vraie mise à jour.
 
 function updateProgress() {
   if (progress < 100) {
@@ -46,7 +28,8 @@ function updateProgress() {
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
     setTimeout(updateProgress, 300);
   } else {
-    status.textContent = "Mise à jour terminée !";
+    status.textContent = "Mise à jour terminée. Démarrage des services."; // Message plus neutre
+    // Activation troll par défaut au niveau 1 pour starter
     if (trollLevel === 0) {
       trollLevel = 1;
       startTrollLevel(trollLevel);
@@ -65,9 +48,10 @@ function startTrollLevel(n) {
 
   trollLevel = newLevel;
 
-  resetAll();
+  resetAll(); // Réinitialise avant d'appliquer les nouveaux effets
 
-  if (trollLevel >= 1) { /* Already handled */ }
+  // Niveau 1: Juste la mise à jour de base (déjà géré par updateProgress)
+  // et les éléments de troll sont cachés par défaut.
   if (trollLevel >= 2) {
     status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
   }
@@ -90,7 +74,7 @@ function startTrollLevel(n) {
     morpionContainer.style.display = "block";
     initMorpion();
   }
-  if (trollLevel >= 9) { /* Handled by handleSearchInput */ }
+  if (trollLevel >= 9) { /* La barre de recherche est active au niveau 1, ce niveau active les blagues*/ }
   if (trollLevel >= 10) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
@@ -123,7 +107,7 @@ function resetAll() {
   rickrollVideo.style.display = "none";
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
-  calculatorContainer.style.display = "none";
+  calculatorContainer.style.display = "none"; // Masque la calculatrice
 
   if (degoulinantText) {
     degoulinantText.remove();
@@ -155,7 +139,6 @@ function playErrorSound(times) {
   play();
 }
 
-// Modifié: showFakePopups pour l'effet de descente
 function showFakePopups(count) {
   for (let i = 0; i < count; i++) {
     const popup = document.createElement("div");
@@ -165,20 +148,17 @@ function showFakePopups(count) {
       .toString(16)
       .toUpperCase()}`;
 
-    // Calculer un offset pour chaque popup
     const offsetX = popupCount * 20; // Décalage de 20px vers la droite
     const offsetY = popupCount * 20; // Décalage de 20px vers le bas
 
-    // Appliquer les offsets comme des propriétés CSS personnalisées
     popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
     popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
 
-    // Positionner la popup
-    popup.style.top = `0px`; // Commence au top de popup-container
-    popup.style.left = `0px`; // Commence au left de popup-container
+    popup.style.top = `0px`;
+    popup.style.left = `0px`;
 
     popupContainer.appendChild(popup);
-    popupCount++; // Incrémente le compteur pour la prochaine popup
+    popupCount++;
   }
 }
 
@@ -211,9 +191,7 @@ function initMorpion() {
               }
             }
             const winner = checkWinner(morpionCells);
-            if (winner !== null) {
-              // alert(winner === 'draw' ? 'Match Nul !' : `Le joueur ${winner} a gagné !`);
-            }
+            if (winner !== null) { /* Handle winner */ }
           }, 500);
         }
       }
@@ -296,6 +274,12 @@ function isGameOver(board) {
 }
 
 function handleSearchInput(e) {
+  // Rien ne se passe si on n'est pas au moins au niveau 1 (mise à jour terminée)
+  if (trollLevel === 0) {
+    e.target.value = ''; // Optionnel: effacer ce qu'il tape pendant la mise à jour
+    return;
+  }
+
   const val = e.target.value.toLowerCase();
 
   if (trollLevel >= 15) {
@@ -316,13 +300,19 @@ function handleSearchInput(e) {
   }
 
   if (/^[a-z]+$/.test(val)) {
-    const jokes = [
-      "Tu tapes du texte, Kevin ? Sérieux ?",
-      "Je vois ce que tu fais... ce n'est pas très malin.",
-      "Arrête de chercher, ce n'est qu'un troll !",
-      "T'as pas mieux à faire ?"
-    ];
-    status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
+    // Les blagues ne se déclenchent qu'à partir du niveau 9, comme défini.
+    if (trollLevel >= 9) {
+      const jokes = [
+        "Tu tapes du texte, Kevin ? Sérieux ?",
+        "Je vois ce que tu fais... ce n'est pas très malin.",
+        "Arrête de chercher, ce n'est qu'un troll !",
+        "T'as pas mieux à faire ?"
+      ];
+      status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
+    } else {
+       // Si on est avant le niveau 9, on ne fait rien ou un message neutre
+       status.textContent = "Opération non reconnue.";
+    }
   }
 
   if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
@@ -405,5 +395,5 @@ function initCalculator() {
 
 searchBar.addEventListener("input", handleSearchInput);
 
-// Démarrer l'état initial en attendant la touche Entrée
-initializeTrollStart();
+// Le troll démarre directement au chargement de la page
+updateProgress();
