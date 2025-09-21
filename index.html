@@ -8,13 +8,13 @@
 <body>
   <!-- Conteneur principal pour le mode plein écran -->
   <div id="fullscreen-container">
-    <h1 id="main-title">Mise à jour système</h1> <!-- Assurez-vous que l'ID est bien là -->
+    <h1 id="main-title">Mise à jour système</h1>
 
     <!-- Barre de progression -->
     <div id="progress-bar">
       <div id="progress"></div>
     </div>
-    <div id="status"></div> <!-- Le texte initial sera mis par JS -->
+    <div id="status"></div>
 
     <!-- Calculatrice troll -->
     <div id="calculator-container" style="display:none;">
@@ -24,7 +24,11 @@
     </div>
 
     <!-- Barre de recherche troll -->
-    <input type="text" id="search-bar" placeholder="Clic PAS">
+    <div id="search-bar-wrapper"> <!-- Nouveau wrapper pour la barre et le bouton -->
+        <input type="text" id="search-bar" placeholder="Clic PAS">
+        <button id="submit-search-btn" style="display:none;">Entrée</button>
+    </div>
+
 
     <!-- Morpion -->
     <div id="morpion-container" style="display:none;">
