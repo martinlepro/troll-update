@@ -5,7 +5,7 @@
   <title>Mise à jour système - troll</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="data:image/x-icon;,"> <!-- AJOUTÉ: Pour éviter l'erreur favicon 404 -->
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
 </head>
 <body>
   <!-- Conteneur principal pour le mode plein écran -->
@@ -18,13 +18,13 @@
     </div>
     <div id="status"></div>
 
-    <!-- NOUVEAU: Conteneur pour l'effet 1 et 0 (Matrix Rain) -->
+    <!-- Conteneur pour l'effet 1 et 0 (Matrix Rain) -->
     <div id="matrix-rain-container" class="fixed-element"></div>
 
     <!-- CALCULATRICE (Haut Droite) -->
     <div id="calculator-container" class="fixed-element">
       <h3>Calculatrice</h3>
-      <span class="close-button" data-target="calculator-container">&times;</span><!-- NOUVEAU: Bouton de fermeture -->
+      <span class="close-button" data-target="calculator-container">&times;</span>
       <input type="text" id="calc-display" disabled />
       <div id="calc-buttons"></div>
     </div>
@@ -32,8 +32,10 @@
     <!-- MORPION (Milieu Droite) -->
     <div id="morpion-container" class="fixed-element">
       <h3>Jouez pendant que ça installe...</h3>
-      <span class="close-button" data-target="morpion-container">&times;</span><!-- NOUVEAU: Bouton de fermeture -->
+      <span class="close-button" data-target="morpion-container">&times;</span>
       <div id="board"></div>
+      <!-- NOUVEAU: Bouton pour recommencer le Morpion -->
+      <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
     </div>
 
     <!-- POPUPS (Haut Gauche) -->
@@ -46,18 +48,18 @@
     </div>
 
     <!-- RICKROLL (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element" autoplay loop muted style="display:none;">
+    <video id="rickroll-video" class="fixed-element" autoplay loop> <!-- MODIFIÉ: 'muted' retiré -->
       <source src="rickroll.mp4" type="video/mp4">
     </video>
 
     <!-- SUBWAY SURFER VIDEO (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element" autoplay loop muted style="display:none;">
+    <video id="subway-surfer-video" class="fixed-element" autoplay loop> <!-- MODIFIÉ: 'muted' retiré -->
         <source src="subwaysurfer.mp4" type="video/mp4">
     </video>
 
     <!-- Image troll (milieu) -->
     <div id="image-troll" style="display:none;" class="fixed-element">
-      <p>Image trouvé sur votre ordinateur :</p><!-- NOUVEAU: Texte pour l'image troll -->
+      <p>Image trouvé sur votre ordinateur :</p>
       <img src="trollface.png" alt="Trollface">
     </div>
 
@@ -67,10 +69,10 @@
     <!-- Son d’erreur -->
     <audio id="error-sound" src="error.mp3"></audio>
 
-    <!-- NOUVEAU: Conteneur pour les messages d'alerte personnalisés -->
+    <!-- Conteneur pour les messages d'alerte personnalisés -->
     <div id="custom-alert-container" class="fixed-element"></div>
 
-    <!-- NOUVEAU: Spinner de redémarrage type Windows -->
+    <!-- Spinner de redémarrage type Windows -->
     <div id="windows-restart-spinner" class="fixed-element">
       <div class="spinning-circle"></div>
     </div>
