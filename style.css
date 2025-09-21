@@ -134,12 +134,12 @@ h1 {
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES (VERSION PC) --- */
 
-/* MODIFIÉ: Image troll (Haut Gauche) */
+/* Image troll (Haut Gauche) */
 #image-troll {
   top: 1vh;
   left: 1vw;
-  right: unset; /* Assurez que la propriété right n'est pas définie */
-  transform: none; /* Supprimer le translate */
+  right: unset;
+  transform: none;
   text-align: center;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -147,7 +147,7 @@ h1 {
   user-select: none;
   z-index: 5000;
 }
-#image-troll p { /* NOUVEAU: Style pour le texte de l'image troll */
+#image-troll p { /* Style pour le texte de l'image troll */
     margin-bottom: 0.5vh;
     font-size: 2vw;
 }
@@ -160,11 +160,47 @@ h1 {
   border-radius: 6px;
 }
 
-/* MODIFIÉ: Calculatrice (Sous l'image troll, en Haut Gauche) */
-#calculator-container {
+/* NOUVEAU: POPUPS (Sous l'image troll, en Haut Gauche) */
+#popup-container {
   top: 20vh; /* Ajusté pour être sous l'image troll (environ 15vh + un peu de marge) */
   left: 1vw;
   right: unset;
+  width: 25vw;
+  min-width: 200px;
+  z-index: 3000;
+  pointer-events: none; /* Toujours non interactif sur le container global */
+}
+.fake-popup {
+  background: #005FA8;
+  border: 2px solid white;
+  padding: 1vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: white;
+  box-shadow: 0 0 15px rgba(255,255,255,0.7);
+  animation: fadeOut 5s forwards; /* Réactivé */
+  user-select: none;
+  position: absolute;
+  width: 100%;
+  border-radius: 3px;
+  font-size: 2vw;
+  pointer-events: all; /* Permettre l'interaction sur les popups individuels (pour le bouton fermer) */
+}
+.fake-popup .close-button { /* Bouton de fermeture spécifique pour chaque popup */
+    font-size: 1.5vw; /* Plus petit que les autres */
+    pointer-events: all; /* Important pour qu'il soit cliquable */
+}
+@keyframes fadeOut {
+  0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
+  80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
+  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
+}
+
+
+/* MODIFIÉ: Calculatrice (Haut Droite) */
+#calculator-container {
+  top: 1vh; /* Revenu en haut */
+  right: 1vw; /* Revenu à droite */
+  left: unset; /* Assurer que left est bien unset */
   width: 20vw;
   min-width: 200px;
   background: #005FA8;
@@ -177,7 +213,7 @@ h1 {
   z-index: 4000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(255,255,255,0.5);
-  position: fixed;
+  position: fixed; /* Assure que le bouton X est relatif à lui */
   transform: none; /* Supprimer le translate */
 }
 #calculator-container h3 {
@@ -220,47 +256,11 @@ h1 {
   color: #0078D4;
 }
 
-/* MODIFIÉ: POPUPS (Sous la calculatrice, en Haut Gauche) */
-#popup-container {
-  top: 45vh; /* Ajusté pour être sous la calculatrice */
-  left: 1vw;
-  right: unset;
-  width: 25vw;
-  min-width: 200px;
-  z-index: 3000;
-  pointer-events: none; /* Toujours non interactif sur le container global */
-}
-.fake-popup {
-  background: #005FA8;
-  border: 2px solid white;
-  padding: 1vh;
-  font-family: "Segoe UI", Arial, sans-serif;
-  color: white;
-  box-shadow: 0 0 15px rgba(255,255,255,0.7);
-  animation: fadeOut 5s forwards; /* Réactivé */
-  user-select: none;
-  position: absolute;
-  width: 100%;
-  border-radius: 3px;
-  font-size: 2vw;
-  pointer-events: all; /* Permettre l'interaction sur les popups individuels (pour le bouton fermer) */
-}
-.fake-popup .close-button { /* Bouton de fermeture spécifique pour chaque popup */
-    font-size: 1.5vw; /* Plus petit que les autres */
-    pointer-events: all; /* Important pour qu'il soit cliquable */
-}
-@keyframes fadeOut {
-  0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
-}
-
-
-/* MODIFIÉ: Morpion (Milieu Gauche) */
+/* Morpion (Milieu Gauche) */
 #morpion-container {
   top: 50%;
   left: 1vw;
-  right: unset; /* S'assurer que right n'est pas défini */
+  right: unset;
   transform: translateY(-50%);
   width: 20vw;
   min-width: 200px;
@@ -304,11 +304,11 @@ h1 {
   opacity: 0.7;
 }
 
-/* MODIFIÉ: Matrix Rain (Milieu Droit) */
+/* Matrix Rain (Milieu Droit) */
 #matrix-rain-container {
     top: 50%;
     right: 1vw;
-    left: unset; /* Assurez que left n'est pas défini */
+    left: unset;
     transform: translateY(-50%);
     width: 25vw;
     min-width: 200px;
@@ -332,7 +332,7 @@ h1 {
 #subway-surfer-video {
   bottom: 1vh;
   left: 1vw;
-  right: unset; /* Assurez que right n'est pas défini */
+  right: unset;
   width: 25vw;
   height: auto;
   max-height: 25vh;
@@ -345,7 +345,7 @@ h1 {
 #rickroll-video {
   bottom: 1vh;
   right: 1vw;
-  left: unset; /* Assurez que left n'est pas défini */
+  left: unset;
   width: 25vw;
   height: auto;
   max-height: 25vh;
@@ -410,10 +410,9 @@ body.cursor-pale {
 
 /* ========================================================= */
 /* --- MODIFIÉ: Media Queries pour les petits écrans (Mobile) --- */
-/* (Ceci remplacera ou complétera les styles ci-dessus pour les écrans < 768px) */
 /* ========================================================= */
 @media (max-width: 768px) {
-    /* NOUVEAU: Masquer les boutons de fermeture sur mobile */
+    /* Masquer les boutons de fermeture sur mobile */
     .close-button {
         display: none;
     }
@@ -460,36 +459,34 @@ body.cursor-pale {
     }
 
     /* --- Positionnement et taille des "troll" fixed-elements pour mobile --- */
-    /* Ils gardent leurs positions relatives, mais sont réduits en taille pour tenir sur l'écran. */
-    /* Des chevauchements peuvent persister en fonction de la taille de l'écran. */
 
-    /* MODIFIÉ: Image troll (Haut Gauche) pour mobile */
+    /* Image troll (Haut Gauche) pour mobile */
     #image-troll {
         top: 1vh;
         left: 1vw;
         right: unset;
         transform: none;
-        max-width: 25vw; /* Plus petit */
-        max-height: 10vh; /* Plus petit */
+        max-width: 25vw;
+        max-height: 10vh;
     }
-    #image-troll p { /* Style pour le texte de l'image troll sur mobile */
+    #image-troll p {
         font-size: 3.5vw;
     }
     #image-troll img {
-        max-width: 25vw; /* Image elle-même plus petite */
+        max-width: 25vw;
         max-height: 8vh;
     }
 
 
-    /* MODIFIÉ: Calculatrice (Sous l'image troll, Haut Gauche) pour mobile */
+    /* NOUVEAU: Calculatrice (Haut Droite) pour mobile */
     #calculator-container {
-        top: 15vh; /* Ajusté pour être sous l'image troll */
-        left: 1vw;
-        right: unset;
+        top: 1vh; /* En haut */
+        right: 1vw; /* À droite */
+        left: unset;
         transform: none;
-        width: 45vw; /* Plus petit */
+        width: 45vw;
         min-width: unset;
-        font-size: 2.5vw; /* Taille globale de la police réduite */
+        font-size: 2.5vw;
     }
     #calculator-container h3 {
         font-size: 3.5vw;
@@ -504,13 +501,13 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* MODIFIÉ: POPUPS (Sous la calculatrice, Haut Gauche) pour mobile */
+    /* NOUVEAU: POPUPS (Sous l'image troll, Haut Gauche) pour mobile */
     #popup-container {
-        top: 35vh; /* Ajusté pour être sous la calculatrice */
+        top: 15vh; /* Ajusté pour être sous l'image troll */
         left: 1vw;
         right: unset;
         transform: none;
-        width: 45vw; /* Plus petit */
+        width: 45vw;
         min-width: unset;
         font-size: 3vw;
     }
@@ -518,49 +515,49 @@ body.cursor-pale {
         font-size: 3vw;
         padding: 1vh;
         margin-bottom: 0.5vh;
-        opacity: 1; /* Pour assurer que l'animation commence bien */
-        position: relative; /* Repositionner en relatif dans le conteneur */
-        top: unset; left: unset; transform: none; /* Annuler les transformations spécifiques à l'animation */
+        opacity: 1;
+        position: relative;
+        top: unset; left: unset; transform: none;
     }
 
-    /* MODIFIÉ: Morpion (Milieu Gauche) pour mobile */
+    /* Morpion (Milieu Gauche) pour mobile */
     #morpion-container {
         top: 50%;
         left: 1vw;
         right: unset;
         transform: translateY(-50%);
-        width: 45vw; /* Plus petit */
+        width: 45vw;
         min-width: unset;
-        font-size: 2.5vw; /* Taille globale de la police réduite */
+        font-size: 2.5vw;
     }
     #morpion-container h3 {
         font-size: 3.5vw;
     }
     #board {
-        grid-template-columns: repeat(3, 13vw); /* Cellules du morpion plus petites */
+        grid-template-columns: repeat(3, 13vw);
         grid-gap: 0.8vh;
     }
     #board > div {
         width: 13vw;
         height: 13vw;
-        font-size: 6vw; /* "X" et "O" visibles */
+        font-size: 6vw;
     }
 
-    /* MODIFIÉ: Matrix Rain (Milieu Droit) pour mobile */
+    /* Matrix Rain (Milieu Droit) pour mobile */
     #matrix-rain-container {
         top: 50%;
         right: 1vw;
         left: unset;
         transform: translateY(-50%);
         width: 45vw;
-        height: 25vh; /* Hauteur réduite */
+        height: 25vh;
         min-width: unset;
         min-height: unset;
-        font-size: 3vw; /* Taille du texte 0 et 1 lisible */
+        font-size: 3vw;
         padding: 1vh;
     }
 
-    /* MODIFIÉ: Subway Surfer Video (Bas Gauche) pour mobile */
+    /* Subway Surfer Video (Bas Gauche) pour mobile */
     #subway-surfer-video {
         bottom: 1vh;
         left: 1vw;
@@ -569,7 +566,7 @@ body.cursor-pale {
         max-height: 18vh;
     }
 
-    /* MODIFIÉ: Rickroll (Bas Droite) pour mobile */
+    /* Rickroll (Bas Droite) pour mobile */
     #rickroll-video {
         bottom: 1vh;
         right: 1vw;
@@ -578,12 +575,10 @@ body.cursor-pale {
         max-height: 18vh;
     }
 
-
     /* Texte dégoulinant (Milieu Centré) */
     #degoulinant-text {
         font-size: 6vw;
         width: 90vw;
-        /* Conserve top: 40%; left: 50%; transform: translate(-50%, -50%); */
     }
 
     /* Alerte personnalisée (Milieu Centré) */
@@ -592,7 +587,6 @@ body.cursor-pale {
         max-width: unset;
         font-size: 4vw;
         padding: 2.5vh;
-        /* Conserve top: 50%; left: 50%; transform: translate(-50%, -50%); */
     }
     #custom-alert-container button {
         font-size: 3.5vw;
