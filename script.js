@@ -7,6 +7,7 @@ let popupCount = 0;
 let activatedAlerts = new Set();
 let matrixRainInterval = null;
 let popupInterval = null; // Pour gérer l'intervalle de réapparition des popups
+let initialTrollEffectsTriggered = new Set();
 
 // NOUVEAU: Variables pour le système de redémarrage
 let errorCounter = 0;
@@ -308,8 +309,13 @@ function activateTrollEffectForLevel(level) {
             break;
         case 7:
             popupContainer.style.display = 'block';
-            showFakePopups(5); // NOUVEAU: Afficher un premier lot de 5 popups
-            if (!popupInterval) { // NOUVEAU: Ne créer l'intervalle qu'une seule fois
+            // NOUVEAU: Ne déclencher la rafale initiale de 5 popups que si le niveau 7 n'a pas été initialisé depuis le dernier reset.
+            if (!initialTrollEffectsTriggered.has(7)) {
+                showFakePopups(5); // Cette rafale initiale va très probablement déclencher un redémarrage
+                initialTrollEffectsTriggered.add(7); // Marquer comme "initialisé" pour ne pas le refaire
+            }
+
+            if (!popupInterval) {
                 // NOUVEAU: Générer 1 à 3 popups aléatoires toutes les 5 secondes
                 popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
             }
@@ -369,7 +375,7 @@ function startTrollLevel(n) {
 function resetAll() {
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
-
+  initialTrollEffectsTriggered.clear()
   // Masque tous les éléments 'fixed-element'
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
@@ -990,4 +996,5 @@ searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
+
 
