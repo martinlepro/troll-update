@@ -28,9 +28,9 @@ html, body {
 }
 
 h1 {
-  /* Pas de margin-top fixe, laissé au flexbox pour le centrage */
   margin-top: 0;
   font-weight: normal;
+  display: none; /* Masqué au démarrage, affiché par JS */
 }
 #main-title {
     margin-bottom: 20px; /* Ajoute un peu d'espace sous le titre principal */
@@ -45,6 +45,7 @@ h1 {
   border-radius: 5px; /* Arrondis un peu moins marqués */
   overflow: hidden;
   box-shadow: 0 0 10px rgba(255,255,255,0.7) inset; /* Ombre blanche */
+  display: none; /* Masquée au démarrage, affichée par JS */
 }
 #progress {
   height: 100%;
@@ -55,12 +56,12 @@ h1 {
 }
 #status {
   text-align: center;
-  font-size: 18px;
+  font-size: 24px; /* Rend le texte du statut plus grand pour l'instruction de clic */
   margin-top: 15px;
   min-height: 24px;
 }
 #search-bar {
-  display: block;
+  display: block; /* Sera masquée/affichée par JS */
   margin: 20px auto 40px auto; /* Marge ajustée car la calculatrice est au-dessus */
   width: 50%;
   max-width: 400px;
