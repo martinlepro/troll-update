@@ -5,7 +5,7 @@ let calculatorInitialized = false;
 let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
-let matrixRainInterval = null;
+let matrixRainInterval = null; // Pour contrôler l'effet 1 et 0
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -68,23 +68,16 @@ function handleFullscreenChange() {
     console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
     if (!document.fullscreenElement && isTrollActive) {
         console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic.");
-        // Pour gérer le bug "Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture."
-        // on ne demande plus le fullscreen directement ici si on est hors du handler de clic/keydown.
-        // handleReEnterFullscreen (sur clic) est la bonne méthode.
     }
 }
 
 function handleGlobalKeyDown(event) {
     if (event.key === "Escape" && isTrollActive) {
         console.log("Touche Escape pressée, troll actif.");
-        event.preventDefault(); // Empêche l'action par défaut d'Escape si possible
+        event.preventDefault();
 
-        // Si l'utilisateur n'est PAS en plein écran (il vient de quitter)
-        // et qu'on a déjà réussi à rentrer en plein écran au moins une fois
         if (!document.fullscreenElement && hasEnteredFullscreenOnce) {
              console.log("Hors plein écran, tentative de retour en plein écran au prochain clic.");
-             // On ne relance PAS requestFullscreenMode ici, car cela causerait le "Permissions check failed".
-             // Le handleReEnterFullscreen sur click gérera ça.
         }
     }
 }
@@ -97,7 +90,6 @@ function handleBeforeUnload(event) {
     }
 }
 
-// --- NOUVEAU: Fonction pour afficher une alerte personnalisée ---
 function showCustomAlert(message) {
     customAlertContainer.innerHTML = `
         <p>${message}</p>
@@ -138,9 +130,8 @@ function handleInitialClick() {
 }
 
 function handleReEnterFullscreen() {
-    // AJOUTÉ: Vérifie que le clic n'est pas sur une alerte personnalisée active
     if (customAlertContainer.style.display === 'block') {
-        return; // Ignore les clics si une alerte personnalisée est affichée
+        return;
     }
 
     if (isTrollActive && !document.fullscreenElement) {
@@ -231,16 +222,14 @@ function activateTrollEffectForLevel(level) {
             break;
         case 12:
             if (!activatedAlerts.has(12)) {
-                // ANCIEN: alert("Activation de troll.vbs...");
-                showCustomAlert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)"); // NOUVEAU
+                showCustomAlert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)");
                 activatedAlerts.add(12);
                 console.log("Niveau 12: Alerte .vbs déclenchée.");
             }
             break;
         case 13:
             if (!activatedAlerts.has(13)) {
-                // ANCIEN: alert("Installation de script...");
-                showCustomAlert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)"); // NOUVEAU
+                showCustomAlert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)");
                 activatedAlerts.add(13);
                 console.log("Niveau 13: Alerte .bat déclenchée.");
             }
@@ -342,7 +331,7 @@ function resetAll() {
 
   trollLevel = 0;
   activatedAlerts.clear();
-  customAlertContainer.style.display = 'none'; // S'assurer que l'alerte personnalisée est masquée au reset
+  customAlertContainer.style.display = 'none';
 }
 
 function startMatrixRain() {
@@ -352,7 +341,6 @@ function startMatrixRain() {
 
     matrixRainContainer.style.position = 'relative';
 
-    // Remplissage initial pour que ça apparaisse tout de suite
     let initialContent = '';
     const numLines = Math.floor(matrixRainContainer.offsetHeight / 15);
     const numChars = Math.floor(matrixRainContainer.offsetWidth / 10);
@@ -367,13 +355,12 @@ function startMatrixRain() {
 
 
     matrixRainInterval = setInterval(() => {
-        // Supprime la première ligne et en ajoute une nouvelle en bas
         let currentContent = matrixRainContainer.textContent;
         const firstLineBreak = currentContent.indexOf('\n');
         if (firstLineBreak !== -1) {
             currentContent = currentContent.substring(firstLineBreak + 1);
         } else {
-            currentContent = ''; // Si plus de ligne, on vide et on recrée
+            currentContent = '';
         }
         
         let newLine = '';
@@ -565,7 +552,7 @@ function processSearchBarSubmission(value) {
     }
 
     if (trollLevel >= 15 && value === 'easter egg') {
-        alert('Bien joué ! Le troll se ferme.'); // L'alerte système est conservée pour l'easter egg final.
+        alert('Bien joué ! Le troll se ferme.');
         exitFullscreenMode();
         window.close();
         return;
@@ -574,7 +561,7 @@ function processSearchBarSubmission(value) {
     const niveau = parseInt(value);
     if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
         activateTrollEffects(niveau);
-        searchBar.value = ''; // Efface la barre après une commande de niveau
+        searchBar.value = '';
         return;
     }
 
@@ -593,7 +580,7 @@ function processSearchBarSubmission(value) {
     } else if (value.length > 0) {
         status.textContent = "Commande inconnue.";
     }
-    searchBar.value = ''; // Efface la barre après toute commande non reconnue pour éviter la répétition
+    searchBar.value = '';
 }
 
 function handleSearchBarInputLive(e) {
@@ -618,13 +605,11 @@ function handleSearchBarKeyDown(e) {
     if (e.key === 'Enter') {
         e.preventDefault();
         processSearchBarSubmission(searchBar.value.toLowerCase());
-        // searchBar.value est déjà vidé dans processSearchBarSubmission
     }
 }
 
 function handleSubmitSearchClick() {
     processSearchBarSubmission(searchBar.value.toLowerCase());
-    // searchBar.value est déjà vidé dans processSearchBarSubmission
 }
 
 let jitterInterval = null;
