@@ -3,8 +3,10 @@ let progress = 0;
 let degoulinantText = null;
 let calculatorInitialized = false;
 let morpionCells = [];
-let popupCount = 0; // Compteur pour gérer les popups qui descendent
+let popupCount = 0;
 
+const fullscreenContainer = document.getElementById("fullscreen-container");
+const mainTitle = document.getElementById("main-title");
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
 const searchBar = document.getElementById("search-bar");
@@ -17,8 +19,100 @@ const calculatorContainer = document.getElementById("calculator-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 
-// --- Plus de fonction initializeTrollStart ni handleInitialEnter ---
-// Le troll démarre directement au chargement de la page pour ressembler à une vraie mise à jour.
+// --- LOGIQUE POUR LE PLEIN ÉCRAN ET LES TOUCHES DE SORTIE ---
+let isTrollActive = false; // Flag pour savoir si le troll est démarré
+
+function requestFullscreenMode() {
+    if (fullscreenContainer.requestFullscreen) {
+        fullscreenContainer.requestFullscreen().catch(err => {
+            console.warn("Échec de la demande de plein écran:", err);
+            // Si le plein écran échoue, on démarre quand même le troll
+            if (!isTrollActive) {
+                startTrollMechanism();
+            }
+        });
+    } else {
+        console.warn("API Fullscreen non supportée par le navigateur.");
+        // Si non supporté, on démarre quand même
+        if (!isTrollActive) {
+            startTrollMechanism();
+        }
+    }
+}
+
+function exitFullscreenMode() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    }
+}
+
+// Fonction appelée quand l'état du plein écran change
+function handleFullscreenChange() {
+    if (!document.fullscreenElement && isTrollActive) {
+        // Si on n'est plus en plein écran ET le troll est actif, on essaie de revenir
+        requestFullscreenMode();
+    }
+}
+
+// Fonction pour bloquer Échap (tentative)
+function handleGlobalKeyDown(event) {
+    // Tente de bloquer Esc en dehors du mode plein écran ou de le détecter
+    if (event.key === "Escape" && isTrollActive) {
+        event.preventDefault(); // Empêche l'action par défaut d'Escape si possible
+        // Si on est en plein écran et que l'utilisateur essaie de sortir, on le ramène
+        if (!document.fullscreenElement) {
+             requestFullscreenMode(); // Essayer de revenir en plein écran
+        }
+    }
+}
+
+// Fonction pour tenter de bloquer la fermeture de la page
+function handleBeforeUnload(event) {
+    if (isTrollActive) {
+        // Le message personnalisé est souvent ignoré par les navigateurs modernes
+        // Ils affichent un message générique.
+        event.returnValue = "Vous êtes sûr de vouloir quitter ? La mise à jour est en cours et cela pourrait endommager votre système.";
+        return event.returnValue;
+    }
+}
+
+// --- INITIALISATION DU TROLL AVEC INTERACTION ---
+function initializeTrollStartInteraction() {
+  status.textContent = "Mise à jour système en attente. Cliquez pour démarrer.";
+  // On masque la barre de recherche au début pour se concentrer sur le clic
+  searchBar.style.display = 'none';
+
+  // L'écouteur sera sur le document entier pour le clic initial
+  document.addEventListener('click', handleInitialClick, { once: true });
+}
+
+function handleInitialClick() {
+    // Masque le message "Cliquez pour démarrer"
+    status.textContent = "";
+    // Affiche la barre de recherche
+    searchBar.style.display = 'block';
+
+    requestFullscreenMode(); // Demande le plein écran
+    startTrollMechanism(); // Démarre la logique du troll
+}
+
+function startTrollMechanism() {
+    if (isTrollActive) return; // Évite de démarrer plusieurs fois
+    isTrollActive = true;
+
+    // Ajoute les écouteurs pour tenter de bloquer les sorties
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    searchBar.disabled = false; // La barre de recherche peut être utilisée après le démarrage
+
+    // Démarrer la barre de progression
+    updateProgress();
+}
+
+
+// --- Fonctions existantes du troll, ajustées si nécessaire ---
 
 function updateProgress() {
   if (progress < 100) {
@@ -28,8 +122,7 @@ function updateProgress() {
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
     setTimeout(updateProgress, 300);
   } else {
-    status.textContent = "Mise à jour terminée. Démarrage des services."; // Message plus neutre
-    // Activation troll par défaut au niveau 1 pour starter
+    status.textContent = "Mise à jour terminée. Démarrage des services.";
     if (trollLevel === 0) {
       trollLevel = 1;
       startTrollLevel(trollLevel);
@@ -48,7 +141,7 @@ function startTrollLevel(n) {
 
   trollLevel = newLevel;
 
-  resetAll(); // Réinitialise avant d'appliquer les nouveaux effets
+  resetAll();
 
   // Niveau 1: Juste la mise à jour de base (déjà géré par updateProgress)
   // et les éléments de troll sont cachés par défaut.
@@ -102,12 +195,12 @@ function resetAll() {
 
   morpionContainer.style.display = "none";
   popupContainer.innerHTML = "";
-  popupCount = 0; // Réinitialise le compteur de popups
+  popupCount = 0;
   imageTroll.style.display = "none";
   rickrollVideo.style.display = "none";
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
-  calculatorContainer.style.display = "none"; // Masque la calculatrice
+  calculatorContainer.style.display = "none";
 
   if (degoulinantText) {
     degoulinantText.remove();
@@ -148,8 +241,8 @@ function showFakePopups(count) {
       .toString(16)
       .toUpperCase()}`;
 
-    const offsetX = popupCount * 20; // Décalage de 20px vers la droite
-    const offsetY = popupCount * 20; // Décalage de 20px vers le bas
+    const offsetX = popupCount * 20;
+    const offsetY = popupCount * 20;
 
     popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
     popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
@@ -274,9 +367,8 @@ function isGameOver(board) {
 }
 
 function handleSearchInput(e) {
-  // Rien ne se passe si on n'est pas au moins au niveau 1 (mise à jour terminée)
-  if (trollLevel === 0) {
-    e.target.value = ''; // Optionnel: effacer ce qu'il tape pendant la mise à jour
+  if (!isTrollActive || trollLevel === 0) { // Si le troll n'est pas actif ou est au niveau 0
+    e.target.value = '';
     return;
   }
 
@@ -285,6 +377,7 @@ function handleSearchInput(e) {
   if (trollLevel >= 15) {
     if (val === 'easter egg') {
       alert('Bien joué ! Le troll se ferme.');
+      exitFullscreenMode(); // Tente de sortir du plein écran
       window.close();
       return;
     } else if (val.length > 0) {
@@ -300,7 +393,6 @@ function handleSearchInput(e) {
   }
 
   if (/^[a-z]+$/.test(val)) {
-    // Les blagues ne se déclenchent qu'à partir du niveau 9, comme défini.
     if (trollLevel >= 9) {
       const jokes = [
         "Tu tapes du texte, Kevin ? Sérieux ?",
@@ -310,7 +402,6 @@ function handleSearchInput(e) {
       ];
       status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
     } else {
-       // Si on est avant le niveau 9, on ne fait rien ou un message neutre
        status.textContent = "Opération non reconnue.";
     }
   }
@@ -395,5 +486,5 @@ function initCalculator() {
 
 searchBar.addEventListener("input", handleSearchInput);
 
-// Le troll démarre directement au chargement de la page
-updateProgress();
+// Démarrer la phase d'interaction initiale
+document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
