@@ -5,6 +5,7 @@ let calculatorInitialized = false;
 let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
+let matrixRainInterval = null; // Pour contrôler l'effet 1 et 0
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -19,9 +20,12 @@ const popupContainer = document.getElementById("popup-container");
 const errorSound = document.getElementById("error-sound");
 const imageTroll = document.getElementById("image-troll");
 const rickrollVideo = document.getElementById("rickroll-video");
+const subwaySurferVideo = document.getElementById("subway-surfer-video");
+const matrixRainContainer = document.getElementById("matrix-rain-container");
 const calculatorContainer = document.getElementById("calculator-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
+
 
 // --- LOGIQUE POUR LE PLEIN ÉCRAN ET LES TOUCHES DE SORTIE ---
 let isTrollActive = false; // Flag pour savoir si le troll est démarré
@@ -53,8 +57,7 @@ function exitFullscreenMode() {
 function handleFullscreenChange() {
     console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
     if (!document.fullscreenElement && isTrollActive) {
-        console.log("Hors plein écran et troll actif, tentative de retour en plein écran.");
-        requestFullscreenMode();
+        console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic.");
     }
 }
 
@@ -63,8 +66,7 @@ function handleGlobalKeyDown(event) {
         console.log("Touche Escape pressée, troll actif.");
         event.preventDefault();
         if (!document.fullscreenElement) {
-             console.log("Hors plein écran, tentative de retour en plein écran.");
-             requestFullscreenMode();
+             console.log("Hors plein écran, tentative de retour en plein écran au prochain clic.");
         }
     }
 }
@@ -84,6 +86,10 @@ function initializeTrollStartInteraction() {
   searchBarWrapper.style.display = 'none';
   searchBar.disabled = true;
 
+  // Masquer les éléments fixes au démarrage pour ne pas les voir avant le plein écran
+  document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
+
+
   status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
   status.style.cursor = 'pointer';
 
@@ -92,7 +98,6 @@ function initializeTrollStartInteraction() {
 }
 
 function handleInitialClick() {
-    console.log("Clic initial détecté, démarrage du troll.");
     status.style.cursor = 'default';
     mainTitle.style.display = 'block';
     progressBarElement.style.display = 'block';
@@ -144,7 +149,9 @@ function updateProgress() {
 function activateTrollEffectForLevel(level) {
     console.log(`Activation de l'effet pour le niveau ${level}.`);
     switch (level) {
-        case 1: break; // Niveau de base, géré par activateTrollEffects
+        case 1:
+            // Niveaux de base, principalement l'activation de la barre de recherche
+            break;
         case 2:
             status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
             break;
@@ -154,7 +161,8 @@ function activateTrollEffectForLevel(level) {
             break;
         case 4:
             showDegoulinantText();
-            console.log("Niveau 4: Texte dégoulinant activé.");
+            startMatrixRain(); // NOUVEAU: Matrix Rain
+            console.log("Niveau 4: Texte dégoulinant et Matrix Rain activés.");
             break;
         case 5:
             playErrorSound(1);
@@ -165,6 +173,7 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 6: Sons d'erreur répétés activés.");
             break;
         case 7:
+            popupContainer.style.display = 'block'; // Affiche le conteneur des popups
             showFakePopups(15);
             console.log("Niveau 7: Popups activées.");
             break;
@@ -173,15 +182,19 @@ function activateTrollEffectForLevel(level) {
             initMorpion();
             console.log("Niveau 8: Morpion activé.");
             break;
-        case 9: break; // Logique dans handleSearchInput
+        case 9:
+            // Les blagues de la barre de recherche sont gérées par handleSearchInput
+            break;
         case 10:
             rickrollVideo.style.display = "block";
             rickrollVideo.play();
             console.log("Niveau 10: Rickroll activé.");
             break;
         case 11:
-            imageTroll.style.display = "block";
-            console.log("Niveau 11: Image troll activée.");
+            imageTroll.style.display = "block"; // Image Trollface (maintenant au niveau 11)
+            subwaySurferVideo.style.display = 'block'; // NOUVEAU: Subway Surfer (maintenant au niveau 11)
+            subwaySurferVideo.play();
+            console.log("Niveau 11: Image Troll et Subway Surfer activés.");
             break;
         case 12:
             if (!activatedAlerts.has(12)) {
@@ -260,10 +273,15 @@ function resetAll() {
   if (boardElement) boardElement.innerHTML = '';
   morpionCells = [];
 
+  popupContainer.style.display = 'none';
   popupContainer.innerHTML = "";
   popupCount = 0;
 
   imageTroll.style.display = "none";
+  subwaySurferVideo.style.display = 'none';
+  subwaySurferVideo.pause();
+  subwaySurferVideo.currentTime = 0;
+
 
   rickrollVideo.style.display = "none";
   rickrollVideo.pause();
@@ -275,6 +293,8 @@ function resetAll() {
     degoulinantText.remove();
     degoulinantText = null;
   }
+  stopMatrixRain();
+  matrixRainContainer.innerHTML = '';
 
   disableCursorJitter();
 
@@ -294,8 +314,40 @@ function resetAll() {
   activatedAlerts.clear();
 }
 
+function startMatrixRain() {
+    if (matrixRainInterval) return;
+    matrixRainContainer.style.display = 'block';
+    matrixRainContainer.innerHTML = '';
+
+    matrixRainContainer.style.position = 'relative';
+
+    matrixRainInterval = setInterval(() => {
+        let fullContent = '';
+        const numLines = Math.floor(matrixRainContainer.offsetHeight / 15);
+        const numChars = Math.floor(matrixRainContainer.offsetWidth / 10);
+        for(let i = 0; i < numLines + 5; i++) { // Générer plus de lignes pour l'effet de défilement
+            let line = '';
+            for(let j = 0; j < numChars; j++) {
+                line += Math.round(Math.random());
+            }
+            fullContent += line + '\n';
+        }
+        matrixRainContainer.textContent = fullContent;
+    }, 100); // Met à jour le contenu toutes les 100ms
+}
+
+
+function stopMatrixRain() {
+    if (matrixRainInterval) {
+        clearInterval(matrixRainInterval);
+        matrixRainInterval = null;
+    }
+    matrixRainContainer.style.display = 'none';
+}
+
+
 function showDegoulinantText() {
-  if (!degoulinantText) { // S'assure de ne créer l'élément qu'une seule fois
+  if (!degoulinantText) {
     degoulinantText = document.createElement("div");
     degoulinantText.id = "degoulinant-text";
     degoulinantText.textContent = "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
@@ -338,14 +390,13 @@ function showFakePopups(count) {
 }
 
 function initMorpion() {
-  // Reset morpionCells avant de recréer le plateau
-  morpionCells = Array(9).fill(""); // Assurez-vous que c'est un tableau de 9 chaînes vides
+  morpionCells = Array(9).fill("");
 
   const boardElement = document.getElementById("board");
-  boardElement.innerHTML = ""; // Vide le contenu existant
+  boardElement.innerHTML = "";
 
-  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>"; // Réajoute le titre
-  morpionContainer.appendChild(boardElement); // Réajoute le plateau vidé
+  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
+  morpionContainer.appendChild(boardElement);
 
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
@@ -376,7 +427,6 @@ function initMorpion() {
     boardElement.appendChild(cell);
   }
 }
-
 
 function getBestMove(board) {
   if (isGameOver(board)) return null;
@@ -457,11 +507,12 @@ function processSearchBarSubmission(value) {
     }
     console.log(`Soumission barre de recherche: "${value}"`);
 
-    // --- NOUVEAU : Fonctionnalité "RESET ALL" ---
+    // --- Fonctionnalité "RESET ALL" ---
     if (value === 'reset all') {
         resetAll();
         searchBar.value = '';
         status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll.";
+        exitFullscreenMode();
         return;
     }
 
@@ -490,7 +541,7 @@ function processSearchBarSubmission(value) {
         } else {
             status.textContent = "Opération non reconnue.";
         }
-    } else if (value.length > 0) { // Si ce n'est pas une lettre/chiffre reconnu mais non vide
+    } else if (value.length > 0) {
         status.textContent = "Commande inconnue.";
     }
 }
@@ -593,7 +644,6 @@ function initCalculator() {
     calculatorInitialized = true;
   }
 }
-
 
 searchBar.addEventListener("input", handleSearchBarInputLive);
 searchBar.addEventListener("keydown", handleSearchBarKeyDown);
