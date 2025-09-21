@@ -27,7 +27,7 @@ const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 
-// NOUVEAU: Tableau de messages troll pour les popups
+// Tableau de messages troll pour les popups
 const trollMessages = [
     "Erreur critique 0x000000FF. Votre système est immunisé contre les erreurs (temporairement).",
     "Système 32 protégé. (Pour l'instant... 😏)",
@@ -137,7 +137,6 @@ function initializeTrollStartInteraction() {
   searchBar.disabled = true;
 
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
-  // NOUVEAU: Cacher aussi les boutons de fermeture au démarrage
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
 
@@ -157,7 +156,6 @@ function handleInitialClick() {
     searchBarWrapper.style.display = 'flex';
     submitSearchBtn.style.display = 'inline-block';
 
-    // NOUVEAU: Afficher les boutons de fermeture par défaut après le clic initial (pour PC)
     document.querySelectorAll('.close-button').forEach(button => button.style.display = 'block');
 
 
@@ -343,11 +341,11 @@ function resetAll() {
   document.body.classList.remove("cursor-pale");
 
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
-  // NOUVEAU: Cacher les boutons de fermeture lors d'un reset
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
 
-  const boardElement = document.getElementById("board");
+  // MODIFIÉ: Récupérer à nouveau l'élément 'board' après innerHTML = ""
+  let boardElement = document.getElementById("board");
   if (boardElement) boardElement.innerHTML = '';
   morpionCells = [];
 
@@ -475,19 +473,17 @@ function showFakePopups(count) {
     const popup = document.createElement("div");
     popup.classList.add("fake-popup");
 
-    // NOUVEAU: Choisir un message troll aléatoire
     const randomMessage = trollMessages[Math.floor(Math.random() * trollMessages.length)];
     popup.textContent = randomMessage;
 
-    // NOUVEAU: Ajouter un bouton de fermeture à chaque popup
     const closeBtn = document.createElement("span");
     closeBtn.classList.add("close-button");
     closeBtn.textContent = "×";
     closeBtn.onclick = () => {
-        popup.remove(); // Supprime la popup
+        popup.remove();
         console.log("Popup fermée manuellement.");
     };
-    popup.appendChild(closeBtn); // Ajouter le bouton à la popup
+    popup.appendChild(closeBtn);
 
     const offsetX = popupCount * 20;
     const offsetY = popupCount * 20;
@@ -495,10 +491,8 @@ function showFakePopups(count) {
     popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
     popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
 
-    // Pour relancer l'animation fadeOut à chaque création
-    // On doit la supprimer puis la rajouter pour forcer le navigateur à la re-déclencher
     popup.style.animation = 'none';
-    popup.offsetHeight; // Force un reflow/repaint
+    popup.offsetHeight;
     popup.style.animation = 'fadeOut 5s forwards';
 
     popupContainer.appendChild(popup);
@@ -515,9 +509,32 @@ function initMorpion() {
       console.error("Element #board non trouvé pour le morpion.");
       return;
   }
-  boardElement.innerHTML = "";
+  boardElement.innerHTML = ""; // Ceci supprime l'élément #board, il faut le recréer ou le re-sélectionner.
 
-  morpionContainer.querySelector('h3').textContent = "Jouez pendant que ça installe..."; // Assure que le titre est là
+  // Pour corriger, assure-toi que le 'boardElement' est toujours un enfant du 'morpionContainer'
+  // et que tu le re-sélectionnes ou le recrée si nécessaire.
+  // Une meilleure approche est de simplement vider l'innerHTML de 'boardElement'
+  // sans recréer le 'boardElement' lui-même s'il est déjà dans le DOM.
+
+  // Si #board est un DIV direct dans #morpion-container:
+  // morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3><div id='board'></div>";
+  // boardElement = document.getElementById("board"); // MODIFIÉ: Re-sélectionner boardElement après avoir vidé le parent
+
+  // Ou, si tu veux juste vider les cellules:
+  // (Le code actuel est correct si boardElement est déjà vide de ses cellules, mais son parent a été nettoyé)
+  // Assure-toi que morpionContainer a toujours un enfant avec l'ID 'board'
+  let currentBoardElement = morpionContainer.querySelector('#board');
+  if (!currentBoardElement) {
+      morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>"; // Recrée le titre si pas là
+      currentBoardElement = document.createElement("div");
+      currentBoardElement.id = "board";
+      morpionContainer.appendChild(currentBoardElement);
+  } else {
+      currentBoardElement.innerHTML = ''; // Vide juste le contenu de la grille existante
+  }
+
+
+  morpionContainer.querySelector('h3').textContent = "Jouez pendant que ça installe...";
 
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
@@ -532,7 +549,7 @@ function initMorpion() {
           setTimeout(() => {
             const move = getBestMove(morpionCells);
             if (move !== null) {
-              const computerCell = boardElement.children[move];
+              const computerCell = currentBoardElement.children[move]; // MODIFIÉ: Utiliser currentBoardElement
               if (computerCell) {
                 computerCell.textContent = "O";
                 computerCell.classList.add("used");
@@ -545,7 +562,7 @@ function initMorpion() {
         }
       }
     });
-    boardElement.appendChild(cell);
+    currentBoardElement.appendChild(cell); // MODIFIÉ: Utiliser currentBoardElement
   }
   console.log("Morpion initialisé.");
 }
@@ -793,13 +810,15 @@ function initCalculator() {
   }
 }
 
-// NOUVEAU: Ajout des listeners pour les boutons de fermeture des éléments fixes
+// Ajout des listeners pour les boutons de fermeture des éléments fixes
 document.querySelectorAll('.close-button').forEach(button => {
     button.addEventListener('click', (event) => {
-        const targetId = event.target.dataset.target;
-        if (targetId) {
-            document.getElementById(targetId).style.display = 'none';
-            console.log(`Fermeture de l'élément: ${targetId}`);
+        // Pour une popup individuelle, le parent est la popup elle-même
+        // Pour la calculatrice ou le morpion, on utilise le data-target
+        const targetElement = event.target.closest('.fake-popup') || document.getElementById(event.target.dataset.target);
+        if (targetElement) {
+            targetElement.style.display = 'none';
+            console.log(`Fermeture de l'élément: ${targetElement.id || 'popup'}`);
         }
     });
 });
