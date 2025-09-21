@@ -4,7 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  /* Un bleu clair mais suffisant pour le texte blanc */
+  /* Ce background #0078D4 sera le fond "par défaut" du body */
   background: #0078D4; /* Un bleu Windows classique */
   color: white; /* Texte blanc */
   font-family: "Segoe UI", Arial, sans-serif; /* Police plus proche de Windows */
@@ -25,15 +25,17 @@ html, body {
   justify-content: center;
   align-items: center;
   text-align: center; /* Centre le texte */
+  background: #0078D4; /* <--- AJOUTE CETTE LIGNE ICI !!! */
+  /* C'est crucial pour que l'arrière-plan reste bleu en mode plein écran */
 }
 
 h1 {
   margin-top: 0;
   font-weight: normal;
-  display: none; /* Masqué au démarrage, affiché par JS */
+  display: none;
 }
 #main-title {
-    margin-bottom: 20px; /* Ajoute un peu d'espace sous le titre principal */
+    margin-bottom: 20px;
 }
 
 #progress-bar {
@@ -249,3 +251,4 @@ body.cursor-pale {
   border-radius: 6px;
   z-index: 4500;
 }
+
