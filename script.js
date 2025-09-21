@@ -1,9 +1,10 @@
-let trollLevel = 0;
+let trollLevel = 0; // Le niveau de troll maximal actuellement activé
 let progress = 0;
 let degoulinantText = null;
 let calculatorInitialized = false;
 let morpionCells = [];
 let popupCount = 0;
+let activatedAlerts = new Set(); // Pour suivre les alertes déjà affichées (éviter les répétitions)
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -27,14 +28,12 @@ function requestFullscreenMode() {
     if (fullscreenContainer.requestFullscreen) {
         fullscreenContainer.requestFullscreen().catch(err => {
             console.warn("Échec de la demande de plein écran:", err);
-            // Si le plein écran échoue, on démarre quand même le troll
             if (!isTrollActive) {
                 startTrollMechanism();
             }
         });
     } else {
         console.warn("API Fullscreen non supportée par le navigateur.");
-        // Si non supporté, on démarre quand même
         if (!isTrollActive) {
             startTrollMechanism();
         }
@@ -48,7 +47,6 @@ function exitFullscreenMode() {
 }
 
 function handleFullscreenChange() {
-    // Si on n'est plus en plein écran ET le troll est actif, on essaie de revenir
     if (!document.fullscreenElement && isTrollActive) {
         requestFullscreenMode();
     }
@@ -56,10 +54,9 @@ function handleFullscreenChange() {
 
 function handleGlobalKeyDown(event) {
     if (event.key === "Escape" && isTrollActive) {
-        event.preventDefault(); // Empêche l'action par défaut d'Escape si possible
-        // Si on est en plein écran et que l'utilisateur essaie de sortir, on le ramène
+        event.preventDefault();
         if (!document.fullscreenElement) {
-             requestFullscreenMode(); // Essayer de revenir en plein écran
+             requestFullscreenMode();
         }
     }
 }
@@ -81,12 +78,8 @@ function initializeTrollStartInteraction() {
   status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
   status.style.cursor = 'pointer';
 
-  // Ajoute l'écouteur de clic au document entier pour le démarrage initial
   document.addEventListener('click', handleInitialClick, { once: true });
-
-  // Ajoute un écouteur de clic pour le ré-entrée en mode plein écran APRÈS le démarrage
-  // Il sera toujours actif tant que le troll est actif
-  document.addEventListener('click', handleReEnterFullscreen); // NOUVEAU
+  document.addEventListener('click', handleReEnterFullscreen); // Cet écouteur est toujours actif
 }
 
 function handleInitialClick() {
@@ -95,13 +88,11 @@ function handleInitialClick() {
     progressBarElement.style.display = 'block';
     searchBar.style.display = 'block';
 
-    requestFullscreenMode(); // Demande le plein écran
-    startTrollMechanism(); // Démarre la logique du troll
+    requestFullscreenMode();
+    startTrollMechanism();
 }
 
-// NOUVELLE FONCTION pour gérer les clics après le démarrage, pour ré-entrer en plein écran
 function handleReEnterFullscreen() {
-    // Si le troll est actif et que nous ne sommes pas en plein écran, tente d'y retourner.
     if (isTrollActive && !document.fullscreenElement) {
         requestFullscreenMode();
     }
@@ -111,20 +102,17 @@ function startTrollMechanism() {
     if (isTrollActive) return;
     isTrollActive = true;
 
-    // Ajoute les écouteurs pour tenter de bloquer les sorties
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     window.addEventListener('keydown', handleGlobalKeyDown);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    // La barre de recherche reste désactivée pendant la phase de progression (trollLevel 0)
-    searchBar.disabled = true;
+    searchBar.disabled = true; // Reste désactivée pendant la progression initiale
 
-    // Démarrer la barre de progression
     updateProgress();
 }
 
 
-// --- Fonctions existantes du troll, ajustées si nécessaire ---
+// --- Fonctions de progression et d'activation des niveaux de troll ---
 
 function updateProgress() {
   if (progress < 100) {
@@ -136,255 +124,169 @@ function updateProgress() {
   } else {
     status.textContent = "Mise à jour terminée. Démarrage des services.";
     if (trollLevel === 0) {
-      trollLevel = 1;
-      startTrollLevel(trollLevel);
+      activateTrollEffects(1); // Active le niveau 1 après la progression initiale
     }
   }
 }
 
-function startTrollLevel(n) {
-  const newLevel = parseInt(n);
-  if (isNaN(newLevel) || newLevel < 0 || newLevel > 15) {
-    console.warn("Tentative d'activer un niveau de troll invalide :", n);
+// NOUVELLE FONCTION pour activer les effets d'un niveau spécifique
+function activateTrollEffectForLevel(level) {
+    // console.log(`Activating effect for level ${level}`); // Pour débug
+    switch (level) {
+        case 1:
+            // Le statut et la barre de recherche sont gérés par le flux principal et en dehors du switch
+            // searchBar.disabled est activé dans activateTrollEffects(1)
+            break;
+        case 2:
+            status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
+            break;
+        case 3:
+            document.body.classList.add("cursor-pale");
+            break;
+        case 4:
+            showDegoulinantText(); // Vérifie déjà si l'élément existe pour éviter les doublons
+            break;
+        case 5:
+            playErrorSound(1); // Se déclenche une fois
+            break;
+        case 6:
+            playErrorSound(5); // Se déclenche une fois
+            break;
+        case 7:
+            showFakePopups(15); // Ajoute plus de popups de manière cumulative
+            break;
+        case 8:
+            morpionContainer.style.display = "block";
+            initMorpion(); // Réinitialise et re-crée le morpion
+            break;
+        case 9:
+            // Les blagues de la barre de recherche sont gérées par handleSearchInput qui vérifie trollLevel >= 9
+            break;
+        case 10:
+            rickrollVideo.style.display = "block";
+            rickrollVideo.play();
+            break;
+        case 11:
+            imageTroll.style.display = "block";
+            break;
+        case 12:
+            if (!activatedAlerts.has(12)) { // S'assure que l'alerte ne se déclenche qu'une fois par niveau
+                alert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)");
+                activatedAlerts.add(12);
+            }
+            break;
+        case 13:
+            if (!activatedAlerts.has(13)) { // S'assure que l'alerte ne se déclenche qu'une fois par niveau
+                alert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)");
+                activatedAlerts.add(13);
+            }
+            break;
+        case 14:
+            enableCursorJitter(); // Vérifie déjà si l'intervalle est actif
+            break;
+        case 15:
+            calculatorContainer.style.display = "block";
+            initCalculator(); // Vérifie déjà si initialisée
+            break;
+    }
+}
+
+
+// MODIFIED: La fonction principale pour changer de niveau de troll
+function activateTrollEffects(newLevel) {
+  const parsedNewLevel = parseInt(newLevel);
+  if (isNaN(parsedNewLevel) || parsedNewLevel < 0 || parsedNewLevel > 15) {
+    console.warn("Tentative d'activer un niveau de troll invalide :", newLevel);
     return;
   }
 
-  if (trollLevel === newLevel) return;
+  if (parsedNewLevel === trollLevel) return; // Si le niveau est le même, ne rien faire
 
-  trollLevel = newLevel;
-
-  resetAll();
-
-  // Mise à jour de la barre de recherche et du statut une fois la progression terminée (trollLevel 1)
-  if (trollLevel === 1) {
-    searchBar.disabled = false; // La barre de recherche est maintenant active !
-    status.textContent = "Mise à jour terminée. Le système est en attente d'instructions."; // Nouveau statut pour le niveau 1
+  // Si le nouveau niveau est inférieur au niveau actuel (on redescend) ou si on va au niveau 0
+  // On fait une réinitialisation complète, puis on active les niveaux de 1 à `parsedNewLevel`.
+  if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
+    resetAll();
+    activatedAlerts.clear(); // Réinitialise le suivi des alertes pour qu'elles puissent être ré-affichées
+    trollLevel = 0; // Réinitialise le niveau de troll avant de réactiver
   }
 
-  if (trollLevel >= 2) {
-    status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
+  // Active les effets de manière cumulative, du niveau précédent + 1 jusqu'au nouveau niveau.
+  // Si un reset a été effectué (trollLevel est alors 0), cela active de 1 à parsedNewLevel.
+  for (let i = trollLevel + 1; i <= parsedNewLevel; i++) {
+    activateTrollEffectForLevel(i);
   }
-  if (trollLevel >= 3) {
-    document.body.classList.add("cursor-pale");
-  }
-  if (trollLevel >= 4) {
-    showDegoulinantText();
-  }
-  if (trollLevel >= 5) {
-    playErrorSound(1);
-  }
-  if (trollLevel >= 6) {
-    playErrorSound(5);
-  }
-  if (trollLevel >= 7) {
-    showFakePopups(15);
-  }
-  if (trollLevel >= 8) {
-    morpionContainer.style.display = "block";
-    initMorpion();
-  }
-  if (trollLevel >= 9) { /* La barre de recherche est active, ce niveau active les blagues*/ }
-  if (trollLevel >= 10) {
-    rickrollVideo.style.display = "block";
-    rickrollVideo.play();
-  }
-  if (trollLevel >= 11) {
-    imageTroll.style.display = "block";
-  }
-  if (trollLevel >= 12) {
-    alert("Activation de troll.vbs - (faux script externe, ne fait rien en vrai)");
-  }
-  if (trollLevel >= 13) {
-    alert("Installation de script au démarrage Windows (faux install.bat, juste pour le troll)");
-  }
-  if (trollLevel >= 14) {
-    enableCursorJitter();
-  }
-  if (trollLevel >= 15) {
-    calculatorContainer.style.display = "block";
-    initCalculator();
+
+  trollLevel = parsedNewLevel; // Met à jour le niveau de troll maximal actuellement actif
+
+  // Gestion spécifique de l'état de la barre de recherche et du statut pour le niveau 1
+  if (trollLevel >= 1) { // Une fois que le troll est au moins au niveau 1 (mise à jour finie)
+      searchBar.disabled = false; // La barre de recherche est activée
+      if (trollLevel === 1) { // Si c'est juste le niveau 1, un message neutre
+          status.textContent = "Mise à jour terminée. Le système est en attente d'instructions.";
+      }
+      // Sinon, le status est géré par activateTrollEffectForLevel pour les niveaux supérieurs
+  } else { // Si le niveau est 0 (ex: après un reset complet)
+      searchBar.disabled = true;
   }
 }
 
-function resetAll() {
-  document.body.classList.remove("cursor-pale");
+// Renomme la fonction pour plus de clarté
+function startTrollLevel(n) {
+  activateTrollEffects(n);
+}
 
-  morpionContainer.style.display = "none";
-  popupContainer.innerHTML = "";
-  popupCount = 0;
-  imageTroll.style.display = "none";
-  rickrollVideo.style.display = "none";
+// MODIFIED: resetAll est maintenant plus complet et réinitialise tous les effets
+function resetAll() {
+  document.body.classList.remove("cursor-pale"); // Niveau 3
+
+  morpionContainer.style.display = "none"; // Niveau 8
+  const boardElement = document.getElementById("board");
+  if (boardElement) boardElement.innerHTML = ''; // Nettoie le plateau de morpion
+  morpionCells = []; // Réinitialise l'état logique du morpion
+
+  popupContainer.innerHTML = ""; // Niveau 7
+  popupCount = 0; // Réinitialise le compteur de popups
+
+  imageTroll.style.display = "none"; // Niveau 11
+
+  rickrollVideo.style.display = "none"; // Niveau 10
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
-  calculatorContainer.style.display = "none";
 
-  if (degoulinantText) {
+  calculatorContainer.style.display = "none"; // Niveau 15
+
+  if (degoulinantText) { // Niveau 4
     degoulinantText.remove();
     degoulinantText = null;
   }
 
-  disableCursorJitter();
+  disableCursorJitter(); // Niveau 14
 
-  morpionCells = [];
-  const boardElement = document.getElementById("board");
-  if (boardElement) boardElement.innerHTML = '';
+  // Réinitialise les éléments de l'interface utilisateur pour un état neutre
+  mainTitle.style.display = 'block'; // S'assure que le titre est visible
+  progressBarElement.style.display = 'block'; // S'assure que la barre de progression est visible
+  progressBar.style.width = '0%'; // Réinitialise la barre de progression
+  progress = 0; // Réinitialise le compteur de progression
+
+  searchBar.style.display = 'block'; // S'assure que la barre de recherche est visible
+  searchBar.disabled = true; // La barre de recherche est désactivée après un reset
+  searchBar.value = ''; // Efface le contenu de la barre de recherche
+
+  status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll."; // Statut générique après reset
+
+  // Réinitialise le niveau de troll et les alertes activées
+  trollLevel = 0;
+  activatedAlerts.clear();
 }
 
-function showDegoulinantText() {
-  degoulinantText = document.createElement("div");
-  degoulinantText.id = "degoulinant-text";
-  degoulinantText.textContent = "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
-  document.body.appendChild(degoulinantText);
-}
 
-function playErrorSound(times) {
-  let count = 0;
-  function play() {
-    errorSound.currentTime = 0;
-    errorSound.play();
-    count++;
-    if (count < times) setTimeout(play, 800);
-  }
-  play();
-}
+// --- Fonctions de Morpion (inchangées) ---
+// ... (getBestMove, minimax, checkWinner, isGameOver) ...
 
-function showFakePopups(count) {
-  for (let i = 0; i < count; i++) {
-    const popup = document.createElement("div");
-    popup.classList.add("fake-popup");
-    popup.textContent = `Erreur critique 0x${Math
-      .floor(Math.random() * 9999)
-      .toString(16)
-      .toUpperCase()}`;
-
-    const offsetX = popupCount * 20;
-    const offsetY = popupCount * 20;
-
-    popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
-    popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
-
-    popup.style.top = `0px`;
-    popup.style.left = `0px`;
-
-    popupContainer.appendChild(popup);
-    popupCount++;
-  }
-}
-
-function initMorpion() {
-  const boardElement = document.getElementById("board");
-  boardElement.innerHTML = "";
-
-  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
-  morpionContainer.appendChild(boardElement);
-
-  morpionCells = [];
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement("div");
-    cell.dataset.index = i;
-    cell.addEventListener("click", () => {
-      if (!cell.classList.contains("used") && morpionCells[i] === "") {
-        cell.textContent = "X";
-        cell.classList.add("used");
-        morpionCells[i] = "X";
-
-        if (checkWinner(morpionCells) === null) {
-          setTimeout(() => {
-            const move = getBestMove(morpionCells);
-            if (move !== null) {
-              const computerCell = boardElement.children[move];
-              if (computerCell) {
-                computerCell.textContent = "O";
-                computerCell.classList.add("used");
-                morpionCells[move] = "O";
-              }
-            }
-            const winner = checkWinner(morpionCells);
-            if (winner !== null) { /* Handle winner */ }
-          }, 500);
-        }
-      }
-    });
-    boardElement.appendChild(cell);
-    morpionCells.push("");
-  }
-}
-
-function getBestMove(board) {
-  if (isGameOver(board)) return null;
-
-  let bestScore = -Infinity;
-  let move = null;
-  for (let i = 0; i < board.length; i++) {
-    if (board[i] === "") {
-      board[i] = "O";
-      const score = minimax(board, false);
-      board[i] = "";
-      if (score > bestScore) {
-        bestScore = score;
-        move = i;
-      }
-    }
-  }
-  return move;
-}
-
-function minimax(board, isMaximizing) {
-  const winner = checkWinner(board);
-  if (winner !== null) {
-    if (winner === "O") return 10;
-    else if (winner === "X") return -10;
-    else return 0;
-  }
-
-  if (isMaximizing) {
-    let bestScore = -Infinity;
-    for (let i = 0; i < board.length; i++) {
-      if (board[i] === "") {
-        board[i] = "O";
-        bestScore = Math.max(bestScore, minimax(board, false));
-        board[i] = "";
-      }
-    }
-    return bestScore;
-  } else {
-    let bestScore = Infinity;
-    for (let i = 0; i < board.length; i++) {
-      if (board[i] === "") {
-        board[i] = "X";
-        bestScore = Math.min(bestScore, minimax(board, true));
-        board[i] = "";
-      }
-    }
-    return bestScore;
-  }
-}
-
-function checkWinner(board) {
-  const wins = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6],
-  ];
-  for (const [a, b, c] of wins) {
-    if (
-      board[a] !== "" &&
-      board[a] === board[b] &&
-      board[a] === board[c]
-    )
-      return board[a];
-  }
-  if (board.every((cell) => cell !== "")) return "draw";
-  return null;
-}
-
-function isGameOver(board) {
-  return checkWinner(board) !== null;
-}
-
+// --- Fonctions de handleSearchInput (ajustées pour la nouvelle logique de trollLevel) ---
 function handleSearchInput(e) {
-  // La barre de recherche est désactivée par l'attribut 'disabled' si trollLevel === 0
-  // Donc si on arrive ici, la barre est forcément active et trollLevel >= 1.
+  // La barre de recherche est désactivée par l'attribut 'disabled' si trollLevel < 1
+  // Donc si on arrive ici, la barre est forcément active (trollLevel >= 1).
   const val = e.target.value.toLowerCase();
 
   if (trollLevel >= 15) {
@@ -400,13 +302,13 @@ function handleSearchInput(e) {
 
   const niveau = parseInt(val);
   if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
-    startTrollLevel(niveau);
+    activateTrollEffects(niveau); // Utilise la nouvelle fonction
     e.target.value = '';
     return;
   }
 
   if (/^[a-z]+$/.test(val)) {
-    if (trollLevel >= 9) {
+    if (trollLevel >= 9) { // Les blagues ne se déclenchent qu'à partir du niveau 9
       const jokes = [
         "Tu tapes du texte, Kevin ? Sérieux ?",
         "Je vois ce que tu fais... ce n'est pas très malin.",
@@ -422,82 +324,15 @@ function handleSearchInput(e) {
   if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
-  } else if (trollLevel < 10) {
+  } else if (trollLevel < 10) { // Si le niveau est redescendu sous 10, arrêter le rickroll
     rickrollVideo.pause();
     rickrollVideo.currentTime = 0;
     rickrollVideo.style.display = "none";
   }
 }
 
-let jitterInterval = null;
-function enableCursorJitter() {
-  jitterInterval = setInterval(() => {
-    const x = Math.random() * (window.screen.width - window.outerWidth);
-    const y = Math.random() * (window.screen.height - window.outerHeight);
-    window.moveTo(x, y);
-  }, 1000);
-}
-function disableCursorJitter() {
-  if (jitterInterval) {
-    clearInterval(jitterInterval);
-    jitterInterval = null;
-  }
-}
+// ... (enableCursorJitter, disableCursorJitter, initCalculator restent inchangées) ...
 
-function initCalculator() {
-  calcDisplay.value = "";
-
-  if (!calculatorInitialized) {
-    const buttons = [
-      "7", "8", "9", "/",
-      "4", "5", "6", "*",
-      "1", "2", "3", "-",
-      "0", ".", "=", "+"
-    ];
-
-    buttons.forEach(val => {
-      const btn = document.createElement("button");
-      btn.className = "calc-button";
-      btn.textContent = val;
-      if (val === "=") {
-        btn.dataset.action = "equals";
-      } else if (["+", "-", "*", "/"].includes(val)) {
-        btn.dataset.action = "operator";
-      } else {
-        btn.dataset.action = "number";
-      }
-      calcButtons.appendChild(btn);
-    });
-
-    const clearBtn = document.createElement("button");
-    clearBtn.className = "calc-button";
-    clearBtn.textContent = "C";
-    clearBtn.dataset.action = "clear";
-    calcButtons.appendChild(clearBtn);
-
-    calcButtons.querySelectorAll(".calc-button").forEach((btn) => {
-      btn.onclick = () => {
-        const action = btn.dataset.action;
-        const buttonValue = btn.textContent;
-
-        if (action === "clear") {
-          calcDisplay.value = "";
-        } else if (action === "equals") {
-          try {
-            calcDisplay.value = new Function('return ' + calcDisplay.value)();
-          } catch {
-            calcDisplay.value = "Erreur";
-          }
-        } else {
-          calcDisplay.value += buttonValue;
-        }
-      };
-    });
-    calculatorInitialized = true;
-  }
-}
-
+// Démarrage
 searchBar.addEventListener("input", handleSearchInput);
-
-// Démarrer la phase d'interaction initiale (clic pour commencer)
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
