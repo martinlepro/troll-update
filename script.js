@@ -27,22 +27,21 @@ function initializeTrollStart() {
 // --- Nouveau gestionnaire d'événement pour la touche Entrée ---
 function handleInitialEnter(event) {
   if (event.key === 'Enter') {
+    event.preventDefault(); // <-- AJOUTE CETTE LIGNE
     document.removeEventListener('keydown', handleInitialEnter); // Retire cet écouteur
     searchBar.disabled = false; // Active la barre de recherche
-    searchBar.classList.add('fixed-search-bar'); // Ajoute une classe pour la position fixe
 
-    // Modifie le CSS de la barre de recherche directement ou via une classe
-    // Pour que cela fonctionne bien avec le style actuel :
     searchBar.style.position = 'fixed';
-    searchBar.style.top = '40px'; // Garde la même hauteur que le margin-top initial
+    searchBar.style.top = '40px';
     searchBar.style.left = '50%';
     searchBar.style.transform = 'translateX(-50%)';
-    searchBar.style.margin = '0'; // Annule le margin pour éviter les conflits
+    searchBar.style.margin = '0';
 
     status.textContent = "Préparation de la mise à jour...";
     updateProgress(); // Démarre le troll !
   }
 }
+
 
 function updateProgress() {
   if (progress < 100) {
@@ -415,3 +414,4 @@ searchBar.addEventListener("input", handleSearchInput);
 
 // Démarrer l'état initial en attendant la touche Entrée
 initializeTrollStart();
+
