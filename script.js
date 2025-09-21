@@ -7,6 +7,7 @@ let popupCount = 0;
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
+const progressBarElement = document.getElementById("progress-bar"); // Renommé pour éviter conflit avec 'progress'
 const progressBar = document.getElementById("progress");
 const status = document.getElementById("status");
 const searchBar = document.getElementById("search-bar");
@@ -46,7 +47,6 @@ function exitFullscreenMode() {
     }
 }
 
-// Fonction appelée quand l'état du plein écran change
 function handleFullscreenChange() {
     if (!document.fullscreenElement && isTrollActive) {
         // Si on n'est plus en plein écran ET le troll est actif, on essaie de revenir
@@ -54,9 +54,7 @@ function handleFullscreenChange() {
     }
 }
 
-// Fonction pour bloquer Échap (tentative)
 function handleGlobalKeyDown(event) {
-    // Tente de bloquer Esc en dehors du mode plein écran ou de le détecter
     if (event.key === "Escape" && isTrollActive) {
         event.preventDefault(); // Empêche l'action par défaut d'Escape si possible
         // Si on est en plein écran et que l'utilisateur essaie de sortir, on le ramène
@@ -66,11 +64,8 @@ function handleGlobalKeyDown(event) {
     }
 }
 
-// Fonction pour tenter de bloquer la fermeture de la page
 function handleBeforeUnload(event) {
     if (isTrollActive) {
-        // Le message personnalisé est souvent ignoré par les navigateurs modernes
-        // Ils affichent un message générique.
         event.returnValue = "Vous êtes sûr de vouloir quitter ? La mise à jour est en cours et cela pourrait endommager votre système.";
         return event.returnValue;
     }
@@ -78,26 +73,29 @@ function handleBeforeUnload(event) {
 
 // --- INITIALISATION DU TROLL AVEC INTERACTION ---
 function initializeTrollStartInteraction() {
-  status.textContent = "Mise à jour système en attente. Cliquez pour démarrer.";
-  // On masque la barre de recherche au début pour se concentrer sur le clic
-  searchBar.style.display = 'none';
+  mainTitle.style.display = 'none'; // Assurez-vous que le titre est masqué
+  progressBarElement.style.display = 'none'; // Assurez-vous que la barre de progression est masquée
+  searchBar.style.display = 'none'; // Masquer la barre de recherche au début
+  searchBar.disabled = true; // S'assurer qu'elle est désactivée
 
-  // L'écouteur sera sur le document entier pour le clic initial
+  status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
+  status.style.cursor = 'pointer'; // Indiquer que c'est cliquable
+
   document.addEventListener('click', handleInitialClick, { once: true });
 }
 
 function handleInitialClick() {
-    // Masque le message "Cliquez pour démarrer"
-    status.textContent = "";
-    // Affiche la barre de recherche
-    searchBar.style.display = 'block';
+    status.style.cursor = 'default'; // Restaurer le curseur par défaut
+    mainTitle.style.display = 'block'; // Afficher le titre
+    progressBarElement.style.display = 'block'; // Afficher la barre de progression
+    searchBar.style.display = 'block'; // Afficher la barre de recherche
 
     requestFullscreenMode(); // Demande le plein écran
     startTrollMechanism(); // Démarre la logique du troll
 }
 
 function startTrollMechanism() {
-    if (isTrollActive) return; // Évite de démarrer plusieurs fois
+    if (isTrollActive) return;
     isTrollActive = true;
 
     // Ajoute les écouteurs pour tenter de bloquer les sorties
@@ -105,7 +103,8 @@ function startTrollMechanism() {
     window.addEventListener('keydown', handleGlobalKeyDown);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    searchBar.disabled = false; // La barre de recherche peut être utilisée après le démarrage
+    // La barre de recherche reste désactivée pendant la phase de progression (trollLevel 0)
+    searchBar.disabled = true;
 
     // Démarrer la barre de progression
     updateProgress();
@@ -122,10 +121,10 @@ function updateProgress() {
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
     setTimeout(updateProgress, 300);
   } else {
-    status.textContent = "Mise à jour terminée. Démarrage des services.";
+    status.textContent = "Mise à jour terminée. Démarrage des services."; // Message plus neutre et réaliste pour Niveau 1
     if (trollLevel === 0) {
       trollLevel = 1;
-      startTrollLevel(trollLevel);
+      startTrollLevel(trollLevel); // Passe au niveau 1 (mise à jour de base)
     }
   }
 }
@@ -143,8 +142,13 @@ function startTrollLevel(n) {
 
   resetAll();
 
-  // Niveau 1: Juste la mise à jour de base (déjà géré par updateProgress)
-  // et les éléments de troll sont cachés par défaut.
+  // Mise à jour de la barre de recherche et du statut une fois la progression terminée (trollLevel 1)
+  if (trollLevel === 1) {
+    searchBar.disabled = false; // La barre de recherche est maintenant active !
+    status.textContent = "Mise à jour terminée. Le système est en attente d'instructions."; // Nouveau statut pour le niveau 1
+  }
+
+  // Les niveaux de troll spécifiques commencent après
   if (trollLevel >= 2) {
     status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
   }
@@ -167,7 +171,7 @@ function startTrollLevel(n) {
     morpionContainer.style.display = "block";
     initMorpion();
   }
-  if (trollLevel >= 9) { /* La barre de recherche est active au niveau 1, ce niveau active les blagues*/ }
+  if (trollLevel >= 9) { /* La barre de recherche est active, ce niveau active les blagues*/ }
   if (trollLevel >= 10) {
     rickrollVideo.style.display = "block";
     rickrollVideo.play();
@@ -367,17 +371,14 @@ function isGameOver(board) {
 }
 
 function handleSearchInput(e) {
-  if (!isTrollActive || trollLevel === 0) { // Si le troll n'est pas actif ou est au niveau 0
-    e.target.value = '';
-    return;
-  }
-
+  // La barre de recherche est désactivée par l'attribut 'disabled' si trollLevel === 0
+  // Donc si on arrive ici, la barre est forcément active et trollLevel >= 1.
   const val = e.target.value.toLowerCase();
 
   if (trollLevel >= 15) {
     if (val === 'easter egg') {
       alert('Bien joué ! Le troll se ferme.');
-      exitFullscreenMode(); // Tente de sortir du plein écran
+      exitFullscreenMode();
       window.close();
       return;
     } else if (val.length > 0) {
@@ -486,5 +487,5 @@ function initCalculator() {
 
 searchBar.addEventListener("input", handleSearchInput);
 
-// Démarrer la phase d'interaction initiale
+// Démarrer la phase d'interaction initiale (clic pour commencer)
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
