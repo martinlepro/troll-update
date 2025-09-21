@@ -6,6 +6,7 @@ let morpionCells = [];
 let popupCount = 0;
 let activatedAlerts = new Set();
 let matrixRainInterval = null;
+let popupInterval = null; // NOUVEAU: Pour gérer l'intervalle de réapparition des popups
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
 const mainTitle = document.getElementById("main-title");
@@ -234,8 +235,12 @@ function activateTrollEffectForLevel(level) {
             break;
         case 7:
             popupContainer.style.display = 'block';
-            showFakePopups(15);
-            console.log("Niveau 7: Popups activées.");
+            showFakePopups(5); // NOUVEAU: Afficher un premier lot de 5 popups
+            if (!popupInterval) { // NOUVEAU: Ne créer l'intervalle qu'une seule fois
+                // NOUVEAU: Générer 1 à 3 popups aléatoires toutes les 5 secondes
+                popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
+            }
+            console.log("Niveau 7: Popups activées avec réapparition.");
             break;
         case 8:
             morpionContainer.style.display = 'block';
@@ -344,13 +349,19 @@ function resetAll() {
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
 
-  // MODIFIÉ: Récupérer à nouveau l'élément 'board' après innerHTML = ""
   let boardElement = document.getElementById("board");
   if (boardElement) boardElement.innerHTML = '';
   morpionCells = [];
 
   popupContainer.innerHTML = "";
   popupCount = 0;
+  // NOUVEAU: Arrêter l'intervalle des popups lors du reset
+  if (popupInterval) {
+      clearInterval(popupInterval);
+      popupInterval = null;
+      console.log("Intervalle des popups arrêté.");
+  }
+
 
   subwaySurferVideo.pause();
   subwaySurferVideo.currentTime = 0;
@@ -504,33 +515,14 @@ function showFakePopups(count) {
 function initMorpion() {
   morpionCells = Array(9).fill("");
 
-  const boardElement = document.getElementById("board");
-  if (!boardElement) {
-      console.error("Element #board non trouvé pour le morpion.");
-      return;
-  }
-  boardElement.innerHTML = ""; // Ceci supprime l'élément #board, il faut le recréer ou le re-sélectionner.
-
-  // Pour corriger, assure-toi que le 'boardElement' est toujours un enfant du 'morpionContainer'
-  // et que tu le re-sélectionnes ou le recrée si nécessaire.
-  // Une meilleure approche est de simplement vider l'innerHTML de 'boardElement'
-  // sans recréer le 'boardElement' lui-même s'il est déjà dans le DOM.
-
-  // Si #board est un DIV direct dans #morpion-container:
-  // morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3><div id='board'></div>";
-  // boardElement = document.getElementById("board"); // MODIFIÉ: Re-sélectionner boardElement après avoir vidé le parent
-
-  // Ou, si tu veux juste vider les cellules:
-  // (Le code actuel est correct si boardElement est déjà vide de ses cellules, mais son parent a été nettoyé)
-  // Assure-toi que morpionContainer a toujours un enfant avec l'ID 'board'
   let currentBoardElement = morpionContainer.querySelector('#board');
   if (!currentBoardElement) {
-      morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>"; // Recrée le titre si pas là
+      morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
       currentBoardElement = document.createElement("div");
       currentBoardElement.id = "board";
       morpionContainer.appendChild(currentBoardElement);
   } else {
-      currentBoardElement.innerHTML = ''; // Vide juste le contenu de la grille existante
+      currentBoardElement.innerHTML = '';
   }
 
 
@@ -549,7 +541,7 @@ function initMorpion() {
           setTimeout(() => {
             const move = getBestMove(morpionCells);
             if (move !== null) {
-              const computerCell = currentBoardElement.children[move]; // MODIFIÉ: Utiliser currentBoardElement
+              const computerCell = currentBoardElement.children[move];
               if (computerCell) {
                 computerCell.textContent = "O";
                 computerCell.classList.add("used");
@@ -562,7 +554,7 @@ function initMorpion() {
         }
       }
     });
-    currentBoardElement.appendChild(cell); // MODIFIÉ: Utiliser currentBoardElement
+    currentBoardElement.appendChild(cell);
   }
   console.log("Morpion initialisé.");
 }
@@ -810,11 +802,8 @@ function initCalculator() {
   }
 }
 
-// Ajout des listeners pour les boutons de fermeture des éléments fixes
 document.querySelectorAll('.close-button').forEach(button => {
     button.addEventListener('click', (event) => {
-        // Pour une popup individuelle, le parent est la popup elle-même
-        // Pour la calculatrice ou le morpion, on utilise le data-target
         const targetElement = event.target.closest('.fake-popup') || document.getElementById(event.target.dataset.target);
         if (targetElement) {
             targetElement.style.display = 'none';
