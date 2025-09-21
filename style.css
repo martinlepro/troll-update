@@ -116,7 +116,7 @@ h1 {
   color: #0078D4;
 }
 
-/* Styles pour les boutons de fermeture */
+/* Styles pour les boutons de fermeture (PC uniquement) */
 .close-button {
     position: absolute;
     top: 5px;
@@ -134,12 +134,12 @@ h1 {
 
 /* --- POSITIONS DES ÉLÉMENTS FIXES (VERSION PC) --- */
 
-/* Image troll (Haut Gauche) */
+/* CORRIGÉ: Image troll (Haut Gauche) */
 #image-troll {
   top: 1vh;
   left: 1vw;
-  right: unset;
-  transform: none;
+  right: auto; /* IMPORTANT: Annuler la propriété 'right' si on utilise 'left' */
+  transform: none; /* IMPORTANT: Supprimer les transformations si non nécessaires pour le positionnement direct */
   text-align: center;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -160,11 +160,11 @@ h1 {
   border-radius: 6px;
 }
 
-/* POPUPS (Sous l'image troll, en Haut Gauche) */
+/* CORRIGÉ: POPUPS (Sous l'image troll, en Haut Gauche) */
 #popup-container {
   top: 20vh; /* Ajusté pour être sous l'image troll (environ 15vh + un peu de marge) */
   left: 1vw;
-  right: unset;
+  right: auto; /* IMPORTANT: Annuler la propriété 'right' */
   width: 25vw;
   min-width: 200px;
   z-index: 3000;
@@ -196,11 +196,11 @@ h1 {
 }
 
 
-/* Calculatrice (Haut Droite) */
+/* CORRIGÉ: Calculatrice (Haut Droite) */
 #calculator-container {
   top: 1vh;
   right: 1vw;
-  left: unset; /* Assurer que left est bien unset */
+  left: auto; /* IMPORTANT: Annuler la propriété 'left' */
   width: 20vw;
   min-width: 200px;
   background: #005FA8;
@@ -256,12 +256,12 @@ h1 {
   color: #0078D4;
 }
 
-/* Morpion (Milieu Gauche) */
+/* CORRIGÉ: Morpion (Milieu Gauche) */
 #morpion-container {
   top: 50%;
   left: 1vw; /* CONFIRMÉ: Morpion à GAUCHE */
-  right: unset;
-  transform: translateY(-50%);
+  right: auto; /* IMPORTANT: Annuler la propriété 'right' */
+  transform: translateY(-50%); /* Pour centrer verticalement */
   width: 20vw;
   min-width: 200px;
   background: #005FA8;
@@ -304,12 +304,12 @@ h1 {
   opacity: 0.7;
 }
 
-/* Matrix Rain (Milieu Droit) */
+/* CORRIGÉ: Matrix Rain (Milieu Droit) */
 #matrix-rain-container {
     top: 50%;
     right: 1vw; /* CONFIRMÉ: Matrix Rain à DROITE */
-    left: unset;
-    transform: translateY(-50%);
+    left: auto; /* IMPORTANT: Annuler la propriété 'left' */
+    transform: translateY(-50%); /* Pour centrer verticalement */
     width: 25vw;
     min-width: 200px;
     height: 30vh;
@@ -328,11 +328,11 @@ h1 {
 }
 
 
-/* Subway Surfer Video (Bas Gauche) */
+/* CORRIGÉ: Subway Surfer Video (Bas Gauche) */
 #subway-surfer-video {
   bottom: 1vh;
   left: 1vw;
-  right: unset;
+  right: auto; /* IMPORTANT: Annuler la propriété 'right' */
   width: 25vw;
   height: auto;
   max-height: 25vh;
@@ -341,11 +341,11 @@ h1 {
   z-index: 4500;
 }
 
-/* Rickroll (Bas Droite) */
+/* CORRIGÉ: Rickroll (Bas Droite) */
 #rickroll-video {
   bottom: 1vh;
   right: 1vw;
-  left: unset;
+  left: auto; /* IMPORTANT: Annuler la propriété 'left' */
   width: 25vw;
   height: auto;
   max-height: 25vh;
@@ -460,14 +460,14 @@ body.cursor-pale {
 
     /* --- Positionnement et taille des "troll" fixed-elements pour mobile --- */
 
-    /* Image troll (Haut Gauche) pour mobile */
+    /* CORRIGÉ: Image troll (Haut Gauche) pour mobile */
     #image-troll {
         top: 1vh;
         left: 1vw;
-        right: unset;
+        right: auto;
         transform: none;
-        max-width: 25vw;
-        max-height: 10vh;
+        max-width: 25vw; /* Plus petit */
+        max-height: 10vh; /* Plus petit */
     }
     #image-troll p {
         font-size: 3.5vw;
@@ -478,14 +478,14 @@ body.cursor-pale {
     }
 
 
-    /* Calculatrice (Haut Droite) pour mobile */
+    /* CORRIGÉ: Calculatrice (Haut Droite) pour mobile */
     #calculator-container {
         top: 1vh;
         right: 1vw;
-        left: unset;
+        left: auto;
         transform: none;
         width: 45vw;
-        min-width: unset;
+        min-width: auto; /* CORRIGÉ: Enlever le min-width */
         font-size: 2.5vw;
     }
     #calculator-container h3 {
@@ -501,14 +501,14 @@ body.cursor-pale {
         padding: 1.5vh;
     }
 
-    /* POPUPS (Sous l'image troll, Haut Gauche) pour mobile */
+    /* CORRIGÉ: POPUPS (Sous l'image troll, Haut Gauche) pour mobile */
     #popup-container {
         top: 15vh; /* Ajusté pour être sous l'image troll */
         left: 1vw;
-        right: unset;
+        right: auto;
         transform: none;
         width: 45vw;
-        min-width: unset;
+        min-width: auto; /* CORRIGÉ: Enlever le min-width */
         font-size: 3vw;
     }
     .fake-popup {
@@ -517,17 +517,17 @@ body.cursor-pale {
         margin-bottom: 0.5vh;
         opacity: 1;
         position: relative;
-        top: unset; left: unset; transform: none;
+        top: auto; left: auto; transform: none; /* CORRIGÉ: Réinitialiser les positions absolues internes et les transform */
     }
 
-    /* Morpion (Milieu Gauche) pour mobile */
+    /* CORRIGÉ: Morpion (Milieu Gauche) pour mobile */
     #morpion-container {
         top: 50%;
         left: 1vw; /* CONFIRMÉ: Morpion à GAUCHE pour mobile */
-        right: unset;
+        right: auto;
         transform: translateY(-50%);
         width: 45vw;
-        min-width: unset;
+        min-width: auto; /* CORRIGÉ: Enlever le min-width */
         font-size: 2.5vw;
     }
     #morpion-container h3 {
@@ -543,34 +543,34 @@ body.cursor-pale {
         font-size: 6vw;
     }
 
-    /* Matrix Rain (Milieu Droit) pour mobile */
+    /* CORRIGÉ: Matrix Rain (Milieu Droit) pour mobile */
     #matrix-rain-container {
         top: 50%;
         right: 1vw; /* CONFIRMÉ: Matrix Rain à DROITE pour mobile */
-        left: unset;
+        left: auto;
         transform: translateY(-50%);
         width: 45vw;
         height: 25vh;
-        min-width: unset;
-        min-height: unset;
+        min-width: auto; /* CORRIGÉ: Enlever le min-width */
+        min-height: auto; /* CORRIGÉ: Enlever le min-height */
         font-size: 3vw;
         padding: 1vh;
     }
 
-    /* Subway Surfer Video (Bas Gauche) pour mobile */
+    /* CORRIGÉ: Subway Surfer Video (Bas Gauche) pour mobile */
     #subway-surfer-video {
         bottom: 1vh;
         left: 1vw;
-        right: unset;
+        right: auto;
         width: 45vw;
         max-height: 18vh;
     }
 
-    /* Rickroll (Bas Droite) pour mobile */
+    /* CORRIGÉ: Rickroll (Bas Droite) pour mobile */
     #rickroll-video {
         bottom: 1vh;
         right: 1vw;
-        left: unset;
+        left: auto;
         width: 45vw;
         max-height: 18vh;
     }
