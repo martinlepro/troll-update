@@ -1,3 +1,4 @@
+
 let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
@@ -41,7 +42,7 @@ const calculatorContainer = document.getElementById("calculator-container");
 const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
-const resetMorpionBtn = document.getElementById("reset-morpion-btn"); // NOUVEAU: Récupérer le bouton Recommencer Morpion
+const resetMorpionBtn = document.getElementById("reset-morpion-btn"); // Récupérer le bouton Recommencer Morpion
 
 
 // Éléments pour le spinner de redémarrage
@@ -271,6 +272,7 @@ function activateTrollEffects(newLevel) {
   trollLevel = parsedNewLevel;
 
   if (trollLevel >= 1) {
+      searchBarWrapper.style.display = 'flex'; // <--- AJOUTÉ: Rendre le conteneur visible
       searchBar.disabled = false;
       submitSearchBtn.style.display = 'inline-block';
       if (trollLevel === 1 && !restartSequenceActive) { // Ne pas écraser le message de redémarrage si actif
@@ -279,6 +281,8 @@ function activateTrollEffects(newLevel) {
   } else {
       searchBar.disabled = true;
       submitSearchBtn.style.display = 'none';
+      // Optionnel: Cacher searchBarWrapper quand le trollLevel est 0.
+      // searchBarWrapper.style.display = 'none';
   }
 
   if (trollLevel >= 14 && !document.fullscreenElement) {
@@ -718,6 +722,7 @@ function stopRestartSpinnerSpeedLoop() {
 }
 
 
+
 function initMorpion() {
   morpionCells = Array(9).fill("");
 
@@ -1027,7 +1032,7 @@ searchBar.addEventListener("input", handleSearchBarInputLive);
 searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
-// NOUVEAU: Écouteur d'événement pour le bouton de redémarrage du Morpion
+// Écouteur d'événement pour le bouton de redémarrage du Morpion
 if (resetMorpionBtn) {
     resetMorpionBtn.addEventListener("click", initMorpion);
 }
