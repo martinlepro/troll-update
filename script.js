@@ -9,7 +9,6 @@ const morpionContainer = document.getElementById("morpion-container");
 const popupContainer = document.getElementById("popup-container");
 const errorSound = document.getElementById("error-sound");
 const imageTroll = document.getElementById("image-troll");
-const rickrollContainer = document.getElementById("rickroll-container");
 const rickrollVideo = document.getElementById("rickroll-video");
 const calculatorContainer = document.getElementById("calculator-container");
 const calcDisplay = document.getElementById("calc-display");
@@ -44,7 +43,7 @@ function startTrollLevel(n) {
   }
   if (trollLevel >= 2) {
     status.textContent =
-      "Mise à jour terminée - votre PC est infecté 😈 (ceci est un troll)";
+      "Mise à jour terminée - votre PC est infecté 😈";
   }
   if (trollLevel >= 3) {
     document.body.classList.add("cursor-pale");
@@ -340,30 +339,66 @@ function disableCursorJitter() {
 // Calculatrice troll (niveau 15)
 function initCalculator() {
   calcDisplay.value = "";
+
+  // Créer les boutons de la calculatrice s'ils n'existent pas encore
+  if (calcButtons.children.length === 0) {
+    const buttons = [
+      "7", "8", "9", "/",
+      "4", "5", "6", "*",
+      "1", "2", "3", "-",
+      "0", ".", "=", "+"
+    ];
+
+    buttons.forEach(val => {
+      const btn = document.createElement("button");
+      btn.className = "calc-button";
+
+      if (val === "=") {
+        btn.id = "calc-equals";
+        btn.textContent = val;
+      } else if (val === "C") {
+        btn.id = "calc-clear";
+        btn.textContent = val;
+      } else {
+        btn.setAttribute("data-val", val);
+        btn.textContent = val;
+      }
+
+      calcButtons.appendChild(btn);
+    });
+
+    // Ajouter un bouton clear séparé
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "calc-button";
+    clearBtn.id = "calc-clear";
+    clearBtn.textContent = "C";
+    calcButtons.appendChild(clearBtn);
+  }
+
+  // Gestion des clics boutons
   calcButtons.querySelectorAll("button").forEach((btn) => {
     btn.onclick = () => {
       const val = btn.getAttribute("data-val");
       if (val) {
         calcDisplay.value += val;
+      } else if (btn.id === "calc-clear") {
+        calcDisplay.value = "";
+      } else if (btn.id === "calc-equals") {
+        try {
+          calcDisplay.value = eval(calcDisplay.value) ?? "";
+        } catch {
+          calcDisplay.value = "Erreur";
+        }
       }
     };
   });
-  document.getElementById("calc-clear").onclick = () => {
-    calcDisplay.value = "";
-  };
-  document.getElementById("calc-equals").onclick = () => {
-    try {
-      // eslint-disable-next-line no-eval
-      calcDisplay.value = eval(calcDisplay.value) ?? "";
-    } catch {
-      calcDisplay.value = "Erreur";
-    }
-  };
 }
+
 
 searchBar.addEventListener("input", handleSearchInput);
 
 // Start with progress bar
 updateProgress();
+
 
 
