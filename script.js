@@ -10,7 +10,7 @@ let popupInterval = null; // Pour gérer l'intervalle de réapparition des popup
 
 // NOUVEAU: Variables pour le système de redémarrage
 let errorCounter = 0;
-const RESTART_ERROR_THRESHOLD = 5; // Le nombre d'erreurs avant de déclencher le redémarrage
+const RESTART_ERROR_THRESHOLD = 3; // Le nombre d'erreurs avant de déclencher le redémarrage
 let restartSequenceActive = false; // Drapeau pour indiquer si une séquence de redémarrage est en cours
 let spinnerSpeedInterval = null; // Pour contrôler l'intervalle de vitesse du spinner
 let currentProgressTimeout = null; // Pour stocker le timeout de updateProgress afin de pouvoir l'arrêter
@@ -990,3 +990,4 @@ searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
+
