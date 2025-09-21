@@ -7,11 +7,13 @@ let popupCount = 0;
 let activatedAlerts = new Set();
 let matrixRainInterval = null;
 let popupInterval = null; // Pour gérer l'intervalle de réapparition des popups
+
+// NOUVEAU: Pour suivre les effets de troll qui ont déjà déclenché leur "rafale initiale"
 let initialTrollEffectsTriggered = new Set();
 
-// NOUVEAU: Variables pour le système de redémarrage
+// Variables pour le système de redémarrage
 let errorCounter = 0;
-const RESTART_ERROR_THRESHOLD = 3; // Le nombre d'erreurs avant de déclencher le redémarrage
+const RESTART_ERROR_THRESHOLD = 5; // Le nombre d'erreurs avant de déclencher le redémarrage
 let restartSequenceActive = false; // Drapeau pour indiquer si une séquence de redémarrage est en cours
 let spinnerSpeedInterval = null; // Pour contrôler l'intervalle de vitesse du spinner
 let currentProgressTimeout = null; // Pour stocker le timeout de updateProgress afin de pouvoir l'arrêter
@@ -37,7 +39,7 @@ const customAlertContainer = document.getElementById("custom-alert-container");
 const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 
-// NOUVEAU: Éléments pour le spinner de redémarrage
+// Éléments pour le spinner de redémarrage
 const windowsRestartSpinnerElement = document.getElementById("windows-restart-spinner");
 const spinningCircleElement = windowsRestartSpinnerElement ? windowsRestartSpinnerElement.querySelector(".spinning-circle") : null;
 
@@ -371,11 +373,11 @@ function startTrollLevel(n) {
 }
 
 
-// MODIFIÉ: S'assure de réinitialiser les variables du système de redémarrage.
+// MODIFIÉ: S'assure de réinitialiser les variables du système de redémarrage et le set initialTrollEffectsTriggered.
 function resetAll() {
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
-  initialTrollEffectsTriggered.clear()
+
   // Masque tous les éléments 'fixed-element'
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
@@ -429,9 +431,11 @@ function resetAll() {
   activatedAlerts.clear();
   customAlertContainer.style.display = 'none';
 
-  // NOUVEAU: Réinitialiser les variables du système de redémarrage
+  // NOUVEAU: Réinitialiser les variables du système de redémarrage et le set des initialTrollEffects
   errorCounter = 0;
   restartSequenceActive = false;
+  initialTrollEffectsTriggered.clear(); // VIDE LE SET ICI
+
   if (currentProgressTimeout) { // S'assurer qu'aucun ancien timeout n'est actif
       clearTimeout(currentProgressTimeout);
       currentProgressTimeout = null;
@@ -996,5 +1000,3 @@ searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
-
-
