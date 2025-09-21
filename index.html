@@ -3,28 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <title>TrollUpdate - Mise à jour Windows</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <h1>Mise à jour Windows 10.0.2025.09.20</h1>
-  <div id="progress-bar"><div id="progress"></div></div>
-  <p id="status">Initialisation...</p>
-  <input type="text" id="search-bar" placeholder="Rechercher..." autocomplete="off" />
+  <div id="app-root">
+    <h1>Mise à jour Windows {{UPDATE_VERSION}}</h1>
+    <div id="progress-bar"><div id="progress"></div></div>
+    <p id="status">Initialisation...</p>
+    
+    <!-- Nouveau : Sélecteur de difficulté -->
+    <div id="difficulty-selector" style="text-align: center; margin-top: 20px;">
+      <p>Sélectionnez le niveau de difficulté du troll :</p>
+      <select id="troll-difficulty" style="padding: 8px; font-size: 16px; border-radius: 5px; background: #1a1a1a; color: lime; border: 1px solid lime;">
+        <option value="">-- Choisir --</option>
+        <option value="facile">Facile (mise à jour rapide, peu de popups)</option>
+        <option value="moyen">Moyen (rythme normal)</option>
+        <option value="difficile">Difficile (mise à jour lente, beaucoup de popups)</option>
+      </select>
+      <button id="start-troll-button" style="padding: 10px 20px; font-size: 16px; margin-left: 10px; cursor: pointer; background: lime; color: black; border: none; border-radius: 5px;" disabled>Démarrer la Mise à Jour</button>
+    </div>
+    <!-- Fin du sélecteur de difficulté -->
 
-  <!-- Nouveau conteneur pour les fausses popups, mieux que les alert() natives -->
-  <div id="popup-container"></div>
+    <input type="text" id="search-bar" placeholder="Rechercher..." autocomplete="off" />
 
-  <!-- Conteneur pour le Morpion -->
-  <div id="morpion-container"></div>
+    <div id="popup-container"></div>
+    <div id="morpion-container"></div>
+    <img id="image-troll" src="/meme.png" alt="Troll" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999; max-width: 80%; height: auto;" />
+    <audio id="error-audio" src="/winstart.wav" preload="auto"></audio>
+  </div>
 
-  <!-- L'image de troll, cachée au début, affichée en cas de perte au morpion ou fin de troll -->
-  <!-- Assurez-vous d'avoir une image nommée 'troll_image.png' dans le même dossier ! -->
-  <img id="image-troll" src="troll_image.png" alt="Troll" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999; max-width: 80%; height: auto;" />
-
-  <!-- L'audio pour les sons d'erreur -->
-  <!-- Assurez-vous d'avoir un fichier 'winstart.wav' dans le même dossier ! -->
-  <audio id="error-audio" src="winstart.wav" preload="auto"></audio>
-
-  <script src="script.js"></script>
+  <script src="/script.js"></script>
 </body>
 </html>
