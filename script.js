@@ -17,7 +17,7 @@ const searchBar = document.getElementById("search-bar");
 const submitSearchBtn = document.getElementById("submit-search-btn");
 const morpionContainer = document.getElementById("morpion-container");
 const popupContainer = document.getElementById("popup-container");
-const errorSound = document.getElementById("error.mp3"); // S'assurer que le nom correspond à ton fichier si tu l'as renommé
+const errorSound = document.getElementById("error-sound"); // MODIFIÉ: Correction de l'ID si tu as renommé en error-sound
 const imageTroll = document.getElementById("image-troll");
 const rickrollVideo = document.getElementById("rickroll-video");
 const subwaySurferVideo = document.getElementById("subway-surfer-video");
@@ -33,24 +33,26 @@ let isTrollActive = false;
 let hasEnteredFullscreenOnce = false;
 
 function requestFullscreenMode() {
-    console.log("Tentative de demande de plein écran.");
+    console.log("Tentative de demande de plein écran."); // NOUVEAU: Log de débogage
     if (fullscreenContainer.requestFullscreen) {
         fullscreenContainer.requestFullscreen().then(() => {
             hasEnteredFullscreenOnce = true;
-            console.log("Plein écran activé.");
+            console.log("Plein écran activé."); // NOUVEAU: Log de débogage
             // NOUVEAU: Si le niveau 14 est actif, désactiver le jitter en entrant en plein écran
             if (trollLevel >= 14) {
                 disableCursorJitter();
-                console.log("Jitter (Niveau 14) désactivé en mode plein écran.");
+                console.log("Jitter (Niveau 14) désactivé en mode plein écran."); // NOUVEAU: Log de débogage
             }
         }).catch(err => {
-            console.warn("Échec de la demande de plein écran:", err);
-            if (!isTrollActive && err.name !== "AbortError") {
+            console.warn("Échec de la demande de plein écran:", err); // NOUVEAU: Log de débogage
+            // MODIFIÉ: Démarrer le troll même si le plein écran échoue
+            if (!isTrollActive) {
+                console.log("Démarrage du mécanisme de troll car plein écran échoué."); // NOUVEAU: Log de débogage
                 startTrollMechanism();
             }
         });
     } else {
-        console.warn("API Fullscreen non supportée par le navigateur.");
+        console.warn("API Fullscreen non supportée par le navigateur. Démarrage direct du troll."); // NOUVEAU: Log de débogage
         if (!isTrollActive) {
             startTrollMechanism();
         }
@@ -58,40 +60,40 @@ function requestFullscreenMode() {
 }
 
 function exitFullscreenMode() {
-    console.log("Tentative de sortie du plein écran.");
+    console.log("Tentative de sortie du plein écran."); // NOUVEAU: Log de débogage
     if (document.exitFullscreen) {
         document.exitFullscreen().catch(err => {
-            console.warn("Échec de la sortie du plein écran:", err);
+            console.warn("Échec de la sortie du plein écran:", err); // NOUVEAU: Log de débogage
         });
     }
 }
 
 function handleFullscreenChange() {
-    console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
+    console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement); // NOUVEAU: Log de débogage
     if (!document.fullscreenElement && isTrollActive) { // On est sorti du plein écran
-        console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic.");
+        console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic."); // NOUVEAU: Log de débogage
         // NOUVEAU: Si le niveau 14 est actif, réactiver le jitter après être sorti du plein écran
-        if (trollLevel >= 14 && !jitterInterval) { // trollLevel >= 14 et jitter est actuellement inactif
+        if (trollLevel >= 14 && !jitterInterval) {
             enableCursorJitter();
-            console.log("Jitter (Niveau 14) réactivé après sortie du plein écran.");
+            console.log("Jitter (Niveau 14) réactivé après sortie du plein écran."); // NOUVEAU: Log de débogage
         }
     }
 }
 
 function handleGlobalKeyDown(event) {
     if (event.key === "Escape" && isTrollActive) {
-        console.log("Touche Escape pressée, troll actif.");
+        console.log("Touche Escape pressée, troll actif."); // NOUVEAU: Log de débogage
         event.preventDefault();
 
         if (!document.fullscreenElement && hasEnteredFullscreenOnce) {
-             console.log("Hors plein écran, tentative de retour en plein écran au prochain clic.");
+             console.log("Hors plein écran, tentative de retour en plein écran au prochain clic."); // NOUVEAU: Log de débogage
         }
     }
 }
 
 function handleBeforeUnload(event) {
     if (isTrollActive) {
-        console.log("Tentative de quitter la page, troll actif.");
+        console.log("Tentative de quitter la page, troll actif."); // NOUVEAU: Log de débogage
         event.returnValue = "Vous êtes sûr de vouloir quitter ? La mise à jour est en cours et cela pourrait endommager votre système.";
         return event.returnValue;
     }
@@ -103,8 +105,10 @@ function showCustomAlert(message) {
         <button id="custom-alert-ok-btn">OK</button>
     `;
     customAlertContainer.style.display = 'block';
+    console.log(`Alert personnalisée affichée: "${message}"`); // NOUVEAU: Log de débogage
     customAlertContainer.querySelector('#custom-alert-ok-btn').onclick = () => {
         customAlertContainer.style.display = 'none';
+        console.log("Alert personnalisée fermée."); // NOUVEAU: Log de débogage
     };
 }
 
@@ -123,14 +127,17 @@ function initializeTrollStartInteraction() {
   status.style.cursor = 'pointer';
 
   document.addEventListener('click', handleInitialClick, { once: true });
-  document.addEventListener('click', handleReEnterFullscreen);
+  document.addEventListener('click', handleReEnterFullscreen); // MODIFIÉ: Permet de ré-entrer en plein écran à chaque clic
+  console.log("Application initialisée, en attente du clic initial."); // NOUVEAU: Log de débogage
 }
 
 function handleInitialClick() {
+    console.log("Clic initial détecté, démarre le processus."); // NOUVEAU: Log de débogage
     status.style.cursor = 'default';
     mainTitle.style.display = 'block';
     progressBarElement.style.display = 'block';
-    searchBarWrapper.style.display = 'flex';
+    searchBarWrapper.style.display = 'flex'; // MODIFIÉ: Afficher searchBarWrapper
+    submitSearchBtn.style.display = 'inline-block'; // MODIFIÉ: Afficher le bouton de la barre de recherche
 
     requestFullscreenMode();
     startTrollMechanism();
@@ -138,11 +145,13 @@ function handleInitialClick() {
 
 function handleReEnterFullscreen() {
     if (customAlertContainer.style.display === 'block') {
-        return;
+        return; // Ne pas tenter de ré-entrer en plein écran si une alerte personnalisée est ouverte
     }
 
+    // MODIFIÉ: Vérifier si le troll est actif ET si on n'est PAS en plein écran.
+    // Cela évite de tenter de ré-entrer en plein écran si l'utilisateur est déjà en plein écran.
     if (isTrollActive && !document.fullscreenElement) {
-        console.log("Clic pour ré-entrer en plein écran détecté.");
+        console.log("Clic détecté hors plein écran alors que le troll est actif. Tentative de ré-entrer."); // NOUVEAU: Log de débogage
         requestFullscreenMode();
     }
 }
@@ -150,13 +159,13 @@ function handleReEnterFullscreen() {
 function startTrollMechanism() {
     if (isTrollActive) return;
     isTrollActive = true;
-    console.log("Mécanisme de troll démarré.");
+    console.log("Mécanisme de troll démarré. isTrollActive:", isTrollActive); // NOUVEAU: Log de débogage
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     window.addEventListener('keydown', handleGlobalKeyDown);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    searchBar.disabled = true;
+    searchBar.disabled = false; // MODIFIÉ: La barre de recherche doit être activée pour interagir
 
     updateProgress();
 }
@@ -170,9 +179,11 @@ function updateProgress() {
     if (progress > 100) progress = 100;
     progressBar.style.width = progress + "%";
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
+    // console.log(`Progression: ${Math.floor(progress)}%`); // NOUVEAU: Log de débogage
     setTimeout(updateProgress, 300);
   } else {
     status.textContent = "Mise à jour terminée. Démarrage des services.";
+    console.log("Progression à 100%. Démarrage du niveau 1."); // NOUVEAU: Log de débogage
     if (trollLevel === 0) {
       activateTrollEffects(1);
     }
@@ -180,9 +191,10 @@ function updateProgress() {
 }
 
 function activateTrollEffectForLevel(level) {
-    console.log(`Activation de l'effet pour le niveau ${level}.`);
+    console.log(`Activation de l'effet pour le niveau ${level}.`); // NOUVEAU: Log de débogage
     switch (level) {
         case 1:
+            // Le niveau 1 est la base, juste le texte de statut
             break;
         case 2:
             status.textContent = "Mise à jour terminée - votre PC est infecté 😈";
@@ -215,6 +227,8 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 8: Morpion activé.");
             break;
         case 9:
+            // Ce niveau n'a pas d'effet visuel/sonore direct, il modifie le comportement de la search bar
+            console.log("Niveau 9: Comportement de la barre de recherche modifié.");
             break;
         case 10:
             rickrollVideo.style.display = 'block';
@@ -255,38 +269,40 @@ function activateTrollEffectForLevel(level) {
 
 function activateTrollEffects(newLevel) {
   const parsedNewLevel = parseInt(newLevel);
+  console.log(`Appel à activateTrollEffects avec newLevel: ${newLevel}, parsedNewLevel: ${parsedNewLevel}`); // NOUVEAU: Log de débogage
   if (isNaN(parsedNewLevel) || parsedNewLevel < 0 || parsedNewLevel > 15) {
-    console.warn("Tentative d'activer un niveau de troll invalide :", newLevel);
+    console.warn("Tentative d'activer un niveau de troll invalide :", newLevel); // NOUVEAU: Log de débogage
     return;
   }
 
   if (parsedNewLevel === trollLevel) {
-    console.log(`Niveau ${parsedNewLevel} déjà actif, pas de changement.`);
+    console.log(`Niveau ${parsedNewLevel} déjà actif, pas de changement.`); // NOUVEAU: Log de débogage
     return;
   }
-  console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`);
+  console.log(`Changement de niveau de troll : de ${trollLevel} à ${parsedNewLevel}.`); // NOUVEAU: Log de débogage
 
   // NOUVEAU: Appel de disableCursorJitter() avant tout changement de niveau
-  // pour éviter des conflits pendant la transition ou si le jitter doit être stoppé.
-  if (trollLevel >= 14) { // Si le jitter était actif
+  if (trollLevel >= 14) {
       disableCursorJitter();
-      console.log("Jitter (Niveau 14) temporairement désactivé pour changement de niveau.");
+      console.log("Jitter (Niveau 14) temporairement désactivé pour changement de niveau."); // NOUVEAU: Log de débogage
   }
 
 
   if (parsedNewLevel < trollLevel || parsedNewLevel === 0) {
-    console.log("Reset complet demandé.");
+    console.log("Reset complet demandé."); // NOUVEAU: Log de débogage
     resetAll();
     activatedAlerts.clear();
     trollLevel = 0;
   }
 
+  // Activer tous les niveaux entre l'ancien et le nouveau (ou juste le nouveau si reset)
   for (let i = trollLevel + 1; i <= parsedNewLevel; i++) {
     activateTrollEffectForLevel(i);
   }
 
   trollLevel = parsedNewLevel;
 
+  // Gérer l'état de la barre de recherche en fonction du niveau de troll
   if (trollLevel >= 1) {
       searchBar.disabled = false;
       submitSearchBtn.style.display = 'inline-block';
@@ -301,7 +317,7 @@ function activateTrollEffects(newLevel) {
   // NOUVEAU: Si le niveau 14 est activé ET qu'on n'est pas en plein écran, réactiver le jitter
   if (trollLevel >= 14 && !document.fullscreenElement) {
       enableCursorJitter();
-      console.log("Jitter (Niveau 14) réactivé après changement de niveau (hors plein écran).");
+      console.log("Jitter (Niveau 14) réactivé après changement de niveau (hors plein écran)."); // NOUVEAU: Log de débogage
   }
 }
 
@@ -310,7 +326,7 @@ function startTrollLevel(n) {
 }
 
 function resetAll() {
-  console.log("Exécution de resetAll().");
+  console.log("Exécution de resetAll()."); // NOUVEAU: Log de débogage
   document.body.classList.remove("cursor-pale");
 
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
@@ -343,7 +359,7 @@ function resetAll() {
   progressBar.style.width = '0%';
   progress = 0;
 
-  searchBarWrapper.style.display = 'flex';
+  searchBarWrapper.style.display = 'flex'; // MODIFIÉ: S'assurer que le wrapper est visible après reset
   searchBar.disabled = true;
   submitSearchBtn.style.display = 'none';
   searchBar.value = '';
@@ -356,16 +372,29 @@ function resetAll() {
 }
 
 function startMatrixRain() {
-    if (matrixRainInterval) return;
-    matrixRainContainer.style.display = 'block';
-    matrixRainContainer.innerHTML = '';
+    if (matrixRainInterval) return; // Empêche de démarrer plusieurs fois
+    matrixRainContainer.style.display = 'block'; // S'assurer que le conteneur est visible
+    matrixRainContainer.innerHTML = ''; // Nettoyer le contenu précédent
 
-    matrixRainContainer.style.position = 'relative';
+    matrixRainContainer.style.position = 'relative'; // Important pour que les calculs de taille soient corrects
+
+    // MODIFIÉ: Récupérer les styles calculés par le navigateur pour le conteneur
+    const computedStyle = getComputedStyle(matrixRainContainer);
+    const fontSize = parseFloat(computedStyle.fontSize); // Taille réelle de la police en pixels
+    const lineHeight = parseFloat(computedStyle.lineHeight) || fontSize * 1.2; // Hauteur de ligne réelle (si 'normal', utiliser 1.2x fontSize)
+
+    // MODIFIÉ: Pour une police monospace (que tu utilises), la largeur d'un caractère est environ 0.6x la hauteur.
+    // Cette valeur est une approximation, tu peux l'ajuster (ex: 0.55 à 0.65) si les caractères ne s'alignent pas parfaitement.
+    const charWidth = fontSize * 0.6;
+    const charHeight = lineHeight; // Utilisation de la hauteur de ligne pour la hauteur d'un "caractère" (inclut l'espacement vertical)
 
     let initialContent = '';
-    const numLines = Math.floor(matrixRainContainer.offsetHeight / 15);
-    const numChars = Math.floor(matrixRainContainer.offsetWidth / 10);
-    for(let i = 0; i < numLines + 5; i++) {
+    // MODIFIÉ: Calculer le nombre de lignes et de caractères pour remplir le conteneur
+    // Math.max(1, ...) pour éviter des divisions par zéro ou des valeurs négatives si le conteneur est très petit.
+    const numLines = Math.max(1, Math.floor(matrixRainContainer.offsetHeight / charHeight));
+    const numChars = Math.max(1, Math.floor(matrixRainContainer.offsetWidth / charWidth));
+
+    for(let i = 0; i < numLines + 5; i++) { // +5 lignes pour assurer un défilement continu
         let line = '';
         for(let j = 0; j < numChars; j++) {
             line += Math.round(Math.random());
@@ -377,20 +406,23 @@ function startMatrixRain() {
 
     matrixRainInterval = setInterval(() => {
         let currentContent = matrixRainContainer.textContent;
+        // Supprimer la première ligne
         const firstLineBreak = currentContent.indexOf('\n');
         if (firstLineBreak !== -1) {
             currentContent = currentContent.substring(firstLineBreak + 1);
         } else {
-            currentContent = '';
+            currentContent = ''; // Si pas de saut de ligne, vider tout
         }
-        
+
+        // Ajouter une nouvelle ligne
         let newLine = '';
-        for(let i = 0; i < numChars; i++) {
+        for(let i = 0; i < numChars; i++) { // Utiliser numChars calculé pour chaque nouvelle ligne
             newLine += Math.round(Math.random());
         }
         matrixRainContainer.textContent = currentContent + newLine + '\n';
 
-    }, 100);
+    }, 100); // Intervalle de rafraîchissement
+    console.log("Matrix Rain démarré avec numLines:", numLines, "numChars:", numChars, "fontSize:", fontSize); // NOUVEAU: Log de débogage
 }
 
 
@@ -399,7 +431,8 @@ function stopMatrixRain() {
         clearInterval(matrixRainInterval);
         matrixRainInterval = null;
     }
-    matrixRainContainer.style.display = 'none';
+    matrixRainContainer.style.display = 'none'; // Cacher le conteneur du Matrix Rain
+    console.log("Matrix Rain arrêté."); // NOUVEAU: Log de débogage
 }
 
 
@@ -409,18 +442,24 @@ function showDegoulinantText() {
     degoulinantText.id = "degoulinant-text";
     degoulinantText.textContent = "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
     document.body.appendChild(degoulinantText);
+    console.log("Texte dégoulinant affiché."); // NOUVEAU: Log de débogage
   }
 }
 
 function playErrorSound(times) {
   let count = 0;
   function play() {
-    errorSound.currentTime = 0;
-    errorSound.play();
-    count++;
-    if (count < times) setTimeout(play, 800);
+    if (errorSound) { // MODIFIÉ: S'assurer que l'élément audio existe
+        errorSound.currentTime = 0;
+        errorSound.play().catch(e => console.warn("Erreur de lecture audio:", e)); // NOUVEAU: Gérer les erreurs de lecture
+        count++;
+        if (count < times) setTimeout(play, 800);
+    } else {
+        console.warn("Element audio 'error-sound' non trouvé."); // NOUVEAU: Log si l'audio n'est pas là
+    }
   }
   play();
+  console.log(`Son d'erreur joué ${times} fois.`); // NOUVEAU: Log de débogage
 }
 
 function showFakePopups(count) {
@@ -438,20 +477,26 @@ function showFakePopups(count) {
     popup.style.setProperty('--popup-offset-x', `${offsetX}px`);
     popup.style.setProperty('--popup-offset-y', `${offsetY}px`);
 
-    popup.style.top = `0px`;
-    popup.style.left = `0px`;
+    popup.style.top = `0px`; // MODIFIÉ: Initialisation à 0px pour la propriété top
+    popup.style.left = `0px`; // MODIFIÉ: Initialisation à 0px pour la propriété left
 
     popupContainer.appendChild(popup);
     popupCount++;
   }
+  console.log(`${count} fausses popups affichées.`); // NOUVEAU: Log de débogage
 }
 
 function initMorpion() {
   morpionCells = Array(9).fill("");
 
   const boardElement = document.getElementById("board");
+  if (!boardElement) { // NOUVEAU: Vérifier si l'élément existe
+      console.error("Element #board non trouvé pour le morpion.");
+      return;
+  }
   boardElement.innerHTML = "";
 
+  // MODIFIÉ: S'assurer que le titre est remis si on réinitialise le morpion sans reset complet
   morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
   morpionContainer.appendChild(boardElement);
 
@@ -469,7 +514,7 @@ function initMorpion() {
             const move = getBestMove(morpionCells);
             if (move !== null) {
               const computerCell = boardElement.children[move];
-              if (computerCell) {
+              if (computerCell) { // MODIFIÉ: S'assurer que la cellule existe
                 computerCell.textContent = "O";
                 computerCell.classList.add("used");
                 morpionCells[move] = "O";
@@ -483,6 +528,7 @@ function initMorpion() {
     });
     boardElement.appendChild(cell);
   }
+  console.log("Morpion initialisé."); // NOUVEAU: Log de débogage
 }
 
 function getBestMove(board) {
@@ -559,10 +605,10 @@ function isGameOver(board) {
 
 function processSearchBarSubmission(value) {
     if (searchBar.disabled) {
-        console.warn("Tentative de soumission avec barre de recherche désactivée.");
+        console.warn("Tentative de soumission avec barre de recherche désactivée."); // NOUVEAU: Log de débogage
         return;
     }
-    console.log(`Soumission barre de recherche: "${value}"`);
+    console.log(`Soumission barre de recherche: "${value}"`); // NOUVEAU: Log de débogage
 
     if (value === 'reset all') {
         resetAll();
@@ -575,7 +621,7 @@ function processSearchBarSubmission(value) {
     if (trollLevel >= 15 && value === 'easter egg') {
         alert('Bien joué ! Le troll se ferme.');
         exitFullscreenMode();
-        window.close();
+        window.close(); // Tente de fermer la fenêtre
         return;
     }
 
@@ -609,12 +655,14 @@ function handleSearchBarInputLive(e) {
         e.target.value = '';
         return;
     }
+    // console.log("Input barre de recherche:", e.target.value); // NOUVEAU: Log de débogage pour voir la saisie
 
     const val = e.target.value.toLowerCase();
 
+    // MODIFIÉ: Gérer le rickroll ici si le niveau 10 est actif
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
         rickrollVideo.style.display = "block";
-        rickrollVideo.play();
+        rickrollVideo.play().catch(e => console.warn("Erreur de lecture Rickroll:", e));
     } else if (trollLevel < 10 && rickrollVideo.style.display === "block") {
         rickrollVideo.pause();
         rickrollVideo.currentTime = 0;
@@ -636,17 +684,14 @@ function handleSubmitSearchClick() {
 let jitterInterval = null;
 function enableCursorJitter() {
   // NOUVEAU: Ne démarrer le jitter que si on n'est PAS en plein écran.
-  // Si on est en plein écran, le jitter sera désactivé par requestFullscreenMode.then()
-  // et réactivé par handleFullscreenChange.
   if (document.fullscreenElement) {
-      console.log("Tentative d'activer le jitter en plein écran, ignoré.");
+      console.log("Tentative d'activer le jitter en plein écran, ignoré."); // NOUVEAU: Log de débogage
       return;
   }
   if (jitterInterval) return; // Éviter de créer plusieurs intervalles
 
   jitterInterval = setInterval(() => {
     // NOUVEAU: Vérifier à chaque tick si on est toujours hors plein écran.
-    // Cela rend le jitter plus réactif au changement d'état.
     if (!document.fullscreenElement) {
         const x = Math.random() * (window.screen.width - window.outerWidth);
         const y = Math.random() * (window.screen.height - window.outerHeight);
@@ -655,16 +700,17 @@ function enableCursorJitter() {
         // Si on passe en plein écran pendant que le jitter était actif,
         // désactiver l'intervalle pour éviter les conflits.
         disableCursorJitter();
-        console.log("Jitter (Niveau 14) désactivé car passé en plein écran.");
+        console.log("Jitter (Niveau 14) désactivé car passé en plein écran."); // NOUVEAU: Log de débogage
     }
   }, 1000);
+  console.log("Jitter (Niveau 14) activé."); // NOUVEAU: Log de débogage
 }
 
 function disableCursorJitter() {
   if (jitterInterval) {
     clearInterval(jitterInterval);
     jitterInterval = null;
-    console.log("Jitter (Niveau 14) désactivé.");
+    console.log("Jitter (Niveau 14) désactivé."); // NOUVEAU: Log de débogage
   }
 }
 
@@ -708,16 +754,30 @@ function initCalculator() {
           calcDisplay.value = "";
         } else if (action === "equals") {
           try {
-            calcDisplay.value = new Function('return ' + calcDisplay.value)();
+            calcDisplay.value = new Function('return ' + calcDisplay.value.replace(/×/g, '*') + ' === undefined ? "" : ' + calcDisplay.value.replace(/×/g, '*') )(); // MODIFIÉ: Gérer le × et undefined
+            if (calcDisplay.value === "Infinity" || calcDisplay.value === "-Infinity") calcDisplay.value = "Erreur"; // MODIFIÉ: Gérer l'infini
           } catch {
             calcDisplay.value = "Erreur";
           }
         } else {
-          calcDisplay.value += buttonValue;
+          // Empêcher les opérateurs multiples consécutifs
+          const lastChar = calcDisplay.value.slice(-1);
+          const isOperator = ["+", "-", "*", "/"].includes(buttonValue);
+          const lastCharIsOperator = ["+", "-", "*", "/"].includes(lastChar);
+
+          if (isOperator && lastCharIsOperator) {
+            calcDisplay.value = calcDisplay.value.slice(0, -1) + buttonValue; // Remplacer l'opérateur précédent
+          } else if (calcDisplay.value === "Erreur") {
+            calcDisplay.value = buttonValue; // Écraser "Erreur"
+          }
+          else {
+            calcDisplay.value += buttonValue;
+          }
         }
       };
     });
     calculatorInitialized = true;
+    console.log("Calculatrice initialisée."); // NOUVEAU: Log de débogage
   }
 }
 
