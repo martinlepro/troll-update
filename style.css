@@ -1,5 +1,3 @@
-/* style.css */
-
 html, body {
   margin: 0;
   padding: 0;
@@ -168,7 +166,7 @@ h1 {
   width: 25vw;
   min-width: 200px;
   z-index: 3000;
-  pointer-events: none; /* Toujours non interactif sur le container global */
+  /* pointer-events: none; */ /* Le container peut être interactif si on veut des popups cliquables */
 }
 .fake-popup {
   background: #005FA8;
@@ -177,7 +175,7 @@ h1 {
   font-family: "Segoe UI", Arial, sans-serif;
   color: white;
   box-shadow: 0 0 15px rgba(255,255,255,0.7);
-  animation: fadeOut 5s forwards; /* Réactivé */
+  /* animation: fadeOut 5s forwards; */ /* ANCIEN : Supprimé */
   user-select: none;
   position: absolute;
   width: 100%;
@@ -189,11 +187,11 @@ h1 {
     font-size: 1.5vw; /* Plus petit que les autres */
     pointer-events: all; /* Important pour qu'il soit cliquable */
 }
-@keyframes fadeOut {
-  0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));}
-}
+/* @keyframes fadeOut { */ /* ANCIEN : Supprimé */
+/*   0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));} */
+/*   80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));} */
+/*   100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));} */
+/* } */
 
 
 /* CORRIGÉ: Calculatrice (Haut Droite) */
@@ -597,4 +595,35 @@ body.cursor-pale {
     body.cursor-pale {
         cursor: auto;
     }
+}
+
+/* NOUVEAU: Animation pour les popups éphémères */
+@keyframes popupFloatAndFade {
+  0% { opacity: 0; transform: translateY(50px) scale(0.8); } /* Commence en bas, petit */
+  10% { opacity: 1; transform: translateY(0px) scale(1); }    /* Pleinement visible, taille normale */
+  90% { opacity: 1; transform: translateY(-30px) scale(1); } /* Flotte légèrement vers le haut */
+  100% { opacity: 0; transform: translateY(-50px) scale(0.8); } /* Disparaît plus haut, petit */
+}
+
+/* NOUVEAU: Styles pour le spinner de redémarrage type Windows */
+#windows-restart-spinner {
+    position: fixed; /* Utilise fixed-element déjà défini, mais assure la position */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none; /* Caché par défaut */
+    z-index: 8000; /* Assure qu'il est au-dessus d'autres éléments */
+    text-align: center;
+}
+.spinning-circle {
+    width: 80px;
+    height: 80px;
+    border: 8px solid rgba(255, 255, 255, 0.3); /* Bordure semi-transparente */
+    border-top: 8px solid white; /* Un bord blanc pour l'effet de rotation */
+    border-radius: 50%;
+    animation: spin 2s linear infinite; /* Animation initiale de rotation */
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
