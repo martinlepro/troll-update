@@ -8,15 +8,18 @@ let activatedAlerts = new Set();
 let matrixRainInterval = null;
 let popupInterval = null; // Pour gérer l'intervalle de réapparition des popups
 
-// NOUVEAU: Pour suivre les effets de troll qui ont déjà déclenché leur "rafale initiale"
+// Pour suivre les effets de troll qui ont déjà déclenché leur "rafale initiale"
 let initialTrollEffectsTriggered = new Set();
 
 // Variables pour le système de redémarrage
 let errorCounter = 0;
-const RESTART_ERROR_THRESHOLD = 1; // Le nombre d'erreurs avant de déclencher le redémarrage
+const RESTART_ERROR_THRESHOLD = 5; // Le nombre d'erreurs avant de déclencher le redémarrage
 let restartSequenceActive = false; // Drapeau pour indiquer si une séquence de redémarrage est en cours
 let spinnerSpeedInterval = null; // Pour contrôler l'intervalle de vitesse du spinner
 let currentProgressTimeout = null; // Pour stocker le timeout de updateProgress afin de pouvoir l'arrêter
+
+// NOUVEAU: Contrôle si le popupInterval peut être démarré ou reprendre.
+let canGenerateIntervalPopups = true;
 
 
 const fullscreenContainer = document.getElementById("fullscreen-container");
@@ -208,7 +211,6 @@ function startTrollMechanism() {
 
 // --- Fonctions de progression et d'activation des niveaux de troll ---
 
-// MODIFIÉ: S'assure que la progression ne se met pas à jour pendant un redémarrage.
 function updateProgress() {
     if (restartSequenceActive) return; // Ne pas mettre à jour la barre si un redémarrage est en cours
 
@@ -229,7 +231,6 @@ function updateProgress() {
 }
 
 
-// MODIFIÉ: S'assure que les effets de troll ne s'activent pas pendant un redémarrage.
 function activateTrollEffects(newLevel) {
     if (restartSequenceActive) {
         console.log("Ignorer l'activation de troll pendant la séquence de redémarrage.");
@@ -270,7 +271,7 @@ function activateTrollEffects(newLevel) {
   if (trollLevel >= 1) {
       searchBar.disabled = false;
       submitSearchBtn.style.display = 'inline-block';
-      if (trollLevel === 1 && !restartSequenceActive) { // NOUVEAU: Ne pas écraser le message de redémarrage si actif
+      if (trollLevel === 1 && !restartSequenceActive) { // Ne pas écraser le message de redémarrage si actif
           status.textContent = "Mise à jour terminée. Le système est en attente d'instructions.";
       }
   } else {
@@ -311,15 +312,21 @@ function activateTrollEffectForLevel(level) {
             break;
         case 7:
             popupContainer.style.display = 'block';
-            // NOUVEAU: Ne déclencher la rafale initiale de 5 popups que si le niveau 7 n'a pas été initialisé depuis le dernier reset.
+            // Ne déclencher la rafale initiale de 5 popups que si le niveau 7 n'a pas été initialisé depuis le dernier reset.
             if (!initialTrollEffectsTriggered.has(7)) {
                 showFakePopups(5); // Cette rafale initiale va très probablement déclencher un redémarrage
                 initialTrollEffectsTriggered.add(7); // Marquer comme "initialisé" pour ne pas le refaire
             }
 
-            if (!popupInterval) {
-                // NOUVEAU: Générer 1 à 3 popups aléatoires toutes les 5 secondes
+            // Seulement démarrer popupInterval si autorisé par canGenerateIntervalPopups
+            if (!popupInterval && canGenerateIntervalPopups) {
                 popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
+                console.log("Popup interval started/restarted.");
+            } else if (popupInterval && !canGenerateIntervalPopups) {
+                // Si l'intervalle tourne mais ne devrait pas (ce cas est généralement géré par triggerRestartSequence)
+                clearInterval(popupInterval);
+                popupInterval = null;
+                console.log("Popup interval stopped because canGenerateIntervalPopups is false.");
             }
             console.log("Niveau 7: Popups activées avec réapparition.");
             break;
@@ -373,7 +380,6 @@ function startTrollLevel(n) {
 }
 
 
-// MODIFIÉ: S'assure de réinitialiser les variables du système de redémarrage et le set initialTrollEffectsTriggered.
 function resetAll() {
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
@@ -411,7 +417,7 @@ function resetAll() {
 
   disableCursorJitter();
 
-  // NOUVEAU: Cacher le spinner de redémarrage et arrêter sa boucle
+  // Cacher le spinner de redémarrage et arrêter sa boucle
   if (windowsRestartSpinnerElement) windowsRestartSpinnerElement.style.display = 'none';
   stopRestartSpinnerSpeedLoop();
 
@@ -431,10 +437,12 @@ function resetAll() {
   activatedAlerts.clear();
   customAlertContainer.style.display = 'none';
 
-  // NOUVEAU: Réinitialiser les variables du système de redémarrage et le set des initialTrollEffects
+  // Réinitialiser les variables du système de redémarrage et le set des initialTrollEffects
   errorCounter = 0;
   restartSequenceActive = false;
   initialTrollEffectsTriggered.clear(); // VIDE LE SET ICI
+  canGenerateIntervalPopups = true; // Réinitialiser le flag de génération de popups par intervalle
+
 
   if (currentProgressTimeout) { // S'assurer qu'aucun ancien timeout n'est actif
       clearTimeout(currentProgressTimeout);
@@ -510,8 +518,7 @@ function showDegoulinantText() {
   }
 }
 
-// MODIFIÉ: La fonction playErrorSound va maintenant incrémenter un compteur d'erreurs et déclencher
-// la séquence de redémarrage si le seuil est atteint.
+
 function playErrorSound(times) {
     if (restartSequenceActive) return; // Ne pas compter les erreurs pendant le redémarrage
 
@@ -539,12 +546,11 @@ function playErrorSound(times) {
 }
 
 
-// MODIFIÉ: La popup apparaîtra avec un délai, jouera l'animation de 1 seconde et le son d'erreur.
 function showFakePopups(count) {
     if (restartSequenceActive) return; // Ne pas afficher de popups pendant le redémarrage
 
     for (let i = 0; i < count; i++) {
-        // NOUVEAU: Retarder l'apparition de chaque popup de 0.2s
+        // Retarder l'apparition de chaque popup de 0.2s
         setTimeout(() => {
             const popup = document.createElement("div");
             popup.classList.add("fake-popup");
@@ -566,17 +572,17 @@ function showFakePopups(count) {
             popup.style.left = `${randomX > 0 ? randomX : 0}px`;
             popup.style.top = `${Math.random() * 50}px`; // Légèrement aléatoire en hauteur
 
-            // NOUVEAU: Appliquer la nouvelle animation et la gérer
+            // Appliquer la nouvelle animation et la gérer
             popup.style.animation = 'popupFloatAndFade 1s forwards'; // Animation de 1 seconde
 
             popupContainer.appendChild(popup);
             popupCount++;
             console.log(`Popup n°${popupCount} affichée.`);
 
-            // NOUVEAU: Jouer le son d'erreur à l'apparition de chaque popup
+            // Jouer le son d'erreur à l'apparition de chaque popup
             playErrorSound(1);
 
-            // NOUVEAU: Supprimer la popup après 1 seconde
+            // Supprimer la popup après 1 seconde
             setTimeout(() => {
                 if (popup.parentNode) { // Vérifier si la popup existe toujours (pas fermée manuellement)
                     popup.remove();
@@ -588,7 +594,6 @@ function showFakePopups(count) {
 }
 
 
-// NOUVELLE FONCTION : Déclenchement de la séquence de redémarrage
 function triggerRestartSequence() {
     if (restartSequenceActive) return; // Empêche les activations multiples
     restartSequenceActive = true;
@@ -613,6 +618,14 @@ function triggerRestartSequence() {
     imageTroll.style.display = 'none';
     if (degoulinantText) degoulinantText.style.display = 'none';
     stopMatrixRain();
+
+    // Empêcher le popupInterval de redémarrer immédiatement et le stopper s'il est actif
+    canGenerateIntervalPopups = false;
+    if (popupInterval) {
+        clearInterval(popupInterval);
+        popupInterval = null;
+        console.log("Popup interval cleared during restart.");
+    }
 
 
     status.textContent = "La mise à jour a échoué ; redémarrage en cours...";
@@ -642,22 +655,32 @@ function triggerRestartSequence() {
 
             restartSequenceActive = false; // Permettre de redéclencher le redémarrage
             updateProgress(); // Relancer la barre de progression
-            // Réactiver les effets du niveau de troll actuel. Cela réaffichera la barre de recherche etc.
-            // Si trollLevel est 0, il sera activé à 1 lorsque la barre de progression atteindra 100%.
+
+            // Réactiver les effets de troll immédiatement, mais sans les popups par intervalle pour l'instant
             if (trollLevel > 0) {
                  activateTrollEffects(trollLevel);
-            } else { // Si trollLevel était 0, il faut réactiver la barre de recherche après le redémarrage
+            } else {
                 searchBarWrapper.style.display = 'flex';
                 searchBar.disabled = false;
                 submitSearchBtn.style.display = 'inline-block';
                 status.textContent = "Système opérationnel. Entrez un niveau pour activer le troll.";
             }
 
+            // Planifier la réactivation de la génération de popups par intervalle après un délai de grâce
+            setTimeout(() => {
+                canGenerateIntervalPopups = true;
+                console.log("canGenerateIntervalPopups set to true.");
+                // Si le niveau 7 est toujours actif ET que l'intervalle n'est pas encore redémarré, le relancer
+                if (trollLevel === 7 && !popupInterval) {
+                    popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
+                    console.log("Popup interval re-established after restart grace period.");
+                }
+            }, 5000); // Délai de grâce de 5 secondes après la fin du redémarrage
+
         }, 15000); // Le spinner sera visible et changera de vitesse pendant 15 secondes
     }, 3000); // Le deuxième message apparaît 3 secondes après le premier
 }
 
-// NOUVELLE FONCTION : Gérer la vitesse du spinner de redémarrage
 function startRestartSpinnerSpeedLoop() {
     if (!spinningCircleElement) return;
     let currentSpeed = 2000; // 2s (2000ms) pour une rotation complète (vitesse initiale)
@@ -1000,4 +1023,3 @@ searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
-
