@@ -4,6 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%; /* AJOUTÉ: S'assure que le body prend toute la largeur */
   background: #0078D4; /* Un bleu Windows classique */
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -16,14 +17,14 @@ html, body {
 }
 
 #fullscreen-container {
-  width: 100%;
-  height: 100%;
+  width: 100vw; /* Utilise 100% de la largeur de la fenêtre */
+  height: 100vh; /* Utilise 100% de la hauteur de la fenêtre */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  background: #0078D4; /* S'assure que le fond reste bleu en plein écran */
+  background: #0078D4;
   position: relative; /* Pour positionner les éléments fixes à l'intérieur */
 }
 
@@ -33,21 +34,24 @@ h1 {
   display: none;
 }
 #main-title {
-    margin-bottom: 20px;
+    margin-bottom: 2vh; /* Unité relative */
+    font-size: 5vw; /* Unité relative */
 }
 
 /* Base pour tous les éléments "fixed" pour gérer le z-index plus facilement */
 .fixed-element {
     position: fixed;
     display: none; /* Masqué par défaut, affiché par JS */
+    z-index: 1000; /* Z-index de base, sera écrasé par des valeurs spécifiques */
 }
+
 
 #progress-bar {
   width: 80%;
   max-width: 600px;
-  height: 30px;
+  height: 3vh; /* Unité relative */
   background: #004D99;
-  margin: 30px auto;
+  margin: 3vh auto; /* Unité relative */
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 0 10px rgba(255,255,255,0.7) inset;
@@ -62,15 +66,15 @@ h1 {
 }
 #status {
   text-align: center;
-  font-size: 24px;
-  margin-top: 15px;
-  min-height: 24px;
+  font-size: 3vw; /* Unité relative */
+  margin-top: 2vh; /* Unité relative */
+  min-height: 4vh; /* Unité relative */
 }
 
 /* --- Barre de recherche et bouton (maintenant au centre) --- */
 #search-bar-wrapper {
-  display: none; /* Masqué au démarrage, affiché par JS */
-  margin-top: 20px; /* Espace par rapport aux éléments au-dessus */
+  display: none;
+  margin-top: 3vh; /* Unité relative */
   width: 80%;
   max-width: 500px;
   display: flex;
@@ -82,15 +86,15 @@ h1 {
 
 #search-bar {
   flex-grow: 1;
-  padding: 10px;
-  font-size: 18px;
+  padding: 1vh; /* Unité relative */
+  font-size: 2.5vw; /* Unité relative */
   border-radius: 5px;
   border: 2px solid white;
   outline: none;
   text-align: center;
   background: #004D99;
   color: white;
-  margin-right: 10px;
+  margin-right: 1vh; /* Unité relative */
   display: block;
 }
 #search-bar:focus {
@@ -98,8 +102,8 @@ h1 {
 }
 
 #submit-search-btn {
-  padding: 10px 15px;
-  font-size: 18px;
+  padding: 1vh 2vw; /* Unité relative */
+  font-size: 2.5vw; /* Unité relative */
   border-radius: 5px;
   border: 2px solid white;
   background: #006FB7;
@@ -107,7 +111,7 @@ h1 {
   cursor: pointer;
   outline: none;
   transition: background 0.1s ease;
-  display: none; /* Masqué par défaut */
+  display: none;
 }
 #submit-search-btn:active {
   background: white;
@@ -118,42 +122,46 @@ h1 {
 
 /* POPUPS (Haut Gauche) */
 #popup-container {
-  top: 10px;
-  left: 10px;
-  width: 300px;
+  top: 1vh; /* Unité relative */
+  left: 1vw; /* Unité relative */
+  width: 25vw; /* Unité relative */
+  min-width: 200px; /* Minimum pour ne pas être trop petit */
   z-index: 3000;
   pointer-events: none;
 }
 .fake-popup {
   background: #005FA8;
   border: 2px solid white;
-  padding: 10px;
+  padding: 1vh; /* Unité relative */
   font-family: "Segoe UI", Arial, sans-serif;
   color: white;
   box-shadow: 0 0 15px rgba(255,255,255,0.7);
   animation: fadeOut 5s forwards;
   user-select: none;
-  position: absolute; /* Reste absolu par rapport à popup-container */
-  width: 300px;
+  position: absolute;
+  width: 100%; /* Prend toute la largeur du popup-container */
   border-radius: 3px;
+  font-size: 2vw; /* Unité relative */
 }
 @keyframes fadeOut {
   0% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
   80% {opacity: 1; transform: translate(var(--popup-offset-x, 0), var(--popup-offset-y, 0));}
-  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 50px), var(--popup-offset-y, 0));}
+  100% {opacity: 0; transform: translate(calc(var(--popup-offset-x, 0) + 5vw), var(--popup-offset-y, 0));} /* Utilise vw */
 }
+
 
 /* Calculatrice (Haut Droite) */
 #calculator-container {
-  top: 10px;
-  right: 10px;
-  width: 250px;
+  top: 1vh; /* Unité relative */
+  right: 1vw; /* Unité relative */
+  width: 20vw; /* Unité relative */
+  min-width: 200px; /* Minimum pour ne pas être trop petit */
   background: #005FA8;
   border: 2px solid white;
-  padding: 10px;
+  padding: 1vh; /* Unité relative */
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 1.5vw; /* Unité relative */
   user-select: none;
   z-index: 4000;
   border-radius: 5px;
@@ -162,17 +170,17 @@ h1 {
 #calculator-container h3 {
   text-align: center;
   margin-top: 0;
-  margin-bottom: 10px;
+  margin-bottom: 1vh; /* Unité relative */
 }
 #calc-display {
   width: 100%;
-  height: 35px;
+  height: 4vh; /* Unité relative */
   background: #004D99;
   border: 1px solid white;
   color: white;
-  font-size: 20px;
-  margin-bottom: 10px;
-  padding: 5px;
+  font-size: 2.5vw; /* Unité relative */
+  margin-bottom: 1vh; /* Unité relative */
+  padding: 0.5vh; /* Unité relative */
   box-sizing: border-box;
   text-align: right;
   border-radius: 3px;
@@ -180,16 +188,16 @@ h1 {
 #calc-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 8px;
+  grid-gap: 1vh; /* Unité relative */
 }
 .calc-button {
   background: #006FB7;
   border: 1px solid white;
   color: white;
-  font-size: 20px;
+  font-size: 2.5vw; /* Unité relative */
   cursor: pointer;
   user-select: none;
-  padding: 10px;
+  padding: 1vh; /* Unité relative */
   text-align: center;
   border-radius: 3px;
   transition: background 0.1s ease;
@@ -202,38 +210,36 @@ h1 {
 /* Matrix Rain (Milieu Gauche) */
 #matrix-rain-container {
     top: 50%;
-    left: 10px;
-    transform: translateY(-50%); /* Centrage vertical */
-    width: 250px;
-    height: 300px; /* Hauteur pour le défilement */
-    overflow: hidden; /* Important pour masquer les 1/0 qui sortent */
-    background: rgba(0,0,0,0.3); /* Légèrement transparent */
+    left: 1vw; /* Unité relative */
+    transform: translateY(-50%);
+    width: 25vw; /* Unité relative */
+    min-width: 200px;
+    height: 30vh; /* Unité relative */
+    min-height: 200px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
     border: 2px solid white;
     border-radius: 5px;
-    padding: 5px;
+    padding: 1vh; /* Unité relative */
     font-family: monospace;
-    font-size: 16px;
+    font-size: 2vw; /* Unité relative */
     line-height: 1.2;
-    color: #00FF00; /* Vert Matrix classique */
+    color: #00FF00;
     text-align: left;
-    z-index: 1000; /* Derrière les popups, morpion, etc. */
+    z-index: 1000;
 }
-.matrix-line {
-    white-space: nowrap; /* Empêche les retours à la ligne */
-    /* L'animation est gérée par JS pour le texte content, pas une animation CSS sur les spans */
-}
-
 
 /* Morpion (Milieu Droite) */
 #morpion-container {
   top: 50%;
-  right: 10px;
-  transform: translateY(-50%); /* Centrage vertical */
-  width: 220px;
+  right: 1vw; /* Unité relative */
+  transform: translateY(-50%);
+  width: 20vw; /* Unité relative */
+  min-width: 200px;
   background: #005FA8;
   border: 2px solid white;
-  padding: 10px;
-  font-size: 14px;
+  padding: 1vh; /* Unité relative */
+  font-size: 1.5vw; /* Unité relative */
   user-select: none;
   z-index: 2000;
   border-radius: 5px;
@@ -242,23 +248,24 @@ h1 {
 #morpion-container h3 {
   margin-top: 0;
   text-align: center;
+  font-size: 2vw; /* Unité relative */
 }
 #board {
   display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-gap: 5px;
+  grid-template-columns: repeat(3, 6vw); /* Taille relative des cases */
+  grid-gap: 0.5vh; /* Unité relative */
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 1vh; /* Unité relative */
 }
 #board > div {
-  width: 50px;
-  height: 50px;
+  width: 6vw; /* Taille relative des cases */
+  height: 6vw; /* Taille relative des cases */
   background-color: #006FB7;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 3vw; /* Unité relative */
   cursor: pointer;
   user-select: none;
   border-radius: 3px;
@@ -270,8 +277,11 @@ h1 {
 
 /* Rickroll (Bas Gauche) */
 #rickroll-video {
-  bottom: 10px;
-  left: 10px;
+  bottom: 1vh; /* Unité relative */
+  left: 1vw; /* Unité relative */
+  width: 25vw; /* Unité relative */
+  height: auto; /* Maintient le ratio */
+  max-height: 25vh; /* Max hauteur relative */
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
@@ -279,8 +289,11 @@ h1 {
 
 /* Subway Surfer Video (Bas Droite) */
 #subway-surfer-video {
-  bottom: 10px;
-  right: 10px;
+  bottom: 1vh; /* Unité relative */
+  right: 1vw; /* Unité relative */
+  width: 25vw; /* Unité relative */
+  height: auto; /* Maintient le ratio */
+  max-height: 25vh; /* Max hauteur relative */
   border: 2px solid white;
   border-radius: 6px;
   z-index: 4500;
@@ -294,14 +307,16 @@ h1 {
   text-align: center;
   color: white;
   font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 14px;
+  font-size: 1.5vw; /* Unité relative */
   user-select: none;
   z-index: 5000;
 }
 #image-troll img {
-  max-width: 150px;
+  max-width: 15vw; /* Unité relative */
+  max-height: 15vh; /* Unité relative */
+  height: auto;
   border: 2px solid white;
-  margin-top: 5px;
+  margin-top: 0.5vh; /* Unité relative */
   border-radius: 6px;
 }
 
@@ -312,7 +327,7 @@ h1 {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 28px;
+  font-size: 4vw; /* Unité relative */
   font-weight: bold;
   font-family: "Segoe UI", Arial, sans-serif;
   animation: degoulinement 5s forwards;
@@ -320,15 +335,39 @@ h1 {
   pointer-events: none;
   z-index: 5000;
 }
-@keyframes degoulinement {
-  0% { filter: blur(0); opacity: 1; }
-  100% { filter: blur(3px); opacity: 0; transform: translate(-50%, 100%); }
+
+/* NOUVEAU: Conteneur pour les messages d'alerte personnalisés */
+#custom-alert-container {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #005FA8; /* Fond bleu moyen */
+    border: 2px solid white;
+    padding: 2vh;
+    width: 60vw; /* Largeur relative */
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.8);
+    z-index: 9000; /* Très haut pour être au-dessus de tout */
+    text-align: center;
+    font-size: 2.5vw;
+    line-height: 1.4;
+    border-radius: 5px;
+}
+#custom-alert-container button {
+    margin-top: 2vh;
+    padding: 1vh 2vw;
+    font-size: 2vw;
+    border-radius: 5px;
+    border: 1px solid white;
+    background: #006FB7;
+    color: white;
+    cursor: pointer;
+}
+#custom-alert-container button:active {
+    background: white;
+    color: #0078D4;
 }
 
 body.cursor-pale {
   cursor: url('cursor-pale.cur'), auto;
 }
-
-  z-index: 4500;
-}
-
