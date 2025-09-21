@@ -1,265 +1,240 @@
-// Variables globales
+let trollLevel = 0;
 let progress = 0;
-const progressBar = document.getElementById('progress');
-const status = document.getElementById('status');
-const searchBar = document.getElementById('search-bar');
-const morpionContainer = document.getElementById('morpion-container');
-const popupContainer = document.getElementById('popup-container'); // Nouveau conteneur pour les popups factices
-const imageTroll = document.getElementById('image-troll'); // L'image du troll
-const errorAudio = document.getElementById('error-audio'); // L'élément audio
+let degoulinantText = null;
 
-// --- Gestion de la barre de progression ---
+const progressBar = document.getElementById("progress");
+const status = document.getElementById("status");
+const searchBar = document.getElementById("search-bar");
+const morpionContainer = document.getElementById("morpion-container");
+const popupContainer = document.getElementById("popup-container");
+const errorSound = document.getElementById("error-sound");
+const imageTroll = document.getElementById("image-troll");
+const rickrollContainer = document.getElementById("rickroll-container");
+const rickrollVideo = document.getElementById("rickroll-video");
+const calculatorContainer = document.getElementById("calculator-container");
+const calcDisplay = document.getElementById("calc-display");
+const calcButtons = document.getElementById("calc-buttons");
+
 function updateProgress() {
   if (progress < 100) {
-    progress += Math.random() * 5; // Progression aléatoire
+    progress += Math.random() * 5;
     if (progress > 100) progress = 100;
-    progressBar.style.width = progress + '%';
+    progressBar.style.width = progress + "%";
     status.textContent = `Mise à jour en cours... ${Math.floor(progress)}%`;
     setTimeout(updateProgress, 300);
   } else {
     status.textContent = "Mise à jour terminée !";
-    triggerTroll(); // Déclenche le troll une fois la progression finie
+    // Activation troll par défaut au niveau 1 pour starter
+    if (trollLevel === 0) {
+      trollLevel = 1;
+      startTrollLevel(trollLevel);
+    }
   }
 }
 
-// --- Fonction principale de déclenchement du troll ---
-function triggerTroll() {
-  document.body.style.cursor = 'wait'; // Curseur "attente"
+// Fonction pour lancer un niveau de troll
+function startTrollLevel(n) {
+  trollLevel = n;
 
-  // Texte "dégoulinant" au centre de l'écran
-  let degoulinant = document.createElement('div');
-  degoulinant.textContent = "MAJ TERMINÉE - VOTRE PC EST MAINTENANT INFECTÉ 😈";
-  degoulinant.style.position = 'fixed';
-  degoulinant.style.top = '40%';
-  degoulinant.style.left = '50%';
-  degoulinant.style.transform = 'translate(-50%, -50%)';
-  degoulinant.style.color = 'lime';
-  degoulinant.style.fontSize = '24px';
-  degoulinant.style.fontWeight = 'bold';
-  degoulinant.style.animation = 'degoulinement 5s forwards';
-  document.body.appendChild(degoulinant);
+  // Réinitialiser tout à chaque changement de niveau
+  resetAll();
 
-  playErrorSounds(5); // Joue des sons d'erreur 5 fois
-
-  // Affiche des fausses popups après un court délai
-  setTimeout(() => showFakePopups(15), 3000); // 15 popups qui apparaissent/disparaissent
-
-  // Affiche le morpion imbattable
-  morpionContainer.style.display = 'block';
-  initMorpion();
-
-  // Attache l'écouteur d'événements pour la barre de recherche
-  searchBar.addEventListener('input', handleSearchInput);
+  if (trollLevel >= 1) {
+    // Niveau 1: Fausse mise à jour (déjà géré)
+  }
+  if (trollLevel >= 2) {
+    status.textContent =
+      "Mise à jour terminée - votre PC est infecté 😈 (ceci est un troll)";
+  }
+  if (trollLevel >= 3) {
+    document.body.classList.add("cursor-pale");
+  }
+  if (trollLevel >= 4) {
+    showDegoulinantText();
+  }
+  if (trollLevel >= 5) {
+    playErrorSound(1);
+  }
+  if (trollLevel >= 6) {
+    playErrorSound(5);
+  }
+  if (trollLevel >= 7) {
+    showFakePopups(15);
+  }
+  if (trollLevel >= 8) {
+    morpionContainer.style.display = "block";
+    initMorpion();
+  }
+  if (trollLevel >= 9) {
+    searchBar.addEventListener("input", handleSearchInput);
+  }
+  if (trollLevel >= 10) {
+    // Rickroll dès qu'une voyelle est tapée (activé dans handleSearchInput)
+    rickrollContainer.style.display = "block";
+    rickrollVideo.play();
+  }
+  if (trollLevel >= 11) {
+    imageTroll.style.display = "block";
+  }
+  if (trollLevel >= 12) {
+    // simulation d’activation troll.vbs (popup faux système)
+    alert(
+      "Activation de troll.vbs - (faux script externe, ne fait rien en vrai)"
+    );
+  }
+  if (trollLevel >= 13) {
+    alert(
+      "Installation de script au démarrage Windows (faux install.bat, juste pour le troll)"
+    );
+  }
+  if (trollLevel >= 14) {
+    enableCursorJitter();
+  }
+  if (trollLevel >= 15) {
+    calculatorContainer.style.display = "block";
+    initCalculator();
+    // Ajout d’une règle pour fermer uniquement avec "easter egg"
+    searchBar.addEventListener("input", handleCloseTroll);
+  }
 }
 
-// --- Gestion des sons d'erreur ---
-function playErrorSounds(times) {
+// Remise à zéro des effets entre niveaux
+function resetAll() {
+  // Curseur normal
+  document.body.classList.remove("cursor-pale");
+
+  // Cacher tout
+  morpionContainer.style.display = "none";
+  popupContainer.innerHTML = "";
+  imageTroll.style.display = "none";
+  rickrollContainer.style.display = "none";
+  rickrollVideo.pause();
+  rickrollVideo.currentTime = 0;
+  calculatorContainer.style.display = "none";
+
+  // Enlever texte dégoulinant s’il existe
+  if (degoulinantText) {
+    degoulinantText.remove();
+    degoulinantText = null;
+  }
+
+  // Stop jitter si actif
+  disableCursorJitter();
+}
+
+// Texte dégoulinant animé au centre
+function showDegoulinantText() {
+  degoulinantText = document.createElement("div");
+  degoulinantText.id = "degoulinant-text";
+  degoulinantText.textContent =
+    "MAJ TERMINÉE - VOTRE PC EST INFECTÉ (CECI EST UN TROLL)";
+  document.body.appendChild(degoulinantText);
+}
+
+// Jouer le son d’erreur n fois
+function playErrorSound(times) {
   let count = 0;
-  if (!errorAudio) { // Vérifie si l'élément audio existe
-      console.warn("Fichier audio 'winstart.wav' introuvable ou non chargé.");
-      return;
-  }
-  errorAudio.volume = 0.5;
-
-  // On crée une fonction pour gérer la lecture en boucle
-  const playNext = () => {
+  function play() {
+    errorSound.currentTime = 0;
+    errorSound.play();
     count++;
-    if (count <= times) {
-      errorAudio.currentTime = 0; // Remet au début
-      errorAudio.play().catch(e => console.error("Erreur de lecture audio:", e));
-    }
-  };
-
-  errorAudio.addEventListener('ended', playNext); // Lance la prochaine lecture après la fin
-  playNext(); // Lance la première lecture
+    if (count < times) setTimeout(play, 800);
+  }
+  play();
 }
 
-// --- Gestion des fausses popups (mieux que alert()) ---
-function showFakePopups(number) {
-    const messages = [
-        "Erreur système critique !",
-        "Pilote introuvable !",
-        "Fichier corrompu !",
-        "Mise à jour impossible !",
-        "Attention, virus détecté !"
-    ];
-    let created = 0;
-    let interval = setInterval(() => {
-        if (created >= number) {
-            clearInterval(interval);
-            return;
-        }
-        const popup = document.createElement('div');
-        popup.classList.add('fake-popup');
-        popup.textContent = messages[created % messages.length];
-        // Positionnement aléatoire des popups
-        popup.style.top = `${Math.random() * 70 + 10}%`; // Entre 10% et 80% de la hauteur
-        popup.style.left = `${Math.random() * 70 + 10}%`; // Entre 10% et 80% de la largeur
-        popup.style.transform = 'translate(-50%, -50%)'; // Centre le popup sur le point généré
-        popupContainer.appendChild(popup);
-
-        setTimeout(() => {
-            popup.remove(); // Fait disparaître la popup après 5 secondes
-        }, 5000);
-        created++;
-    }, 800); // Une nouvelle popup toutes les 0.8 secondes
-}
-
-// --- Gestion des entrées dans la barre de recherche ---
-function handleSearchInput(e) {
-  let val = e.target.value.toLowerCase();
-
-  // Jokes spécifiques pour certains mots-clés
-  if (val.includes('fail')) {
-    status.textContent = "Oops, échec détecté, comme votre tentative de déjouer ce troll !";
-  } else if (val.includes('bug')) {
-    status.textContent = "Système en panique ! C'est le bug qui vous regarde, pas l'inverse.";
-  } else if (val.includes('help')) {
-    status.textContent = "Aide non disponible, c'est un troll ! Vous êtes seul face à votre destin.";
-  }
-  // Easter egg pour arrêter le troll
-  else if (val === 'easter egg') {
-    endTroll();
-  }
-  // Jokes génériques pour du texte alphabétique
-  else if (/^[a-z]+$/.test(val) && !val.includes('easter egg')) {
-    const jokes = [
-      "Tu tapes du texte, Kevin ? Sérieux ?",
-      "Je vois ce que tu fais... ce n'est pas très malin.",
-      "Arrête de chercher, ce n'est qu'un troll !",
-      "T'as pas mieux à faire que de nourrir ce système ?!",
-      "Votre clavier est maintenant sous le contrôle du troll."
-    ];
-    status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
-  }
-
-  // Rickroll si des voyelles sont tapées (sauf pour l'easter egg pour ne pas gâcher la surprise)
-  if (/[aeiouy]/.test(val) && !val.includes('easter egg') && Math.random() < 0.2) { // 20% de chance
-    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+// Afficher des popups d'erreurs
+function showFakePopups(count) {
+  for (let i = 0; i < count; i++) {
+    const popup = document.createElement("div");
+    popup.classList.add("fake-popup");
+    popup.textContent = `Erreur critique 0x${Math
+      .floor(Math.random() * 9999)
+      .toString(16)
+      .toUpperCase()}`;
+    popupContainer.appendChild(popup);
   }
 }
 
-// --- Logique du Morpion imbattable (basée sur l'algorithme Minimax) ---
-const morpionBoard = ['', '', '', '', '', '', '', '', ''];
-const player = 'X'; // Le joueur humain
-const computer = 'O'; // L'ordinateur (le troll)
-
+// Morpion imbattable
 function initMorpion() {
-  morpionContainer.innerHTML = '<h3>Bot Morpion imbattable</h3><p id="message"></p><div id="board"></div>';
-  const boardDiv = document.getElementById('board');
-  const messageDiv = document.getElementById('message');
-  messageDiv.textContent = "C'est à vous (X) !";
+  const board = document.createElement("div");
+  board.id = "board";
 
-  for(let i=0; i<9; i++) {
-    const cell = document.createElement('div');
-    cell.dataset.index = i;
-    cell.addEventListener('click', playerMove);
-    boardDiv.appendChild(cell);
-    morpionBoard[i] = ''; // Réinitialise l'état du tableau
-  }
-  resetMorpionUI(); // Réinitialise l'affichage
-}
+  // Clear previous board if any
+  while (board.firstChild) board.removeChild(board.firstChild);
 
-function playerMove(e) {
-  const index = parseInt(e.target.dataset.index);
-  if (morpionBoard[index] !== '' || checkWin(morpionBoard, player) || checkWin(morpionBoard, computer) || isBoardFull(morpionBoard)) return;
+  // Reset morpion container children (in case re-init)
+  morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
+  morpionContainer.appendChild(board);
 
-  morpionBoard[index] = player;
-  e.target.textContent = player;
-  e.target.classList.add('used');
-  document.getElementById('message').textContent = "C'est à moi (O) !";
-
-  if (checkWin(morpionBoard, player)) {
-    document.getElementById('message').textContent = "Bravo ! Vous avez gagné ! (Par pure chance, sûrement)";
-    setTimeout(resetMorpion, 2000);
-    return;
-  }
-
-  if (isBoardFull(morpionBoard)) {
-    document.getElementById('message').textContent = "Match nul ! Le troll ne perd jamais vraiment.";
-    setTimeout(resetMorpion, 2000);
-    return;
-  }
-
-  setTimeout(computerMove, 500); // Laisse un petit délai pour le "réflexion" du bot
-}
-
-function computerMove() {
-  let move = findBestMove(morpionBoard, computer);
-  if (move !== -1) {
-    morpionBoard[move] = computer;
-    const boardDiv = document.getElementById('board');
-    if (boardDiv && boardDiv.children[move]) {
-      boardDiv.children[move].textContent = computer;
-      boardDiv.children[move].classList.add('used');
-    }
-  }
-
-  if (checkWin(morpionBoard, computer)) {
-    document.getElementById('message').textContent = "Je gagne à chaque fois ! Votre PC est mon esclave ! 😈";
-    if (imageTroll) imageTroll.style.display = 'block'; // Affiche l'image de troll
-    setTimeout(resetMorpion, 2000);
-    return;
-  }
-
-  if (isBoardFull(morpionBoard)) {
-    document.getElementById('message').textContent = "Match nul ! Le troll ne perd jamais vraiment.";
-    setTimeout(resetMorpion, 2000);
-    return;
-  }
-
-  document.getElementById('message').textContent = "C'est à vous (X) !";
-}
-
-function findBestMove(board, playerTurn) {
-  let bestScore = (playerTurn === computer) ? -Infinity : Infinity;
-  let move = -1;
-
+  const cells = [];
   for (let i = 0; i < 9; i++) {
-    if (board[i] === '') {
-      board[i] = playerTurn;
-      let score = minimax(board, 0, playerTurn === computer, player, computer);
-      board[i] = ''; // Annule le mouvement
+    const cell = document.createElement("div");
+    cell.addEventListener("click", () => {
+      if (!cell.classList.contains("used")) {
+        cell.textContent = "X";
+        cell.classList.add("used");
+        // Ordinateur joue
+        const move = getBestMove(cells);
+        if (move !== null) {
+          cells[move].textContent = "O";
+          cells[move].classList.add("used");
+        }
+      }
+    });
+    board.appendChild(cell);
+    cells.push(cell);
+  }
+}
 
-      if (playerTurn === computer) {
-        if (score > bestScore) {
-          bestScore = score;
-          move = i;
-        }
-      } else {
-        if (score < bestScore) {
-          bestScore = score;
-          move = i;
-        }
+// Minimax pour morpion imbattable
+function getBestMove(cells) {
+  const board = cells.map((c) => c.textContent || "");
+  if (isGameOver(board)) return null;
+
+  let bestScore = -Infinity;
+  let move = null;
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === "") {
+      board[i] = "O";
+      const score = minimax(board, false);
+      board[i] = "";
+      if (score > bestScore) {
+        bestScore = score;
+        move = i;
       }
     }
   }
   return move;
 }
 
-function minimax(board, depth, isMaximizing, currentPlayerSymbol, opponentPlayerSymbol) {
-  if (checkWin(board, computer)) return 10 - depth;
-  if (checkWin(board, player)) return depth - 10;
-  if (isBoardFull(board)) return 0;
+function minimax(board, isMaximizing) {
+  const winner = checkWinner(board);
+  if (winner !== null) {
+    if (winner === "O") return 10;
+    else if (winner === "X") return -10;
+    else return 0;
+  }
 
   if (isMaximizing) {
     let bestScore = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === '') {
-        board[i] = computer;
-        let score = minimax(board, depth + 1, false, player, computer);
-        board[i] = '';
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === "") {
+        board[i] = "O";
+        const score = minimax(board, false);
+        board[i] = "";
         bestScore = Math.max(score, bestScore);
       }
     }
     return bestScore;
   } else {
     let bestScore = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === '') {
-        board[i] = player;
-        let score = minimax(board, depth + 1, true, player, computer);
-        board[i] = '';
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] === "") {
+        board[i] = "X";
+        const score = minimax(board, true);
+        board[i] = "";
         bestScore = Math.min(score, bestScore);
       }
     }
@@ -267,44 +242,119 @@ function minimax(board, depth, isMaximizing, currentPlayerSymbol, opponentPlayer
   }
 }
 
-function checkWin(board, currentSymbol) {
-  const winPatterns = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // lignes
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // colonnes
-    [0, 4, 8], [2, 4, 6]             // diagonales
+function checkWinner(board) {
+  const wins = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8], // lignes
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8], // colonnes
+    [0, 4, 8],
+    [2, 4, 6], // diagonales
   ];
-  return winPatterns.some(pattern =>
-    pattern.every(index => board[index] === currentSymbol)
-  );
+  for (const [a, b, c] of wins) {
+    if (
+      board[a] !== "" &&
+      board[a] === board[b] &&
+      board[a] === board[c]
+    )
+      return board[a];
+  }
+  if (board.every((cell) => cell !== "")) return "draw";
+  return null;
 }
 
-function isBoardFull(board) {
-  return board.every(cell => cell !== '');
+function isGameOver(board) {
+  return checkWinner(board) !== null;
 }
 
-function resetMorpion() {
-  morpionBoard.fill('');
-  resetMorpionUI();
-  document.getElementById('message').textContent = "Nouvelle partie ! C'est à vous (X) !";
-  if (imageTroll) imageTroll.style.display = 'none'; // Cache l'image du troll
+// Gestion des messages moqueurs (niveau 9)
+function handleSearchInput(e) {
+  const val = e.target.value.toLowerCase();
+
+  if (val === "easter egg") {
+    alert("Bien joué ! Le troll se ferme.");
+    window.close();
+    return;
+  }
+
+  // Si c’est un niveau de troll entre 1 et 15
+  const niveau = parseInt(val);
+  if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
+    startTrollLevel(niveau);
+    return;
+  }
+
+  if (trollLevel >= 9) {
+    const jokes = [
+      "Tu tapes du texte, Kevin ? Sérieux ?",
+      "Je vois ce que tu fais... ce n'est pas très malin.",
+      "Arrête de chercher, ce n'est qu'un troll !",
+      "T'as pas mieux à faire ?",
+    ];
+    status.textContent = jokes[Math.floor(Math.random() * jokes.length)];
+  }
+
+  if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
+    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+  }
 }
 
-function resetMorpionUI() {
-    const boardDiv = document.getElementById('board');
-    if (!boardDiv) return;
-    for(let cell of boardDiv.children) {
-        cell.textContent = '';
-        cell.classList.remove('used');
+// Activation du troll "impossible de fermer" (niveau 15)
+function handleCloseTroll(e) {
+  const val = e.target.value.toLowerCase();
+  if (val === "easter egg") {
+    alert("Bien joué ! Le troll se ferme.");
+    window.close();
+  } else {
+    alert(
+      "Impossible de fermer la fenêtre sauf avec 'easter egg' ou à la fin du troll."
+    );
+  }
+}
+
+// Mouvement aléatoire curseur ou fenêtre (niveau 14)
+let jitterInterval = null;
+function enableCursorJitter() {
+  jitterInterval = setInterval(() => {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    window.moveTo(x, y);
+  }, 1000);
+}
+function disableCursorJitter() {
+  if (jitterInterval) {
+    clearInterval(jitterInterval);
+    jitterInterval = null;
+  }
+}
+
+// Calculatrice troll (niveau 15)
+function initCalculator() {
+  calcDisplay.value = "";
+  calcButtons.querySelectorAll("button").forEach((btn) => {
+    btn.onclick = () => {
+      const val = btn.getAttribute("data-val");
+      if (val) {
+        calcDisplay.value += val;
+      }
+    };
+  });
+  document.getElementById("calc-clear").onclick = () => {
+    calcDisplay.value = "";
+  };
+  document.getElementById("calc-equals").onclick = () => {
+    try {
+      // eslint-disable-next-line no-eval
+      calcDisplay.value = eval(calcDisplay.value) ?? "";
+    } catch {
+      calcDisplay.value = "Erreur";
     }
+  };
 }
 
-// --- Fonction pour mettre fin au troll (Easter Egg) ---
-function endTroll() {
-  alert('Easter Egg détecté : Fin du troll ! Merci d\'avoir joué.');
-  location.reload(); // Recharge la page pour tout remettre à zéro
-}
+searchBar.addEventListener("input", handleSearchInput);
 
-// --- Démarrage de la progression au chargement de la page ---
-window.onload = () => {
-  updateProgress();
-};
+// Start with progress bar
+updateProgress();
