@@ -34,7 +34,7 @@
       <h3>Jouez pendant que ça installe...</h3>
       <span class="close-button" data-target="morpion-container">&times;</span>
       <div id="board"></div>
-      <!-- NOUVEAU: Bouton pour recommencer le Morpion -->
+      <!-- Bouton pour recommencer le Morpion -->
       <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
     </div>
 
@@ -48,12 +48,12 @@
     </div>
 
     <!-- RICKROLL (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element" autoplay loop> <!-- MODIFIÉ: 'muted' retiré -->
+    <video id="rickroll-video" class="fixed-element" autoplay loop>
       <source src="rickroll.mp4" type="video/mp4">
     </video>
 
     <!-- SUBWAY SURFER VIDEO (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element" autoplay loop> <!-- MODIFIÉ: 'muted' retiré -->
+    <video id="subway-surfer-video" class="fixed-element" autoplay loop>
         <source src="subwaysurfer.mp4" type="video/mp4">
     </video>
 
@@ -73,8 +73,9 @@
     <div id="custom-alert-container" class="fixed-element"></div>
 
     <!-- Spinner de redémarrage type Windows -->
-    <div id="windows-restart-spinner" class="fixed-element">
+    <div id="windows-restart-spinner" class="fixed-element" style="display:none;">
       <div class="spinning-circle"></div>
+      <button id="stop-restart-btn">Arrêter</button> <!-- Bouton Arrêter -->
     </div>
 
   </div>
