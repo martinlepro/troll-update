@@ -73,6 +73,19 @@ const trollMessages = [
 let isTrollActive = false;
 let hasEnteredFullscreenOnce = false;
 
+// Fonction pour réinitialiser le jeu de morpion
+function resetMorpion() {
+  board = ['', '', '', '', '', '', '', '', ''];
+  currentPlayer = 'X';
+  gameActive = true;
+  updateBoard();
+  setStatus(`Joueur ${currentPlayer} commence`);
+}
+
+// Ajout du listener sur le bouton reset-morpion-btn
+document.getElementById('reset-morpion-btn').addEventListener('click', resetMorpion);
+
+
 function requestFullscreenMode() {
     console.log("Tentative de demande de plein écran.");
     if (fullscreenContainer.requestFullscreen) {
