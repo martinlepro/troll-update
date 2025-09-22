@@ -649,3 +649,38 @@ body.cursor-pale {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+#cancel-fake-btn {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1vh 2vw;
+  font-size: 2vw;
+  border-radius: 5px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 5000;
+  transition: top 0.2s ease, left 0.2s ease;
+}
+
+#cancel-real-btn {
+  position: fixed;
+  bottom: 1vh;
+  left: 1vw;
+  padding: 1vh 2vw;
+  font-size: 1.5vw;
+  border-radius: 5px;
+  background-color: #444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 5000;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+#cancel-real-btn:hover {
+  opacity: 1;
+}
