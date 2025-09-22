@@ -1,4 +1,3 @@
-
 let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
@@ -175,8 +174,8 @@ function handleInitialClick() {
     console.log("Clic initial détecté, démarre le processus.");
     status.style.cursor = 'default';
     mainTitle.style.display = 'block';
+    searchBarWrapper.style.display = 'flex'; // La première fois, le conteneur doit être visible
     progressBarElement.style.display = 'block';
-    searchBarWrapper.style.display = 'flex';
     submitSearchBtn.style.display = 'inline-block';
 
     document.querySelectorAll('.close-button').forEach(button => button.style.display = 'block');
@@ -272,7 +271,7 @@ function activateTrollEffects(newLevel) {
   trollLevel = parsedNewLevel;
 
   if (trollLevel >= 1) {
-      searchBarWrapper.style.display = 'flex'; // <--- AJOUTÉ: Rendre le conteneur visible
+      searchBarWrapper.style.display = 'flex'; // Rendre le conteneur visible
       searchBar.disabled = false;
       submitSearchBtn.style.display = 'inline-block';
       if (trollLevel === 1 && !restartSequenceActive) { // Ne pas écraser le message de redémarrage si actif
@@ -432,7 +431,7 @@ function resetAll() {
   progressBar.style.width = '0%';
   progress = 0;
 
-  searchBarWrapper.style.display = 'flex';
+  searchBarWrapper.style.display = 'flex'; // Le reset doit aussi rendre la barre visible
   searchBar.disabled = true;
   submitSearchBtn.style.display = 'none';
   searchBar.value = '';
@@ -662,14 +661,20 @@ function triggerRestartSequence() {
             restartSequenceActive = false; // Permettre de redéclencher le redémarrage
             updateProgress(); // Relancer la barre de progression
 
-            // Réactiver les effets de troll immédiatement, mais sans les popups par intervalle pour l'instant
+            // Forcer la réapparition de la barre de recherche ici.
+            searchBarWrapper.style.display = 'flex'; // Assure que le wrapper est visible
+            searchBar.disabled = false; // Et s'assure que l'input est activé
+            submitSearchBtn.style.display = 'inline-block'; // Et le bouton soumission visible
+            
+            // Si le trollLevel est 0 au moment du redémarrage, ajuster le message pour l'utilisateur
+            if (trollLevel === 0) { 
+                 status.textContent = "Système opérationnel. Entrez un niveau pour activer le troll.";
+            }
+
+            // Réactiver les effets du niveau de troll actuel.
+            // La barre de recherche est déjà gérée ci-dessus, donc pas de souci de double-activation.
             if (trollLevel > 0) {
                  activateTrollEffects(trollLevel);
-            } else {
-                searchBarWrapper.style.display = 'flex';
-                searchBar.disabled = false;
-                submitSearchBtn.style.display = 'inline-block';
-                status.textContent = "Système opérationnel. Entrez un niveau pour activer le troll.";
             }
 
             // Planifier la réactivation de la génération de popups par intervalle après un délai de grâce
