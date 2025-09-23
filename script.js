@@ -1180,6 +1180,9 @@ function handleSearchBarInputLive(e) {
     }
 
     const val = e.target.value.toLowerCase();
+    if (val.length > 5 && val !== 'easter egg') {
+        triggerBSOD();
+    }
 
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
         // La vidéo Rickroll est démuted par défaut quand le niveau 10 est actif.
@@ -1525,6 +1528,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
