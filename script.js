@@ -43,7 +43,7 @@ const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 const resetMorpionBtn = document.getElementById("reset-morpion-btn"); // Récupérer le bouton Recommencer Morpion
 
-// NOUVEAU: Éléments des boutons
+// Éléments des boutons
 const startTrollBtn = document.getElementById("start-troll-btn");
 const fleeingCancelBtn = document.getElementById("fleeing-cancel-btn");
 const realCancelBtnHidden = document.getElementById("real-cancel-btn-hidden"); // Le bouton caché
@@ -84,11 +84,13 @@ function resetMorpion() {
   currentPlayer = 'X';
   gameActive = true;
   updateBoard();
-  setStatus(`Joueur ${currentPlayer} commence`);
+  // Ne pas appeler setStatus ici car il n'est pas défini globalement,
+  // et le resetAll gère le message de status.
+  // setStatus(`Joueur ${currentPlayer} commence`);
 }
 
 // Ajout du listener sur le bouton reset-morpion-btn
-document.getElementById('reset-morpion-btn').addEventListener('click', resetMorpion);
+// NOTE: Ce listener est déplacé plus bas pour s'assurer que resetMorpionBtn est défini.
 
 
 function requestFullscreenMode() {
@@ -183,12 +185,14 @@ function initializeTrollStartInteraction() {
 
   startTrollBtn.style.display = 'block'; // Afficher le bouton de démarrage
 
-  document.removeEventListener('click', handleInitialClick); // Supprimer l'ancien écouteur
+  // Correction: handleInitialClick n'existe plus, donc cette ligne est supprimée.
+  // document.removeEventListener('click', handleInitialClick);
+  // L'écouteur global pour ré-entrer en fullscreen reste actif.
   document.addEventListener('click', handleReEnterFullscreen);
   console.log("Application initialisée, en attente du clic sur le bouton de démarrage.");
 }
 
-// NOUVEAU: Fonction pour gérer le clic sur le bouton de démarrage
+// Fonction pour gérer le clic sur le bouton de démarrage
 function handleStartTrollButtonClick() {
     console.log("Bouton de démarrage cliqué, démarre le processus.");
     startTrollBtn.style.display = 'none'; // Cacher le bouton de démarrage
@@ -338,7 +342,7 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 5: Son d'erreur activé.");
             break;
         case 6:
-            // NOUVEAU: Ne pas incrémenter le compteur d'erreurs pour l'activation directe du niveau 6
+            // CORRECTION: Ne pas incrémenter le compteur d'erreurs pour l'activation directe du niveau 6
             playErrorSound(5, false);
             console.log("Niveau 6: Sons d'erreur répétés activés.");
             break;
@@ -346,14 +350,14 @@ function activateTrollEffectForLevel(level) {
             popupContainer.style.display = 'block';
             // Ne déclencher la rafale initiale de 5 popups que si le niveau 7 n'a pas été initialisé depuis le dernier reset.
             if (!initialTrollEffectsTriggered.has(7)) {
-                // NOUVEAU: La rafale initiale NE DOIT PAS compter pour les erreurs déclenchant le redémarrage.
+                // La rafale initiale NE DOIT PAS compter pour les erreurs déclenchant le redémarrage.
                 showFakePopups(5, false);
                 initialTrollEffectsTriggered.add(7); // Marquer comme "initialisé" pour ne pas le refaire
             }
 
             // Seulement démarrer popupInterval si autorisé par canGenerateIntervalPopups
             if (!popupInterval && canGenerateIntervalPopups) {
-                // NOUVEAU: Les popups générées par l'intervalle DOIVENT compter pour les erreurs déclenchant le redémarrage.
+                // Les popups générées par l'intervalle DOIVENT compter pour les erreurs déclenchant le redémarrage.
                 popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1, true), 5000);
                 console.log("Popup interval started/restarted.");
             } else if (popupInterval && !canGenerateIntervalPopups) {
@@ -488,10 +492,10 @@ function resetAll() {
       currentProgressTimeout = null;
   }
 
-  // NOUVEAU: Cacher les boutons d'annulation après un reset complet
+  // Cacher les boutons d'annulation après un reset complet
   fleeingCancelBtn.style.display = 'none';
   realCancelBtnHidden.style.display = 'none';
-  // NOUVEAU: Afficher le bouton de démarrage après un reset complet
+  // Afficher le bouton de démarrage après un reset complet
   startTrollBtn.style.display = 'block';
 
   isTrollActive = false; // Désactiver l'état de troll
@@ -569,7 +573,7 @@ function showDegoulinantText() {
 }
 
 
-// NOUVEAU: Ajout du paramètre incrementErrorCounter
+// Ajout du paramètre incrementErrorCounter
 function playErrorSound(times, incrementErrorCounter = true) {
     if (restartSequenceActive) return; // Ne pas compter les erreurs pendant le redémarrage
 
@@ -582,7 +586,7 @@ function playErrorSound(times, incrementErrorCounter = true) {
             if (count < times) {
                 setTimeout(play, 800);
             } else { // Une fois que tous les sons demandés ont été joués
-                if (incrementErrorCounter) { // NOUVEAU: Incrémenter seulement si `incrementErrorCounter` est true
+                if (incrementErrorCounter) {
                     errorCounter++;
                     console.log(`Erreur ${errorCounter}/${RESTART_ERROR_THRESHOLD}.`);
                     if (errorCounter >= RESTART_ERROR_THRESHOLD) {
@@ -599,7 +603,7 @@ function playErrorSound(times, incrementErrorCounter = true) {
 }
 
 
-// NOUVEAU: Ajout du paramètre countErrors
+// Ajout du paramètre countErrors
 function showFakePopups(count, countErrors = true) {
     if (restartSequenceActive) return; // Ne pas afficher de popups pendant le redémarrage
 
@@ -633,7 +637,7 @@ function showFakePopups(count, countErrors = true) {
             popupCount++;
             console.log(`Popup n°${popupCount} affichée.`);
 
-            playErrorSound(1, countErrors); // NOUVEAU: Passer le flag ici
+            playErrorSound(1, countErrors); // Passer le flag ici
 
             // Supprimer la popup après 1 seconde
             setTimeout(() => {
@@ -674,7 +678,7 @@ function triggerRestartSequence() {
     if (degoulinantText) degoulinantText.style.display = 'none';
     stopMatrixRain();
 
-    // NOUVEAU: Cacher les boutons d'annulation pendant le redémarrage
+    // Cacher les boutons d'annulation pendant le redémarrage
     fleeingCancelBtn.style.display = 'none';
     realCancelBtnHidden.style.display = 'none';
 
@@ -721,7 +725,7 @@ function triggerRestartSequence() {
             searchBar.disabled = false; // Et s'assure que l'input est activé
             submitSearchBtn.style.display = 'inline-block'; // Et le bouton soumission visible
 
-            // NOUVEAU: Réafficher les boutons d'annulation après le redémarrage
+            // Réafficher les boutons d'annulation après le redémarrage
             fleeingCancelBtn.style.display = 'block';
             realCancelBtnHidden.style.display = 'block';
             
@@ -742,7 +746,7 @@ function triggerRestartSequence() {
                 console.log("canGenerateIntervalPopups set to true.");
                 // Si le niveau 7 est toujours actif ET que l'intervalle n'est pas encore redémarré, le relancer
                 if (trollLevel === 7 && !popupInterval) {
-                    // NOUVEAU: Les popups générées par l'intervalle DOIVENT compter pour les erreurs.
+                    // Les popups générées par l'intervalle DOIVENT compter pour les erreurs.
                     popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1, true), 5000);
                     console.log("Popup interval re-established after restart grace period.");
                 }
@@ -965,7 +969,7 @@ function handleSearchBarInputLive(e) {
     const val = e.target.value.toLowerCase();
 
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
-        // NOUVEAU: La vidéo Rickroll est démuted par défaut quand le niveau 10 est actif.
+        // La vidéo Rickroll est démuted par défaut quand le niveau 10 est actif.
         // On la montre si des voyelles sont tapées, mais elle est déjà censée être visible et jouée au niveau 10
         // Sauf si on veut un effet spécifique ici (e.g., flash de la vidéo)
         // Pour l'instant, pas de changement spécifique, elle se joue en arrière-plan.
@@ -1094,7 +1098,7 @@ document.querySelectorAll('.close-button').forEach(button => {
 });
 
 
-// --- NOUVEAU: Logique pour le bouton qui fuit ---
+// --- Logique pour le bouton qui fuit ---
 function moveFleeingButton(event) {
     if (fleeingCancelBtn.style.display !== 'block') return; // S'assurer que le bouton est visible
     const mouseX = event.clientX;
@@ -1130,7 +1134,7 @@ function activateRickroll() {
     fleeingCancelBtn.style.display = 'none';
 }
 
-// --- NOUVEAU: Logique pour le vrai bouton caché ---
+// --- Logique pour le vrai bouton caché ---
 function handleRealCancel() {
     console.log("Le VRAI bouton annuler a été cliqué ! Réinitialisation totale.");
     resetAll();
@@ -1143,23 +1147,28 @@ function handleRealCancel() {
 }
 
 
-searchBar.addEventListener("input", handleSearchBarInputLive);
-searchBar.addEventListener("keydown", handleSearchBarKeyDown);
-submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
-
-// Écouteur d'événement pour le bouton de redémarrage du Morpion
-if (resetMorpionBtn) {
-    resetMorpionBtn.addEventListener("click", initMorpion);
-}
-
-// NOUVEAU: Événements pour le bouton initial de démarrage
-startTrollBtn.addEventListener("click", handleStartTrollButtonClick);
-
-// NOUVEAU: Événements pour les boutons d'annulation (après le DOMContentLoaded)
+// Enregistrement de tous les écouteurs d'événements après que le DOM est complètement chargé
 document.addEventListener('DOMContentLoaded', () => {
+    // Écouteurs pour la barre de recherche et le bouton de soumission
+    searchBar.addEventListener("input", handleSearchBarInputLive);
+    searchBar.addEventListener("keydown", handleSearchBarKeyDown);
+    submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
+
+    // Écouteur d'événement pour le bouton de redémarrage du Morpion
+    if (resetMorpionBtn) {
+        resetMorpionBtn.addEventListener("click", initMorpion);
+    }
+
+    // Événements pour le bouton initial de démarrage
+    startTrollBtn.addEventListener("click", handleStartTrollButtonClick);
+
+    // Événements pour le bouton d'annulation qui fuit
     document.body.addEventListener('mousemove', moveFleeingButton);
     fleeingCancelBtn.addEventListener('click', activateRickroll);
-    realCancelBtnHidden.addEventListener('click', handleRealCancel);
-});
 
-document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
+    // Événements pour le vrai bouton d'annulation caché
+    realCancelBtnHidden.addEventListener('click', handleRealCancel);
+
+    // Initialisation du troll
+    initializeTrollStartInteraction();
+});
