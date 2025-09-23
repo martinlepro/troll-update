@@ -1,3 +1,5 @@
+
+
 let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
@@ -1172,3 +1174,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
