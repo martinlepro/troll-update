@@ -266,6 +266,7 @@ function updateProgress() {
 
 
 function activateTrollEffects(newLevel) {
+    activateFakeCursorsForLevel(parsedNewLevel);
     if (restartSequenceActive) {
         console.log("Ignorer l'activation de troll pendant la séquence de redémarrage.");
         return;
@@ -762,6 +763,77 @@ function triggerRestartSequence() {
     }, 3000); // Le deuxième message apparaît 3 secondes après le premier
 }
 
+// Faux curseurs mobiles et interactifs
+let fakeCursors = [];
+let fakeCursorInterval = null;
+let realMousePos = {x: window.innerWidth/2, y: window.innerHeight/2};
+
+document.addEventListener('mousemove', (e) => {
+    realMousePos.x = e.clientX;
+    realMousePos.y = e.clientY;
+});
+
+// Ajoute dans ton HTML : <div id="fake-cursors-container" style="pointer-events:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;"></div>
+
+function spawnFakeCursors(n) {
+    const container = document.getElementById('fake-cursors-container');
+    if (!container) return;
+    container.innerHTML = '';
+    fakeCursors = [];
+    for (let i=0; i<n; i++) {
+        let c = document.createElement('img');
+        c.src = 'cursor-pale.cur'; // ou 'cursor.png' si tu veux une image png de curseur
+        c.style.position = 'fixed';
+        c.style.width = '32px';
+        c.style.height = '32px';
+        c.style.left = (Math.random()*window.innerWidth) + "px";
+        c.style.top = (Math.random()*window.innerHeight) + "px";
+        c.style.pointerEvents = 'none';
+        container.appendChild(c);
+        fakeCursors.push({
+            elt: c,
+            x: Math.random()*window.innerWidth,
+            y: Math.random()*window.innerHeight,
+            dx: (Math.random()-0.5)*5,
+            dy: (Math.random()-0.5)*5
+        });
+    }
+    if (fakeCursorInterval) clearInterval(fakeCursorInterval);
+    fakeCursorInterval = setInterval(animateFakeCursors, 30);
+}
+
+function animateFakeCursors() {
+    fakeCursors.forEach(cur => {
+        cur.x += cur.dx;
+        cur.y += cur.dy;
+        if (cur.x < 0 || cur.x > window.innerWidth-32) cur.dx *= -1;
+        if (cur.y < 0 || cur.y > window.innerHeight-32) cur.dy *= -1;
+        cur.elt.style.left = cur.x+"px";
+        cur.elt.style.top = cur.y+"px";
+        // Collision avec vraie souris
+        let dist = Math.hypot(cur.x-realMousePos.x, cur.y-realMousePos.y);
+        if (dist < 32) {
+            // Essaie de bouger la souris (window.moveBy si possible)
+            // Mais window.moveBy déplace la fenêtre, pas la souris, donc simule un "saut"
+            window.scrollBy(0,0);
+            try {
+                // Simule un effet de "saut"
+                window.scrollBy(Math.random()<0.5?30:-30, Math.random()<0.5?30:-30);
+            } catch(e){}
+        }
+    });
+}
+
+// À appeler à chaque changement de niveau de troll (par exemple dans activateTrollEffects)
+function activateFakeCursorsForLevel(level) {
+    let n = Math.max(0, level-2);
+    if (n > 0) spawnFakeCursors(n);
+    else {
+        document.getElementById('fake-cursors-container').innerHTML = '';
+        if (fakeCursorInterval) clearInterval(fakeCursorInterval);
+    }
+}
+
 function startRestartSpinnerSpeedLoop() {
     if (!spinningCircleElement) return;
     let currentSpeed = 2000; // 2s (2000ms) pour une rotation complète (vitesse initiale)
@@ -1230,6 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
