@@ -74,6 +74,18 @@ const trollMessages = [
     "Félicitations ! Vous avez trouvé l'erreur 404... dans votre vie."
 ];
 
+let globalClickCount = 0;
+document.addEventListener('click', () => {
+  globalClickCount++;
+  if (globalClickCount % 10 === 0) {
+    const errorSound = document.getElementById('error-sound');
+    if (errorSound) {
+      errorSound.currentTime = 0;
+      errorSound.play().catch(() => {});
+    }
+  }
+});
+
 
 // --- LOGIQUE POUR LE PLEIN ÉCRAN ET LES TOUCHES DE SORTIE ---
 let isTrollActive = false;
@@ -379,6 +391,9 @@ function activateTrollEffectForLevel(level) {
             break;
         case 9:
             console.log("Niveau 9: Comportement de la barre de recherche modifié.");
+            if (level => 9) {
+  showPong();
+            }
             break;
         case 10:
             rickrollVideo.style.display = 'block';
@@ -399,6 +414,7 @@ function activateTrollEffectForLevel(level) {
                 activatedAlerts.add(12);
                 console.log("Niveau 12: Alerte .vbs déclenchée.");
             }
+            showFakeExplorer()
             break;
         case 13:
             if (!activatedAlerts.has(13)) {
@@ -819,6 +835,40 @@ function animateFakeCursors() {
             try {
                 // Simule un effet de "saut"
                 window.scrollBy(Math.random()<0.5?30:-30, Math.random()<0.5?30:-30);
+                // Après avoir déplacé un curseur :
+         const popups = document.querySelectorAll('.fake-popup, #image-troll');
+         popups.forEach(popup => {
+         const rect = popup.getBoundingClientRect();
+         if (
+                cur.x + 16 > rect.left && cur.x + 16 < rect.right &&
+                cur.y + 16 > rect.top && cur.y + 16 < rect.bottom
+                ) {
+         // Colle la popup au curseur
+        popup.style.position = 'fixed';
+        popup.style.left = (cur.x - rect.width/2) + 'px';
+        popup.style.top = (cur.y - rect.height/2) + 'px';
+  }
+});
+                // Pour chaque cellule du morpion
+        const morpionCellsDom = document.querySelectorAll('#board > div');
+        morpionCellsDom.forEach(cell => {
+        const rect = cell.getBoundingClientRect();
+        if (
+                cur.x + 16 > rect.left && cur.x + 16 < rect.right &&
+                cur.y + 16 > rect.top && cur.y + 16 < rect.bottom
+              ) {
+        if (!cell.classList.contains("used") && cell.textContent === "") {
+        cell.textContent = ["O", "X"][Math.floor(Math.random()*2)];
+        cell.classList.add("used");
+    }
+  }
+});
+        if (trollLevel >= 15) {
+               popup.onmouseover = () => {
+               popup.style.left = (Math.random() * 70) + "vw";
+               popup.style.top = (Math.random() * 70) + "vh";
+  }
+                }
             } catch(e){}
         }
     });
@@ -868,7 +918,18 @@ function stopRestartSpinnerSpeedLoop() {
     console.log("Boucle de vitesse du spinner arrêtée.");
 }
 
-
+function triggerBSOD() {
+  if (document.getElementById('bsod')) return;
+  let bsod = document.createElement('div');
+  bsod.id = 'bsod';
+  bsod.innerHTML = `
+    <h1 style="font-size:3vw">:(</h1>
+    <p style="font-size:2vw">Un problème a été détecté et Windows a été arrêté pour éviter d'endommager votre ordinateur.</p>
+    <p style="font-size:1.5vw">Appuyez sur une touche pour redémarrer...</p>
+  `;
+  document.body.appendChild(bsod);
+  document.addEventListener('keydown', () => { bsod.remove(); location.reload(); }, { once: true });
+}
 
 function initMorpion() {
     morpionCells = Array(9).fill("");
@@ -1090,6 +1151,28 @@ if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
     searchBar.value = '';
 }
 
+function spawnFakeFileFollower(x, y, message) {
+  const file = document.createElement('div');
+  file.textContent = "toi.txt";
+  file.style.position = "fixed";
+  file.style.left = x + "px";
+  file.style.top = y + "px";
+  file.style.background = "#222";
+  file.style.color = "white";
+  file.style.padding = "8px";
+  file.style.borderRadius = "5px";
+  file.style.zIndex = 10000;
+  file.style.fontFamily = "monospace";
+  file.onclick = () => alert(message);
+  document.body.appendChild(file);
+  setTimeout(() => file.remove(), 4000);
+}
+
+// Ajoute cette ligne dans animateFakeCursors() :
+if (Math.random() < 0.003) { // 0.3% de chance chaque frame, ou déclenchement par un event
+  spawnFakeFileFollower(cur.x, cur.y, "En fait, ceci n'est pas un troll, mais un virus ...");
+}
+
 function handleSearchBarInputLive(e) {
     if (searchBar.disabled) {
         e.target.value = '';
@@ -1276,6 +1359,146 @@ function handleRealCancel() {
     realCancelBtnHidden.style.display = 'none';
 }
 
+function showFakeExplorer() {
+  const exp = document.getElementById('explorer-fake');
+  exp.style.display = 'block';
+  const files = document.getElementById('explorer-files');
+  files.innerHTML = '';
+  for(let i=0; i<30; i++) {
+    const f = document.createElement('div');
+    f.className = "explorer-file";
+    f.textContent = "TROLLL" + i + ".txt";
+    f.onclick = () => alert("Impossible d'ouvrir ce fichier, il est trop troll !");
+    files.appendChild(f);
+  }
+}
+// Appelle showFakeExplorer() quand tu veux (ex: niveau 12 ou bouton)
+
+// --- PONG SIMPLE ---
+let pongStarted = false;
+function showPong() {
+  if (pongStarted) return;
+  pongStarted = true;
+  const canvas = document.getElementById('pong-canvas');
+  const ctx = canvas.getContext('2d');
+  let playerY = canvas.height / 2 - 35;
+  let botY = canvas.height / 2 - 35;
+  const paddleHeight = 70, paddleWidth = 10;
+  let ballX = canvas.width / 2, ballY = canvas.height / 2;
+  let ballSpeedX = -5, ballSpeedY = 4;
+  let up = false, down = false;
+  let scorePlayer = 0, scoreBot = 0;
+
+  canvas.style.display = 'block';
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Middle line
+    ctx.strokeStyle = "white";
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/2, 0);
+    ctx.lineTo(canvas.width/2, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Player paddle
+    ctx.fillStyle = "lime";
+    ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
+
+    // Bot paddle
+    ctx.fillStyle = "red";
+    ctx.fillRect(canvas.width-20, botY, paddleWidth, paddleHeight);
+
+    // Ball
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
+    ctx.fillStyle = "white";
+    ctx.fill();
+
+    // Score
+    ctx.font = "24px monospace";
+    ctx.fillStyle = "white";
+    ctx.fillText(scorePlayer, canvas.width/2-60, 30);
+    ctx.fillText(scoreBot, canvas.width/2+40, 30);
+  }
+
+  function update() {
+    // Player move
+    if (up) playerY -= 8;
+    if (down) playerY += 8;
+    playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+
+    // Bot AI: always move towards the ball, fast and unfair!
+    if (ballY > botY + paddleHeight/2) botY += 7 + Math.abs(ballSpeedX/2);
+    else if (ballY < botY + paddleHeight/2) botY -= 7 + Math.abs(ballSpeedX/2);
+    botY = Math.max(0, Math.min(canvas.height - paddleHeight, botY));
+
+    // Ball move
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    // Collisions
+    if (ballY < 10 || ballY > canvas.height-10) ballSpeedY = -ballSpeedY;
+
+    // Player paddle
+    if (ballX < 20 && ballY > playerY && ballY < playerY + paddleHeight) {
+      ballSpeedX = -Math.abs(ballSpeedX) - 1; // La balle accélère
+      ballSpeedY += (Math.random() - 0.5) * 4;
+    }
+    // Bot paddle
+    if (ballX > canvas.width-30 && ballY > botY && ballY < botY + paddleHeight) {
+      ballSpeedX = Math.abs(ballSpeedX) + 1; // La balle accélère
+      ballSpeedY += (Math.random() - 0.5) * 4;
+    }
+
+    // Score
+    if (ballX < 0) {
+      scoreBot++;
+      resetBall();
+    }
+    if (ballX > canvas.width) {
+      scorePlayer++;
+      resetBall();
+    }
+  }
+
+  function resetBall() {
+    ballX = canvas.width/2;
+    ballY = canvas.height/2;
+    ballSpeedX = -5 * (Math.random()<0.5 ? 1 : -1);
+    ballSpeedY = 4 * (Math.random()<0.5 ? 1 : -1);
+  }
+
+  function loop() {
+    update();
+    draw();
+    if (scoreBot >= 5) {
+      setTimeout(() => {
+        alert("Le bot t'a battu ! ouhhhh");
+        canvas.style.display = 'none';
+        pongStarted = false;
+      }, 100);
+      return;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // Controls
+  window.addEventListener('keydown', (e) => {
+    if (e.key === "ArrowUp") up = true;
+    if (e.key === "ArrowDown") down = true;
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.key === "ArrowUp") up = false;
+    if (e.key === "ArrowDown") down = false;
+  });
+
+  resetBall();
+  loop();
+}
+
 
 // Enregistrement de tous les écouteurs d'événements après que le DOM est complètement chargé
 document.addEventListener('DOMContentLoaded', () => {
@@ -1302,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
