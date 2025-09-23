@@ -103,14 +103,15 @@ function requestFullscreenMode() {
             }
         }).catch(err => {
             console.warn("Échec de la demande de plein écran:", err);
-            if (!isTrollActive) {
-                console.log("Démarrage du mécanisme de troll car plein écran échoué.");
-                startTrollMechanism();
+            // Cette partie ne devrait plus démarrer le troll directement si le bouton est utilisé
+            // On s'assure juste que si l'API fullscreen n'est pas supportée, le troll démarre quand même.
+            if (!isTrollActive && startTrollBtn.style.display === 'none') { // Si le bouton a été cliqué mais fullscreen a échoué
+                 startTrollMechanism();
             }
         });
     } else {
         console.warn("API Fullscreen non supportée par le navigateur. Démarrage direct du troll.");
-        if (!isTrollActive) {
+        if (!isTrollActive && startTrollBtn.style.display === 'none') { // Si le bouton a été cliqué mais fullscreen a échoué
             startTrollMechanism();
         }
     }
@@ -332,11 +333,13 @@ function activateTrollEffectForLevel(level) {
             console.log("Niveau 4: Texte dégoulinant et Matrix Rain activés.");
             break;
         case 5:
-            playErrorSound(1);
+            // NOUVEAU: Ne pas incrémenter le compteur d'erreurs pour l'activation directe du niveau 5
+            playErrorSound(1, false);
             console.log("Niveau 5: Son d'erreur activé.");
             break;
         case 6:
-            playErrorSound(5);
+            // NOUVEAU: Ne pas incrémenter le compteur d'erreurs pour l'activation directe du niveau 6
+            playErrorSound(5, false);
             console.log("Niveau 6: Sons d'erreur répétés activés.");
             break;
         case 7:
