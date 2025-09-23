@@ -472,6 +472,9 @@ function resetAll() {
   searchBar.disabled = true;
   submitSearchBtn.style.display = 'none';
   searchBar.value = '';
+  // Supprimer le bouton "Tout arrêter" si présent
+  const stopAllBtn = document.getElementById('stop-all-btn');
+  if (stopAllBtn) stopAllBtn.remove();
 
   status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll.";
   status.style.display = 'block'; // S'assurer que le status est visible
@@ -935,12 +938,31 @@ function processSearchBarSubmission(value) {
         return;
     }
 
-    const niveau = parseInt(value);
-    if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
+const niveau = parseInt(value);
+if (!isNaN(niveau) && niveau >= 1 && niveau <= 15) {
+    // NE PAS déclencher de troll/redémarrage si niveau >= 15,
+    // mais activer les effets normaux jusqu'à la calculatrice.
+    if (niveau < 15) {
         activateTrollEffects(niveau);
-        searchBar.value = '';
-        return;
+    } else {
+        activateTrollEffects(niveau); // la calculatrice s'affiche mais PAS de redémarrage troll
     }
+    searchBar.value = '';
+    // Ajouter le bouton "Tout arrêter" une seule fois
+    if (!document.getElementById('stop-all-btn')) {
+        const stopAllBtn = document.createElement('button');
+        stopAllBtn.id = 'stop-all-btn';
+        stopAllBtn.textContent = 'Tout arrêter';
+        stopAllBtn.style.marginLeft = "15px";
+        stopAllBtn.style.padding = "10px 18px";
+        stopAllBtn.style.fontSize = "1.1em";
+        stopAllBtn.onclick = function() {
+            triggerRestartSequence(); // Déclenche le redémarrage troll
+        };
+        searchBarWrapper.appendChild(stopAllBtn);
+    }
+    return;
+}
 
     if (/^[a-z]+$/.test(value)) {
         if (trollLevel >= 9) {
@@ -1172,3 +1194,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
