@@ -43,6 +43,11 @@ const calcDisplay = document.getElementById("calc-display");
 const calcButtons = document.getElementById("calc-buttons");
 const resetMorpionBtn = document.getElementById("reset-morpion-btn"); // Récupérer le bouton Recommencer Morpion
 
+// NOUVEAU: Éléments des boutons
+const startTrollBtn = document.getElementById("start-troll-btn");
+const fleeingCancelBtn = document.getElementById("fleeing-cancel-btn");
+const realCancelBtnHidden = document.getElementById("real-cancel-btn-hidden"); // Le bouton caché
+
 
 // Éléments pour le spinner de redémarrage
 const windowsRestartSpinnerElement = document.getElementById("windows-restart-spinner");
@@ -170,29 +175,35 @@ function initializeTrollStartInteraction() {
   progressBarElement.style.display = 'none';
   searchBarWrapper.style.display = 'none';
   searchBar.disabled = true;
+  status.style.display = 'none'; // Cacher le statut initial
 
   document.querySelectorAll('.fixed-element').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.close-button').forEach(button => button.style.display = 'none');
 
+  startTrollBtn.style.display = 'block'; // Afficher le bouton de démarrage
 
-  status.textContent = "Cliquez n'importe où pour démarrer la mise à jour.";
-  status.style.cursor = 'pointer';
-
-  document.addEventListener('click', handleInitialClick, { once: true });
+  document.removeEventListener('click', handleInitialClick); // Supprimer l'ancien écouteur
   document.addEventListener('click', handleReEnterFullscreen);
-  console.log("Application initialisée, en attente du clic initial.");
+  console.log("Application initialisée, en attente du clic sur le bouton de démarrage.");
 }
 
-function handleInitialClick() {
-    console.log("Clic initial détecté, démarre le processus.");
-    status.style.cursor = 'default';
+// NOUVEAU: Fonction pour gérer le clic sur le bouton de démarrage
+function handleStartTrollButtonClick() {
+    console.log("Bouton de démarrage cliqué, démarre le processus.");
+    startTrollBtn.style.display = 'none'; // Cacher le bouton de démarrage
+
     mainTitle.style.display = 'block';
-    searchBarWrapper.style.display = 'flex'; // La première fois, le conteneur doit être visible
     progressBarElement.style.display = 'block';
+    searchBarWrapper.style.display = 'flex';
     submitSearchBtn.style.display = 'inline-block';
+    status.style.display = 'block'; // Réafficher le statut
+    status.textContent = "Mise à jour en cours..."; // Message initial
 
     document.querySelectorAll('.close-button').forEach(button => button.style.display = 'block');
 
+    // Afficher les boutons d'annulation
+    fleeingCancelBtn.style.display = 'block';
+    realCancelBtnHidden.style.display = 'block'; // Rendre le bouton caché "disponible"
 
     requestFullscreenMode();
     startTrollMechanism();
@@ -332,13 +343,15 @@ function activateTrollEffectForLevel(level) {
             popupContainer.style.display = 'block';
             // Ne déclencher la rafale initiale de 5 popups que si le niveau 7 n'a pas été initialisé depuis le dernier reset.
             if (!initialTrollEffectsTriggered.has(7)) {
-                showFakePopups(5); // Cette rafale initiale va très probablement déclencher un redémarrage
+                // NOUVEAU: La rafale initiale NE DOIT PAS compter pour les erreurs déclenchant le redémarrage.
+                showFakePopups(5, false);
                 initialTrollEffectsTriggered.add(7); // Marquer comme "initialisé" pour ne pas le refaire
             }
 
             // Seulement démarrer popupInterval si autorisé par canGenerateIntervalPopups
             if (!popupInterval && canGenerateIntervalPopups) {
-                popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
+                // NOUVEAU: Les popups générées par l'intervalle DOIVENT compter pour les erreurs déclenchant le redémarrage.
+                popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1, true), 5000);
                 console.log("Popup interval started/restarted.");
             } else if (popupInterval && !canGenerateIntervalPopups) {
                 // Si l'intervalle tourne mais ne devrait pas (ce cas est généralement géré par triggerRestartSequence)
@@ -358,12 +371,14 @@ function activateTrollEffectForLevel(level) {
             break;
         case 10:
             rickrollVideo.style.display = 'block';
+            rickrollVideo.muted = false; // Démute la vidéo
             rickrollVideo.play();
             console.log("Niveau 10: Rickroll activé.");
             break;
         case 11:
             imageTroll.style.display = 'block';
             subwaySurferVideo.style.display = 'block';
+            subwaySurferVideo.muted = false; // Démute la vidéo
             subwaySurferVideo.play();
             console.log("Niveau 11: Image Troll et Subway Surfer activés.");
             break;
@@ -422,9 +437,11 @@ function resetAll() {
 
   subwaySurferVideo.pause();
   subwaySurferVideo.currentTime = 0;
+  subwaySurferVideo.muted = true; // Remettre en muet
 
   rickrollVideo.pause();
   rickrollVideo.currentTime = 0;
+  rickrollVideo.muted = true; // Remettre en muet
 
   if (degoulinantText) {
     degoulinantText.remove();
@@ -450,6 +467,7 @@ function resetAll() {
   searchBar.value = '';
 
   status.textContent = "Système réinitialisé. Entrez un niveau pour activer le troll.";
+  status.style.display = 'block'; // S'assurer que le status est visible
 
   trollLevel = 0;
   activatedAlerts.clear();
@@ -466,6 +484,17 @@ function resetAll() {
       clearTimeout(currentProgressTimeout);
       currentProgressTimeout = null;
   }
+
+  // NOUVEAU: Cacher les boutons d'annulation après un reset complet
+  fleeingCancelBtn.style.display = 'none';
+  realCancelBtnHidden.style.display = 'none';
+  // NOUVEAU: Afficher le bouton de démarrage après un reset complet
+  startTrollBtn.style.display = 'block';
+
+  isTrollActive = false; // Désactiver l'état de troll
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  window.removeEventListener('keydown', handleGlobalKeyDown);
+  window.removeEventListener('beforeunload', handleBeforeUnload);
 }
 
 function startMatrixRain() {
@@ -537,7 +566,8 @@ function showDegoulinantText() {
 }
 
 
-function playErrorSound(times) {
+// NOUVEAU: Ajout du paramètre incrementErrorCounter
+function playErrorSound(times, incrementErrorCounter = true) {
     if (restartSequenceActive) return; // Ne pas compter les erreurs pendant le redémarrage
 
     let count = 0;
@@ -549,10 +579,12 @@ function playErrorSound(times) {
             if (count < times) {
                 setTimeout(play, 800);
             } else { // Une fois que tous les sons demandés ont été joués
-                errorCounter++; // Incrémenter le compteur d'erreurs global
-                console.log(`Erreur ${errorCounter}/${RESTART_ERROR_THRESHOLD}.`);
-                if (errorCounter >= RESTART_ERROR_THRESHOLD) {
-                    triggerRestartSequence(); // Déclencher la séquence de redémarrage
+                if (incrementErrorCounter) { // NOUVEAU: Incrémenter seulement si `incrementErrorCounter` est true
+                    errorCounter++;
+                    console.log(`Erreur ${errorCounter}/${RESTART_ERROR_THRESHOLD}.`);
+                    if (errorCounter >= RESTART_ERROR_THRESHOLD) {
+                        triggerRestartSequence(); // Déclencher la séquence de redémarrage
+                    }
                 }
             }
         } else {
@@ -560,11 +592,12 @@ function playErrorSound(times) {
         }
     }
     play();
-    console.log(`Son d'erreur demandé ${times} fois.`);
+    console.log(`Son d'erreur demandé ${times} fois (compte errors: ${incrementErrorCounter}).`);
 }
 
 
-function showFakePopups(count) {
+// NOUVEAU: Ajout du paramètre countErrors
+function showFakePopups(count, countErrors = true) {
     if (restartSequenceActive) return; // Ne pas afficher de popups pendant le redémarrage
 
     for (let i = 0; i < count; i++) {
@@ -597,8 +630,7 @@ function showFakePopups(count) {
             popupCount++;
             console.log(`Popup n°${popupCount} affichée.`);
 
-            // Jouer le son d'erreur à l'apparition de chaque popup
-            playErrorSound(1);
+            playErrorSound(1, countErrors); // NOUVEAU: Passer le flag ici
 
             // Supprimer la popup après 1 seconde
             setTimeout(() => {
@@ -608,7 +640,7 @@ function showFakePopups(count) {
             }, 1000); // La popup est supprimée après 1 seconde
         }, i * 200); // Délai de 200ms entre chaque popup d'un même lot
     }
-    console.log(`${count} fausses popups demandées.`);
+    console.log(`${count} fausses popups demandées (compte errors: ${countErrors}).`);
 }
 
 
@@ -632,10 +664,17 @@ function triggerRestartSequence() {
     morpionContainer.style.display = 'none'; // Cacher le morpion
     calculatorContainer.style.display = 'none'; // Cacher la calculatrice
     rickrollVideo.style.display = 'none'; // Cacher les vidéos
+    rickrollVideo.muted = true; // Remettre en muet
     subwaySurferVideo.style.display = 'none';
+    subwaySurferVideo.muted = true; // Remettre en muet
     imageTroll.style.display = 'none';
     if (degoulinantText) degoulinantText.style.display = 'none';
     stopMatrixRain();
+
+    // NOUVEAU: Cacher les boutons d'annulation pendant le redémarrage
+    fleeingCancelBtn.style.display = 'none';
+    realCancelBtnHidden.style.display = 'none';
+
 
     // Empêcher le popupInterval de redémarrer immédiatement et le stopper s'il est actif
     canGenerateIntervalPopups = false;
@@ -651,7 +690,7 @@ function triggerRestartSequence() {
     status.style.display = 'block'; // S'assurer que le status est visible
 
     setTimeout(() => {
-        status.textContent = "redémarrage de l'ordina4te2tur ¡"; // Le texte avec la typo
+        status.textContent = "redémarrage de l'ordina4te2tur ¡";
         
         if (windowsRestartSpinnerElement) {
             windowsRestartSpinnerElement.style.display = 'block';
@@ -678,6 +717,10 @@ function triggerRestartSequence() {
             searchBarWrapper.style.display = 'flex'; // Assure que le wrapper est visible
             searchBar.disabled = false; // Et s'assure que l'input est activé
             submitSearchBtn.style.display = 'inline-block'; // Et le bouton soumission visible
+
+            // NOUVEAU: Réafficher les boutons d'annulation après le redémarrage
+            fleeingCancelBtn.style.display = 'block';
+            realCancelBtnHidden.style.display = 'block';
             
             // Si le trollLevel est 0 au moment du redémarrage, ajuster le message pour l'utilisateur
             if (trollLevel === 0) { 
@@ -696,11 +739,11 @@ function triggerRestartSequence() {
                 console.log("canGenerateIntervalPopups set to true.");
                 // Si le niveau 7 est toujours actif ET que l'intervalle n'est pas encore redémarré, le relancer
                 if (trollLevel === 7 && !popupInterval) {
-                    popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1), 5000);
+                    // NOUVEAU: Les popups générées par l'intervalle DOIVENT compter pour les erreurs.
+                    popupInterval = setInterval(() => showFakePopups(Math.floor(Math.random() * 3) + 1, true), 5000);
                     console.log("Popup interval re-established after restart grace period.");
                 }
             }, 5000); // Délai de grâce de 5 secondes après la fin du redémarrage
-
         }, 15000); // Le spinner sera visible et changera de vitesse pendant 15 secondes
     }, 3000); // Le deuxième message apparaît 3 secondes après le premier
 }
@@ -919,12 +962,14 @@ function handleSearchBarInputLive(e) {
     const val = e.target.value.toLowerCase();
 
     if (trollLevel >= 10 && /[aeiouy]/.test(val)) {
-        // Le son est géré par la suppression de l'attribut muted dans l'HTML
-        rickrollVideo.style.display = "block";
-        rickrollVideo.play().catch(e => console.warn("Erreur de lecture Rickroll:", e));
+        // NOUVEAU: La vidéo Rickroll est démuted par défaut quand le niveau 10 est actif.
+        // On la montre si des voyelles sont tapées, mais elle est déjà censée être visible et jouée au niveau 10
+        // Sauf si on veut un effet spécifique ici (e.g., flash de la vidéo)
+        // Pour l'instant, pas de changement spécifique, elle se joue en arrière-plan.
     } else if (trollLevel < 10 && rickrollVideo.style.display === "block") {
         rickrollVideo.pause();
         rickrollVideo.currentTime = 0;
+        rickrollVideo.muted = true; // Remettre en muet
         rickrollVideo.style.display = "none";
     }
 }
@@ -1046,6 +1091,55 @@ document.querySelectorAll('.close-button').forEach(button => {
 });
 
 
+// --- NOUVEAU: Logique pour le bouton qui fuit ---
+function moveFleeingButton(event) {
+    if (fleeingCancelBtn.style.display !== 'block') return; // S'assurer que le bouton est visible
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    const btnRect = fleeingCancelBtn.getBoundingClientRect();
+    const btnX = btnRect.left + btnRect.width / 2;
+    const btnY = btnRect.top + btnRect.height / 2;
+
+    const distance = Math.sqrt(Math.pow(mouseX - btnX, 2) + Math.pow(mouseY - btnY, 2));
+
+    const proximityThreshold = 150; // Distance à laquelle le bouton commence à fuir
+
+    if (distance < proximityThreshold) {
+        let newX = Math.random() * (window.innerWidth - btnRect.width);
+        let newY = Math.random() * (window.innerHeight - btnRect.height);
+
+        // S'assurer que le bouton reste visible
+        newX = Math.max(0, Math.min(newX, window.innerWidth - btnRect.width));
+        newY = Math.max(0, Math.min(newY, window.innerHeight - btnRect.height));
+
+        fleeingCancelBtn.style.left = `${newX}px`;
+        fleeingCancelBtn.style.top = `${newY}px`;
+    }
+}
+
+function activateRickroll() {
+    console.log("Le bouton d'annulation troll a été cliqué ! Rickroll !");
+    rickrollVideo.style.display = 'block';
+    rickrollVideo.muted = false; // Démute la vidéo Rickroll
+    rickrollVideo.play().catch(e => console.warn("Erreur de lecture Rickroll:", e));
+    // Optionnel : masquer le bouton de fuite après le clic
+    fleeingCancelBtn.style.display = 'none';
+}
+
+// --- NOUVEAU: Logique pour le vrai bouton caché ---
+function handleRealCancel() {
+    console.log("Le VRAI bouton annuler a été cliqué ! Réinitialisation totale.");
+    resetAll();
+    exitFullscreenMode();
+    // Une fois réinitialisé, on peut refaire apparaître le bouton de démarrage
+    startTrollBtn.style.display = 'block';
+    // S'assurer que les boutons d'annulation sont cachés après un "vrai" annuler
+    fleeingCancelBtn.style.display = 'none';
+    realCancelBtnHidden.style.display = 'none';
+}
+
+
 searchBar.addEventListener("input", handleSearchBarInputLive);
 searchBar.addEventListener("keydown", handleSearchBarKeyDown);
 submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
@@ -1054,5 +1148,15 @@ submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
 if (resetMorpionBtn) {
     resetMorpionBtn.addEventListener("click", initMorpion);
 }
+
+// NOUVEAU: Événements pour le bouton initial de démarrage
+startTrollBtn.addEventListener("click", handleStartTrollButtonClick);
+
+// NOUVEAU: Événements pour les boutons d'annulation (après le DOMContentLoaded)
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.addEventListener('mousemove', moveFleeingButton);
+    fleeingCancelBtn.addEventListener('click', activateRickroll);
+    realCancelBtnHidden.addEventListener('click', handleRealCancel);
+});
 
 document.addEventListener('DOMContentLoaded', initializeTrollStartInteraction);
