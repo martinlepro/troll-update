@@ -2,7 +2,8 @@ let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
 let calculatorInitialized = false;
-let morpionCells = [];
+let morpionCells = []
+let morpionLocked = false;;
 let popupCount = 0;
 let activatedAlerts = new Set();
 let matrixRainInterval = null;
@@ -421,6 +422,7 @@ function startTrollLevel(n) {
 
 
 function resetAll() {
+  morpionLocked = false;
   console.log("Exécution de resetAll().");
   document.body.classList.remove("cursor-pale");
 
@@ -1194,4 +1196,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
