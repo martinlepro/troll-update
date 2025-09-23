@@ -210,6 +210,8 @@ function handleStartTrollButtonClick() {
     // Afficher les boutons d'annulation
     fleeingCancelBtn.style.display = 'block';
     realCancelBtnHidden.style.display = 'block'; // Rendre le bouton caché "disponible"
+    const xpAudio = document.getElementById('xp-startup');
+    if (xpAudio) { xpAudio.currentTime = 0; xpAudio.play().catch(()=>{}); }
 
     requestFullscreenMode();
     startTrollMechanism();
@@ -797,53 +799,85 @@ function stopRestartSpinnerSpeedLoop() {
 
 
 function initMorpion() {
-  morpionCells = Array(9).fill("");
+    morpionCells = Array(9).fill("");
+    morpionLocked = false;
 
-  let currentBoardElement = morpionContainer.querySelector('#board');
-  if (!currentBoardElement) {
-      // Ce bloc ne devrait normalement pas être atteint si le HTML est bien structuré
-      // et que morpionContainer est l'élément parent de #board.
-      // Si #board est créé dynamiquement et ajouté à morpionContainer, ce code est correct.
-      morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
-      currentBoardElement = document.createElement("div");
-      currentBoardElement.id = "board";
-      morpionContainer.insertBefore(currentBoardElement, resetMorpionBtn); // Insérer avant le bouton
-  } else {
-      currentBoardElement.innerHTML = ''; // Nettoyer le plateau existant
-  }
+    let currentBoardElement = morpionContainer.querySelector('#board');
+    if (!currentBoardElement) {
+        morpionContainer.innerHTML = "<h3>Jouez pendant que ça installe...</h3>";
+        currentBoardElement = document.createElement("div");
+        currentBoardElement.id = "board";
+        morpionContainer.insertBefore(currentBoardElement, resetMorpionBtn);
+    } else {
+        currentBoardElement.innerHTML = '';
+    }
 
+    // Nouveau : Message sous le plateau
+    let morpionMessageElt = morpionContainer.querySelector('#morpion-message');
+    if (!morpionMessageElt) {
+        morpionMessageElt = document.createElement('div');
+        morpionMessageElt.id = 'morpion-message';
+        morpionMessageElt.style.marginTop = "10px";
+        morpionMessageElt.style.fontWeight = "bold";
+        morpionContainer.appendChild(morpionMessageElt);
+    }
+    showMorpionMessage("C'est à vous de commencer !", "yellow");
 
-  morpionContainer.querySelector('h3').textContent = "Jouez pendant que ça installe...";
-
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement("div");
-    cell.dataset.index = i;
-    cell.addEventListener("click", () => {
-      if (!cell.classList.contains("used") && morpionCells[i] === "") {
-        cell.textContent = "X";
-        cell.classList.add("used");
-        morpionCells[i] = "X";
-
-        if (checkWinner(morpionCells) === null) {
-          setTimeout(() => {
-            const move = getBestMove(morpionCells);
-            if (move !== null) {
-              const computerCell = currentBoardElement.children[move];
-              if (computerCell) {
-                computerCell.textContent = "O";
-                computerCell.classList.add("used");
-                morpionCells[move] = "O";
-              }
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement("div");
+        cell.dataset.index = i;
+        cell.addEventListener("click", () => {
+            if (morpionLocked) return;
+            if (!cell.classList.contains("used") && morpionCells[i] === "") {
+                cell.textContent = "X";
+                cell.classList.add("used");
+                morpionCells[i] = "X";
+                let winner = checkWinner(morpionCells);
+                if (winner === null) {
+                    showMorpionMessage("C'est le tour de O", "cyan");
+                    morpionLocked = true;
+                    setTimeout(() => {
+                        const move = getBestMove(morpionCells);
+                        if (move !== null) {
+                            const computerCell = currentBoardElement.children[move];
+                            if (computerCell) {
+                                computerCell.textContent = "O";
+                                computerCell.classList.add("used");
+                                morpionCells[move] = "O";
+                            }
+                        }
+                        let winner2 = checkWinner(morpionCells);
+                        if (winner2 === "X" || winner2 === "O") {
+                            showMorpionMessage(winner2 + " a gagné !", "lime", true);
+                        } else if (winner2 === "draw") {
+                            showMorpionMessage("Égalité !", "orange", true);
+                        } else {
+                            showMorpionMessage("C'est le tour de X", "yellow");
+                        }
+                        morpionLocked = false;
+                    }, 500);
+                } else if (winner === "X" || winner === "O") {
+                    showMorpionMessage(winner + " a gagné !", "lime", true);
+                } else if (winner === "draw") {
+                    showMorpionMessage("Égalité !", "orange", true);
+                }
             }
-            const winner = checkWinner(morpionCells);
-            if (winner !== null) { /* Handle winner */ }
-          }, 500);
-        }
-      }
-    });
-    currentBoardElement.appendChild(cell);
-  }
-  console.log("Morpion initialisé.");
+        });
+        currentBoardElement.appendChild(cell);
+    }
+    console.log("Morpion initialisé.");
+}
+
+function showMorpionMessage(msg, color, animate) {
+    let elt = morpionContainer.querySelector('#morpion-message');
+    if (!elt) return;
+    elt.textContent = msg;
+    elt.style.color = color || "yellow";
+    elt.style.animation = "none";
+    if (animate) {
+        void elt.offsetWidth; // force reflow
+        elt.style.animation = "morpionPulse 1s";
+    }
 }
 
 function getBestMove(board) {
@@ -1196,5 +1230,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
