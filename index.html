@@ -22,22 +22,8 @@
     </div>
     <div id="status"></div>
 
-    <!-- Vrai bouton caché en bas à gauche -->
-    <button id="cancel-real-btn">Vraiment annuler</button>
-
-
     <!-- Conteneur pour l'effet 1 et 0 (Matrix Rain) -->
     <div id="matrix-rain-container" class="fixed-element"></div>
-    <!-- Faux bouton annuler qui bouge (position absolute pour le déplacer) -->
-    <button id="fake-cancel-btn" style="position: absolute; top: 50px; left: 50px; z-index: 1000;">
-    Annuler la mise à jour
-    </button>
-
-    <!-- Vrai bouton annuler (en bas à gauche) -->
-    <button id="real-cancel-btn" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
-    Vrai Annuler la mise à jour
-    </button>
-
 
     <!-- CALCULATRICE (Haut Droite) -->
     <div id="calculator-container" class="fixed-element">
@@ -66,12 +52,12 @@
     </div>
 
     <!-- RICKROLL (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element" autoplay loop>
+    <video id="rickroll-video" class="fixed-element" autoplay loop muted>
       <source src="rickroll.mp4" type="video/mp4">
     </video>
 
     <!-- SUBWAY SURFER VIDEO (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element" autoplay loop>
+    <video id="subway-surfer-video" class="fixed-element" autoplay loop muted>
         <source src="subwaysurfer.mp4" type="video/mp4">
     </video>
 
@@ -98,10 +84,21 @@
 
   </div>
 
+  <!-- NOUVEAU: Bouton initial pour démarrer le troll -->
+  <button id="start-troll-btn" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px 40px; font-size: 3vw; background-color: #006FB7; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: background 0.2s ease; z-index: 10000;">
+      Cliquez ici pour démarrer la mise à jour
+  </button>
+
+  <!-- NOUVEAU: Faux bouton annuler qui bouge (visible au démarrage du troll) -->
+  <button id="fleeing-cancel-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; background-color: #ff4444; color: white; padding: 15px 30px; font-size: 2vw; border: none; border-radius: 5px; cursor: pointer; z-index: 9000;">
+      Annuler la mise à jour
+  </button>
+
+  <!-- NOUVEAU: Vrai bouton annuler (caché en bas à droite) -->
+  <button id="real-cancel-btn-hidden" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.01; background-color: transparent; color: transparent; border: none; cursor: pointer; z-index: 10000; width: 150px; height: 60px;">
+      Vraiment Annuler
+  </button>
+
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
