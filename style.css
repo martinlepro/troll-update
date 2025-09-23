@@ -687,5 +687,11 @@ body.cursor-pale {
   opacity: 1;
 }
 
+@keyframes morpionPulse {
+    0% { color: yellow; transform: scale(1);}
+    50% { color: lime; transform: scale(1.3);}
+    100% { color: yellow; transform: scale(1);}
+}
+#morpion-message { transition: color .3s, transform .3s; }
 
 
