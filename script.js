@@ -266,7 +266,6 @@ function updateProgress() {
 
 
 function activateTrollEffects(newLevel) {
-    activateFakeCursorsForLevel(parsedNewLevel);
     if (restartSequenceActive) {
         console.log("Ignorer l'activation de troll pendant la séquence de redémarrage.");
         return;
@@ -302,6 +301,7 @@ function activateTrollEffects(newLevel) {
   }
 
   trollLevel = parsedNewLevel;
+  activateFakeCursorsForLevel(parsedNewLevel)
 
   if (trollLevel >= 1) {
       searchBarWrapper.style.display = 'flex'; // Rendre le conteneur visible
@@ -1302,6 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
