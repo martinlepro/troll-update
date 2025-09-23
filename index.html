@@ -2,53 +2,102 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Troll Update</title>
+  <title>Mise à jour système - troll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
 </head>
 <body>
+  <!-- Conteneur principal pour le mode plein écran -->
   <div id="fullscreen-container">
-    <h1 id="main-title">Troll Update 2025</h1>
-    <div id="progress-bar"><div id="progress"></div></div>
-    <div id="status">Prêt à troller...</div>
-    <div id="search-bar-wrapper">
-      <input id="search-bar" type="text" placeholder="Tape un niveau ou une commande...">
-      <button id="submit-search-btn">Go</button>
+    <!-- Sons divers -->
+    <audio id="sound1" src="trollsonfauxbouton1.mp3"></audio>
+    <audio id="sound2" src="trollsonfauxbouton2.mp3"></audio>
+    <audio id="sound3" src="trollsonfauxbouton3.mp3"></audio>
+    <audio id="xp-startup" src="Windows_XP.mp3"></audio>
+    <audio id="error-sound" src="error.mp3"></audio>
+    <audio id="error-mp4" src="error.mp4"></audio>
+
+    <!-- Faux curseurs -->
+    <div id="fake-cursors-container" style="pointer-events:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;"></div>
+
+    <!-- Titre principal -->
+    <h1 id="main-title">Mise à jour système</h1>
+
+    <!-- Barre de progression -->
+    <div id="progress-bar">
+      <div id="progress"></div>
     </div>
-    <button id="start-troll-btn">Démarrer le troll</button>
-    <button id="fleeing-cancel-btn" style="position:fixed;display:none;">Annuler (troll)</button>
-    <button id="real-cancel-btn-hidden" style="display:none;">Annuler (vrai)</button>
+    <div id="status"></div>
+
+    <!-- Matrix Rain -->
+    <div id="matrix-rain-container" class="fixed-element"></div>
+
+    <!-- Calculatrice (Haut Droite) -->
+    <div id="calculator-container" class="fixed-element" style="display:none;">
+      <h3>Calculatrice</h3>
+      <span class="close-button" data-target="calculator-container">&times;</span>
+      <input type="text" id="calc-display" disabled />
+      <div id="calc-buttons"></div>
+    </div>
+
+    <!-- Morpion (Milieu Droite) -->
+    <div id="morpion-container" class="fixed-element" style="display:none;">
+      <h3>Jouez pendant que ça installe...</h3>
+      <span class="close-button" data-target="morpion-container">&times;</span>
+      <div id="board"></div>
+      <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
+    </div>
+
+    <!-- Popups (Haut Gauche) -->
+    <div id="popup-container" class="fixed-element"></div>
+
+    <!-- Barre de recherche troll -->
+    <div id="search-bar-wrapper" style="display:none;">
+      <input type="text" id="search-bar" placeholder="Tape un niveau ou une commande...">
+      <button id="submit-search-btn" style="display:none;">Entrée</button>
+    </div>
+
+    <!-- Rickroll (Bas Gauche) -->
+    <video id="rickroll-video" class="fixed-element" style="display:none;" autoplay loop muted>
+      <source src="rickroll.mp4" type="video/mp4">
+    </video>
+
+    <!-- Subway Surfer Video (Bas Droite) -->
+    <video id="subway-surfer-video" class="fixed-element" style="display:none;" autoplay loop muted>
+      <source src="subwaysurfer.mp4" type="video/mp4">
+    </video>
+
+    <!-- Image troll (milieu écran) -->
+    <div id="image-troll" class="fixed-element" style="display:none;">
+      <p>Image trouvée sur votre ordinateur :</p>
+      <img src="trollface.png" alt="Trollface">
+    </div>
+
+    <!-- Conteneur pour les messages d'alerte personnalisés -->
+    <div id="custom-alert-container" class="fixed-element"></div>
+
+    <!-- Spinner de redémarrage type Windows -->
+    <div id="windows-restart-spinner" class="fixed-element" style="display:none;">
+      <div class="spinning-circle"></div>
+      <button id="stop-restart-btn">Arrêter</button>
+    </div>
   </div>
 
-  <!-- Elements fixes pour les trolls -->
-  <div id="image-troll" class="fixed-element" style="display:none;">
-    <p>😈 Trollface !</p>
-    <img src="trollface.png" alt="Trollface">
-  </div>
-  <div id="popup-container" class="fixed-element"></div>
-  <div id="calculator-container" class="fixed-element" style="display:none;">
-    <h3>Calculatrice</h3>
-    <input id="calc-display" readonly>
-    <div id="calc-buttons"></div>
-  </div>
-  <div id="morpion-container" class="fixed-element" style="display:none;">
-    <h3>Morpion</h3>
-    <div id="board"></div>
-    <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
-  </div>
-  <div id="matrix-rain-container" class="fixed-element" style="display:none;"></div>
-  <video id="rickroll-video" class="fixed-element" src="rickroll.mp4" style="display:none;" controls muted></video>
-  <video id="subway-surfer-video" class="fixed-element" src="subway.mp4" style="display:none;" controls muted></video>
-  <div id="fake-cursors-container"></div>
-  <div id="degoulinant-text" style="display:none;"></div>
-  <div id="custom-alert-container" style="display:none;"></div>
-  <div id="windows-restart-spinner">
-    <div class="spinning-circle"></div>
-  </div>
-  <!-- Sons -->
-  <audio id="xp-startup" src="Windows_XP.mp3"></audio>
-  <audio id="error-sound" src="error.wav"></audio>
-  <audio id="error-mp4" src="error.mp4"></audio>
-  <!-- BSOD container (sera injecté en JS) -->
+  <!-- Bouton initial pour démarrer le troll (au centre) -->
+  <button id="start-troll-btn" style="display:block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px 40px; font-size: 3vw; background-color: #006FB7; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: background 0.2s ease; z-index: 10000;">
+    Cliquez ici pour démarrer la mise à jour
+  </button>
+
+  <!-- Faux bouton annuler qui bouge -->
+  <button id="fleeing-cancel-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; background-color: #ff4444; color: white; padding: 15px 30px; font-size: 2vw; border: none; border-radius: 5px; cursor: pointer; z-index: 9000;">
+    Annuler la mise à jour
+  </button>
+
+  <!-- Vrai bouton annuler (caché en bas à droite) -->
+  <button id="real-cancel-btn-hidden" style="position: fixed; bottom: 10px; right: 10px; opacity: 0.01; background-color: transparent; color: transparent; border: none; cursor: pointer; z-index: 10000; width: 150px; height: 60px;">
+    Vraiment Annuler
+  </button>
 
   <script src="script.js"></script>
 </body>
