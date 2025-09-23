@@ -694,4 +694,42 @@ body.cursor-pale {
 }
 #morpion-message { transition: color .3s, transform .3s; }
 
+@keyframes textWobble {
+  0% { transform: scale(1,1) rotate(0deg); }
+  20% { transform: scale(1.1,0.95) rotate(-2deg);}
+  40% { transform: scale(0.95,1.1) rotate(2deg);}
+  60% { transform: scale(1.05,0.98) rotate(-3deg);}
+  80% { transform: scale(0.98,1.05) rotate(1deg);}
+  100% { transform: scale(1,1) rotate(0deg);}
+}
+#degoulinant-text {
+  animation: degoulinement 5s forwards, textWobble 1.2s infinite;
+}
+#explorer-fake {
+  top: 10vh;
+  left: 35vw;
+  width: 30vw;
+  height: 40vh;
+  background: #003366;
+  color: white;
+  z-index: 8000;
+  overflow: auto;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  padding: 10px;
+}
+#explorer-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.explorer-file {
+  background: #222;
+  color: lime;
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-family: monospace;
+  margin: 4px;
+  cursor: pointer;
+}
 
