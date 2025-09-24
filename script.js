@@ -695,9 +695,6 @@ function playErrorSound(times, incrementErrorCounter = true) {
             count++;
             if (count < times) {
                 setTimeout(play, 800);
-            } else { // Une fois que tous les sons demandés ont été joués
-                    }
-                }
             }
         } else {
             console.warn("Element audio 'error-sound' non trouvé.");
@@ -1667,7 +1664,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialisation du troll
     initializeTrollStartInteraction();
+
+    makeAllWindowsDraggable(); // <--- AJOUTE CETTE LIGNE ICI
+    
 });
+
 
 
 
