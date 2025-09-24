@@ -1473,8 +1473,6 @@ function showFakeExplorer() {
     files.appendChild(f);
   }
 }
-// Appelle showFakeExplorer() quand tu veux (ex: niveau 12 ou bouton)
-
 let pongStarted = false;
 let pongKeyListenersAdded = false;
 
@@ -1586,10 +1584,9 @@ function showPong() {
   loop();
 }
 
-  // Initialisation générale
-  initializeTrollStartInteraction();
-  makeAllWindowsDraggable();
-});
+// Initialisation générale (à la toute fin de ton script, déjà présente, à garder)
+initializeTrollStartInteraction();
+makeAllWindowsDraggable();
 
 
 
