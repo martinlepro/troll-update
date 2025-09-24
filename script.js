@@ -752,7 +752,7 @@ function createTrollWindow(title, contentHtml, customId) {
       <div class="window-content">${contentHtml}</div>
     `;
 
-    makeWindowDraggable(win, win.querySelector('.window-titlebar'));
+    makeWindowDraggable(win);
     return win;
 }
 
@@ -1668,6 +1668,7 @@ document.addEventListener('DOMContentLoaded', () => {
     makeAllWindowsDraggable(); // <--- AJOUTE CETTE LIGNE ICI
     
 });
+
 
 
 
