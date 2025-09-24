@@ -1479,7 +1479,6 @@ function showPong() {
     draw();
     if (scoreBot >= 5) {
       setTimeout(() => {
-        alert("Le bot t'a battu ! ouhhhh");
         canvas.style.display = 'none';
         pongStarted = false;
       }, 100);
@@ -1528,6 +1527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
