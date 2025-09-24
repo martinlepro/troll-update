@@ -776,6 +776,9 @@ function showFakePopups(count, countErrors = true) {
 
             document.body.appendChild(popup);
 
+            // ===> C'EST ICI QU'IL FAUT AJOUTER LA LIGNE :
+            makeWindowDraggable(popup);
+
             playErrorSound(1, countErrors); // Son d'erreur et éventuellement incrémentation du compteur
 
             // Supprimer la popup après 1 seconde (sauf si tu veux qu'elles restent jusqu'à ce que l'utilisateur les réduise)
@@ -1665,6 +1668,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
