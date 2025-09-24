@@ -391,8 +391,6 @@ function activateTrollEffectForLevel(level) {
             break;
         case 9:
             console.log("Niveau 9: Comportement de la barre de recherche modifié.");
-            case 9:
-            console.log("Niveau 9: Comportement de la barre de recherche modifié.");
             if (level >= 9) { // <= CORRECTION ICI
                 showPong();
             }
@@ -1527,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
