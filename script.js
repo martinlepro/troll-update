@@ -98,30 +98,6 @@ let hasEnteredFullscreenOnce = false;
 function makeAllWindowsDraggable() {
   document.querySelectorAll('.window').forEach(winElt => {
     makeWindowDraggable(winElt);
-
-    titleElt.style.cursor = 'move';
-    titleElt.onmousedown = function(e) {
-      isDragging = true;
-      let rect = winElt.getBoundingClientRect();
-      offsetX = e.clientX - rect.left;
-      offsetY = e.clientY - rect.top;
-      document.body.style.userSelect = 'none';
-      winElt.style.zIndex = 2000; // Passe devant
-    }
-    document.addEventListener('mousemove', function(e) {
-      if (isDragging) {
-        winElt.style.left = (e.clientX - offsetX) + 'px';
-        winElt.style.top = (e.clientY - offsetY) + 'px';
-        winElt.style.right = 'auto';
-        winElt.style.bottom = 'auto';
-        winElt.style.position = 'fixed';
-      }
-    });
-    document.addEventListener('mouseup', function() {
-      isDragging = false;
-      document.body.style.userSelect = '';
-      winElt.style.zIndex = 1200;
-    });
   });
 }
 
@@ -179,25 +155,6 @@ function makeWindowDraggable(winElt) {
   });
 }
 
-// Bouton réduire/grossir universel
-document.addEventListener('click', function(e){
-  if (e.target.classList.contains('window-min-btn')) {
-    const win = e.target.closest('.window');
-    const content = win.querySelector('.window-content');
-    if (!content) return;
-    if (!win.classList.contains('minimized')) {
-      content.style.display = 'none';
-      win.classList.add('minimized');
-      e.target.textContent = "⬆";
-      e.target.style.fontSize = "1.1em";
-    } else {
-      content.style.display = '';
-      win.classList.remove('minimized');
-      e.target.textContent = '_';
-      e.target.style.fontSize = "";
-    }
-  }
-});
 
 // Fonction pour réinitialiser le jeu de morpion
 function resetMorpion() {
@@ -637,50 +594,48 @@ function resetAll() {
 }
 
 function startMatrixRain() {
-    if (matrixRainInterval) return;
-    matrixRainContainer.style.display = 'block';
-    matrixRainContainer.innerHTML = '';
+  if (matrixRainInterval) return;
+  matrixRainContainer.style.display = 'block';
 
-    matrixRainContainer.style.position = 'relative';
+  // Cible le vrai contenu, pas le conteneur global
+  const content = matrixRainContainer.querySelector('.window-content');
+  if (!content) return;
+  content.textContent = '';
 
-    const computedStyle = getComputedStyle(matrixRainContainer);
-    const fontSize = parseFloat(computedStyle.fontSize);
-    const lineHeight = parseFloat(computedStyle.lineHeight) || fontSize * 1.2;
+  // Calcul dimensions pour effet matrix
+  const computedStyle = getComputedStyle(matrixRainContainer);
+  const fontSize = parseFloat(computedStyle.fontSize);
+  const lineHeight = parseFloat(computedStyle.lineHeight) || fontSize * 1.2;
+  const charWidth = fontSize * 0.6, charHeight = lineHeight;
+  const numLines = Math.max(1, Math.floor(matrixRainContainer.offsetHeight / charHeight));
+  const numChars = Math.max(1, Math.floor(matrixRainContainer.offsetWidth / charWidth));
 
-    const charWidth = fontSize * 0.6;
-    const charHeight = lineHeight;
-
-    let initialContent = '';
-    const numLines = Math.max(1, Math.floor(matrixRainContainer.offsetHeight / charHeight));
-    const numChars = Math.max(1, Math.floor(matrixRainContainer.offsetWidth / charWidth));
-
-    for(let i = 0; i < numLines + 5; i++) {
-        let line = '';
-        for(let j = 0; j < numChars; j++) {
-            line += Math.round(Math.random());
-        }
-        initialContent += line + '\n';
+  // Génération du contenu initial
+  let initialContent = '';
+  for (let i = 0; i < numLines + 5; i++) {
+    let line = '';
+    for (let j = 0; j < numChars; j++) {
+      line += Math.round(Math.random());
     }
-    matrixRainContainer.textContent = initialContent;
+    initialContent += line + '\n';
+  }
+  content.textContent = initialContent;
 
-
-    matrixRainInterval = setInterval(() => {
-        let currentContent = matrixRainContainer.textContent;
-        const firstLineBreak = currentContent.indexOf('\n');
-        if (firstLineBreak !== -1) {
-            currentContent = currentContent.substring(firstLineBreak + 1);
-        } else {
-            currentContent = '';
-        }
-
-        let newLine = '';
-        for(let i = 0; i < numChars; i++) {
-            newLine += Math.round(Math.random());
-        }
-        matrixRainContainer.textContent = currentContent + newLine + '\n';
-
-    }, 100);
-    console.log("Matrix Rain démarré avec numLines:", numLines, "numChars:", numChars, "fontSize:", fontSize);
+  // Animation Matrix
+  matrixRainInterval = setInterval(() => {
+    let currentContent = content.textContent;
+    const firstLineBreak = currentContent.indexOf('\n');
+    if (firstLineBreak !== -1) {
+      currentContent = currentContent.substring(firstLineBreak + 1);
+    } else {
+      currentContent = '';
+    }
+    let newLine = '';
+    for (let i = 0; i < numChars; i++) {
+      newLine += Math.round(Math.random());
+    }
+    content.textContent = currentContent + newLine + '\n';
+  }, 100);
 }
 
 
@@ -1681,6 +1636,7 @@ document.addEventListener('DOMContentLoaded', () => {
     makeAllWindowsDraggable(); // <--- AJOUTE CETTE LIGNE ICI
     
 });
+
 
 
 
