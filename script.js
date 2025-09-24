@@ -443,6 +443,8 @@ function startTrollLevel(n) {
 function resetAll() {
   morpionLocked = false;
   console.log("Exécution de resetAll().");
+  document.getElementById('fake-cursors-container').innerHTML = '';
+  if (fakeCursorInterval) clearInterval(fakeCursorInterval);
   document.body.classList.remove("cursor-pale");
 
   // Masque tous les éléments 'fixed-element'
@@ -876,13 +878,14 @@ function animateFakeCursors() {
 
 // À appeler à chaque changement de niveau de troll (par exemple dans activateTrollEffects)
 function activateFakeCursorsForLevel(level) {
-    let n = Math.max(0, level-2);
-    if (n > 0) spawnFakeCursors(n);
-    else {
-        document.getElementById('fake-cursors-container').innerHTML = '';
-        if (fakeCursorInterval) clearInterval(fakeCursorInterval);
-    }
+// N'affiche les curseurs qu'à partir du niveau 3 (après la MAJ)
+if (level < 3) {
+  document.getElementById('fake-cursors-container').innerHTML = '';
+  if (fakeCursorInterval) clearInterval(fakeCursorInterval);
+  return;
 }
+let n = Math.max(0, level-2);
+if (n > 0) spawnFakeCursors(n);
 
 function startRestartSpinnerSpeedLoop() {
     if (!spinningCircleElement) return;
@@ -1527,6 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
