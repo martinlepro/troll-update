@@ -94,11 +94,10 @@ let hasEnteredFullscreenOnce = false;
 // ---- UNIVERSAL WINDOW MANAGEMENT FOR ALL .window ELEMENTS ----
 
 // Drag & drop pour toutes les fenêtres .window (calculatrice, explorer, matrix, morpion, etc.)
+
 function makeAllWindowsDraggable() {
   document.querySelectorAll('.window').forEach(winElt => {
-    const titleElt = winElt.querySelector('.window-titlebar');
-    if (!titleElt) return;
-    let isDragging = false, offsetX = 0, offsetY = 0;
+    makeWindowDraggable(winElt);
 
     titleElt.style.cursor = 'move';
     titleElt.onmousedown = function(e) {
@@ -131,11 +130,10 @@ document.addEventListener('click', function(e){
   if (e.target.classList.contains('window-min-btn')) {
     const win = e.target.closest('.window');
     const content = win.querySelector('.window-content');
-    const tit = win.querySelector('.window-title');
     if (!win.classList.contains('minimized')) {
       content.style.display = 'none';
       win.classList.add('minimized');
-      e.target.textContent = tit.textContent + " ⬆";
+      e.target.textContent = "⬆";
       e.target.style.fontSize = "1.1em";
     } else {
       content.style.display = '';
@@ -155,7 +153,11 @@ function makeWindowDraggable(winElt) {
   titleElt.style.cursor = 'move';
   titleElt.onmousedown = function(e) {
     isDragging = true;
-    let rect = winElt.getBoundingClientRect();
+    // Force la position courante en px pour éviter le saut
+    const rect = winElt.getBoundingClientRect();
+    winElt.style.top = rect.top + "px";
+    winElt.style.left = rect.left + "px";
+    winElt.style.position = "fixed";
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
     document.body.style.userSelect = 'none';
@@ -176,6 +178,26 @@ function makeWindowDraggable(winElt) {
     winElt.style.zIndex = 1200;
   });
 }
+
+// Bouton réduire/grossir universel
+document.addEventListener('click', function(e){
+  if (e.target.classList.contains('window-min-btn')) {
+    const win = e.target.closest('.window');
+    const content = win.querySelector('.window-content');
+    if (!content) return;
+    if (!win.classList.contains('minimized')) {
+      content.style.display = 'none';
+      win.classList.add('minimized');
+      e.target.textContent = "⬆";
+      e.target.style.fontSize = "1.1em";
+    } else {
+      content.style.display = '';
+      win.classList.remove('minimized');
+      e.target.textContent = '_';
+      e.target.style.fontSize = "";
+    }
+  }
+});
 
 // Fonction pour réinitialiser le jeu de morpion
 function resetMorpion() {
@@ -895,26 +917,6 @@ function triggerRestartSequence() {
     }, 3000); // Le deuxième message apparaît 3 secondes après le premier
 }
 
-document.addEventListener('click', function(e){
-  if (e.target.classList.contains('window-min-btn')) {
-    const win = e.target.closest('.window');
-    const content = win.querySelector('.window-content');
-    const tit = win.querySelector('.window-title');
-    if (!win.classList.contains('minimized')) {
-      content.style.display = 'none';
-      win.classList.add('minimized');
-      // Le bouton affiche le nom de la fenêtre + icône pour restaurer
-      e.target.textContent = tit.textContent + " ⬆";
-      e.target.style.fontSize = "1.1em";
-    } else {
-      content.style.display = '';
-      win.classList.remove('minimized');
-      e.target.textContent = '_';
-      e.target.style.fontSize = "";
-    }
-  }
-});
-
 // Faux curseurs mobiles et interactifs
 let fakeCursors = [];
 let fakeCursorInterval = null;
@@ -1515,7 +1517,8 @@ function showFakeExplorer() {
 }
 // Appelle showFakeExplorer() quand tu veux (ex: niveau 12 ou bouton)
 
-// --- PONG SIMPLE ---
+// ---- PONG ----
+// Ajoute un bouton recommencer sous le canvas Pong
 let pongStarted = false;
 function showPong() {
   if (pongStarted) return;
@@ -1531,11 +1534,11 @@ function showPong() {
   let scorePlayer = 0, scoreBot = 0;
 
   canvas.style.display = 'block';
+  const pongRestartBtn = document.getElementById('pong-restart-btn');
+  if (pongRestartBtn) pongRestartBtn.style.display = 'none';
 
-  function draw() {
+ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Middle line
     ctx.strokeStyle = "white";
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
@@ -1544,21 +1547,17 @@ function showPong() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Player paddle
     ctx.fillStyle = "lime";
     ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
 
-    // Bot paddle
     ctx.fillStyle = "red";
     ctx.fillRect(canvas.width-20, botY, paddleWidth, paddleHeight);
 
-    // Ball
     ctx.beginPath();
     ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
     ctx.fillStyle = "white";
     ctx.fill();
 
-    // Score
     ctx.font = "24px monospace";
     ctx.fillStyle = "white";
     ctx.fillText(scorePlayer, canvas.width/2-60, 30);
@@ -1566,35 +1565,26 @@ function showPong() {
   }
 
   function update() {
-    // Player move
     if (up) playerY -= 8;
     if (down) playerY += 8;
     playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
 
-    // Bot AI: always move towards the ball, fast and unfair!
     if (ballY > botY + paddleHeight/2) botY += 7 + Math.abs(ballSpeedX/2);
     else if (ballY < botY + paddleHeight/2) botY -= 7 + Math.abs(ballSpeedX/2);
     botY = Math.max(0, Math.min(canvas.height - paddleHeight, botY));
 
-    // Ball move
     ballX += ballSpeedX;
     ballY += ballSpeedY;
 
-    // Collisions
     if (ballY < 10 || ballY > canvas.height-10) ballSpeedY = -ballSpeedY;
-
-    // Player paddle
     if (ballX < 20 && ballY > playerY && ballY < playerY + paddleHeight) {
-      ballSpeedX = -Math.abs(ballSpeedX) - 1; // La balle accélère
+      ballSpeedX = -Math.abs(ballSpeedX) - 1;
       ballSpeedY += (Math.random() - 0.5) * 4;
     }
-    // Bot paddle
     if (ballX > canvas.width-30 && ballY > botY && ballY < botY + paddleHeight) {
-      ballSpeedX = Math.abs(ballSpeedX) + 1; // La balle accélère
+      ballSpeedX = Math.abs(ballSpeedX) + 1;
       ballSpeedY += (Math.random() - 0.5) * 4;
     }
-
-    // Score
     if (ballX < 0) {
       scoreBot++;
       resetBall();
@@ -1604,7 +1594,6 @@ function showPong() {
       resetBall();
     }
   }
-
   function resetBall() {
     ballX = canvas.width/2;
     ballY = canvas.height/2;
@@ -1619,11 +1608,26 @@ function showPong() {
       setTimeout(() => {
         canvas.style.display = 'none';
         pongStarted = false;
+        // Affiche le bouton recommencer
+        if (pongRestartBtn) pongRestartBtn.style.display = 'block';
       }, 100);
       return;
     }
     requestAnimationFrame(loop);
   }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === "ArrowUp") up = true;
+    if (e.key === "ArrowDown") down = true;
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.key === "ArrowUp") up = false;
+    if (e.key === "ArrowDown") down = false;
+  });
+
+  resetBall();
+  loop();
+}
 
   // Controls
   window.addEventListener('keydown', (e) => {
@@ -1638,7 +1642,16 @@ function showPong() {
   resetBall();
   loop();
 }
-
+// Ajoute cet event pour le bouton recommencer Pong
+document.addEventListener('DOMContentLoaded', () => {
+  const pongRestartBtn = document.getElementById('pong-restart-btn');
+  if (pongRestartBtn) {
+    pongRestartBtn.addEventListener('click', () => {
+      pongRestartBtn.style.display = 'none';
+      showPong();
+    });
+  }
+  makeAllWindowsDraggable();
 
 // Enregistrement de tous les écouteurs d'événements après que le DOM est complètement chargé
 document.addEventListener('DOMContentLoaded', () => {
@@ -1668,6 +1681,7 @@ document.addEventListener('DOMContentLoaded', () => {
     makeAllWindowsDraggable(); // <--- AJOUTE CETTE LIGNE ICI
     
 });
+
 
 
 
