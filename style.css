@@ -732,4 +732,43 @@ body.cursor-pale {
   margin: 4px;
   cursor: pointer;
 }
+.window {
+  border: 2px solid white;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  background: #005FA8;
+  z-index: 1200;
+  min-width: 220px;
+}
+.window-titlebar {
+  background: #003366;
+  color: white;
+  font-weight: bold;
+  padding: 6px 8px;
+  border-radius: 5px 5px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+}
+.window-content {
+  padding: 12px;
+}
+.window.minimized {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible;
+}
+.window.minimized .window-content {
+  display: none;
+}
+.window-min-btn {
+  margin-left: 14px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: white;
+}
+
 
