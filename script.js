@@ -208,13 +208,15 @@ function exitFullscreenMode() {
 }
 
 function handleFullscreenChange() {
-    console.log("Événement fullscreenchange détecté. FullscreenElement:", document.fullscreenElement);
     if (!document.fullscreenElement && isTrollActive) {
-        console.log("Sortie du plein écran détectée. Le retour sera forcé au prochain clic.");
-        if (trollLevel >= 14 && !jitterInterval) {
-            enableCursorJitter();
-            console.log("Jitter (Niveau 14) réactivé après sortie du plein écran.");
-        }
+        console.log("Sortie du plein écran détectée. Tentative de retour immédiat.");
+        requestFullscreenMode();
+        // Optionnel : affiche un message si ça ne marche pas après 200ms
+        setTimeout(() => {
+            if (!document.fullscreenElement) {
+                status.textContent = "Impossible de forcer le plein écran automatiquement. Cliquez pour réactiver.";
+            }
+        }, 200);
     }
 }
 
@@ -1587,6 +1589,7 @@ function showPong() {
 // Initialisation générale (à la toute fin de ton script, déjà présente, à garder)
 initializeTrollStartInteraction();
 makeAllWindowsDraggable();
+
 
 
 
