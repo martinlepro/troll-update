@@ -621,49 +621,84 @@ function playErrorSound(times, incrementErrorCounter = true) {
     console.log(`Son d'erreur demandé ${times} fois (compte errors: ${incrementErrorCounter}).`);
 }
 
+function makeWindowDraggable(winElt, titleElt) {
+  let isDragging = false, offsetX = 0, offsetY = 0;
+
+  titleElt.style.cursor = 'move';
+  titleElt.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    let rect = winElt.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    document.body.style.userSelect = 'none';
+    winElt.style.zIndex = 2000; // Passe devant
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      winElt.style.left = (e.clientX - offsetX) + 'px';
+      winElt.style.top = (e.clientY - offsetY) + 'px';
+      winElt.style.right = 'auto';
+      winElt.style.bottom = 'auto';
+      winElt.style.position = 'fixed';
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    document.body.style.userSelect = '';
+    winElt.style.zIndex = 1200;
+  });
+}
+
+function createTrollWindow(title, contentHtml, customId) {
+    let win = document.createElement('div');
+    win.className = "window";
+    if (customId) win.id = customId;
+    win.style.position = 'fixed';
+    win.style.top = (Math.random() * 50 + 10) + "vh";
+    win.style.left = (Math.random() * 40 + 10) + "vw";
+    win.style.minWidth = "220px";
+    win.style.zIndex = 1200;
+
+    win.innerHTML = `
+      <div class="window-titlebar">
+        <span class="window-title">${title}</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">${contentHtml}</div>
+    `;
+
+    makeWindowDraggable(win, win.querySelector('.window-titlebar'));
+    return win;
+}
+
 
 // Ajout du paramètre countErrors
 function showFakePopups(count, countErrors = true) {
     if (restartSequenceActive) return; // Ne pas afficher de popups pendant le redémarrage
 
     for (let i = 0; i < count; i++) {
-        // Retarder l'apparition de chaque popup de 0.2s
         setTimeout(() => {
-            const popup = document.createElement("div");
-            popup.classList.add("fake-popup");
-
+            // Choisir un message troll aléatoire
             const randomMessage = trollMessages[Math.floor(Math.random() * trollMessages.length)];
-            popup.textContent = randomMessage;
+            // Créer la fenêtre popup
+            const popup = createTrollWindow("Erreur.exe", `<div>${randomMessage}</div>`);
+            popup.style.left = (Math.random() * 60 + 5) + "vw";
+            popup.style.top = (Math.random() * 40 + 5) + "vh";
+            popup.style.zIndex = 3000 + Math.floor(Math.random()*500);
 
-            const closeBtn = document.createElement("span");
-            closeBtn.classList.add("close-button");
-            closeBtn.textContent = "×";
-            closeBtn.onclick = () => {
-                popup.remove();
-                console.log("Popup fermée manuellement.");
-            };
-            popup.appendChild(closeBtn);
+            document.body.appendChild(popup);
 
-            // Positionnement aléatoire pour éviter un empilement trop parfait
-            const randomX = Math.random() * (popupContainer.offsetWidth - 200); // 200px est une largeur min estimée pour la popup
-            popup.style.left = `${randomX > 0 ? randomX : 0}px`;
-            popup.style.top = `${Math.random() * 50}px`; // Légèrement aléatoire en hauteur
+            playErrorSound(1, countErrors); // Son d'erreur et éventuellement incrémentation du compteur
 
-            // Appliquer la nouvelle animation et la gérer
-            popup.style.animation = 'popupFloatAndFade 1s forwards'; // Animation de 1 seconde
-
-            popupContainer.appendChild(popup);
-            popupCount++;
-            console.log(`Popup n°${popupCount} affichée.`);
-
-            playErrorSound(1, countErrors); // Passer le flag ici
-
-            // Supprimer la popup après 1 seconde
+            // Supprimer la popup après 1 seconde (sauf si tu veux qu'elles restent jusqu'à ce que l'utilisateur les réduise)
             setTimeout(() => {
-                if (popup.parentNode) { // Vérifier si la popup existe toujours (pas fermée manuellement)
+                if (popup && popup.parentNode && !popup.classList.contains('minimized')) {
                     popup.remove();
                 }
-            }, 1000); // La popup est supprimée après 1 seconde
+            }, 1000);
+
         }, i * 200); // Délai de 200ms entre chaque popup d'un même lot
     }
     console.log(`${count} fausses popups demandées (compte errors: ${countErrors}).`);
@@ -773,6 +808,26 @@ function triggerRestartSequence() {
         }, 15000); // Le spinner sera visible et changera de vitesse pendant 15 secondes
     }, 3000); // Le deuxième message apparaît 3 secondes après le premier
 }
+
+document.addEventListener('click', function(e){
+  if (e.target.classList.contains('window-min-btn')) {
+    const win = e.target.closest('.window');
+    const content = win.querySelector('.window-content');
+    const tit = win.querySelector('.window-title');
+    if (!win.classList.contains('minimized')) {
+      content.style.display = 'none';
+      win.classList.add('minimized');
+      // Le bouton affiche le nom de la fenêtre + icône pour restaurer
+      e.target.textContent = tit.textContent + " ⬆";
+      e.target.style.fontSize = "1.1em";
+    } else {
+      content.style.display = '';
+      win.classList.remove('minimized');
+      e.target.textContent = '_';
+      e.target.style.fontSize = "";
+    }
+  }
+});
 
 // Faux curseurs mobiles et interactifs
 let fakeCursors = [];
@@ -1524,6 +1579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
