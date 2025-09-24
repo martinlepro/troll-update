@@ -91,6 +91,92 @@ document.addEventListener('click', () => {
 let isTrollActive = false;
 let hasEnteredFullscreenOnce = false;
 
+// ---- UNIVERSAL WINDOW MANAGEMENT FOR ALL .window ELEMENTS ----
+
+// Drag & drop pour toutes les fenêtres .window (calculatrice, explorer, matrix, morpion, etc.)
+function makeAllWindowsDraggable() {
+  document.querySelectorAll('.window').forEach(winElt => {
+    const titleElt = winElt.querySelector('.window-titlebar');
+    if (!titleElt) return;
+    let isDragging = false, offsetX = 0, offsetY = 0;
+
+    titleElt.style.cursor = 'move';
+    titleElt.onmousedown = function(e) {
+      isDragging = true;
+      let rect = winElt.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      document.body.style.userSelect = 'none';
+      winElt.style.zIndex = 2000; // Passe devant
+    }
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        winElt.style.left = (e.clientX - offsetX) + 'px';
+        winElt.style.top = (e.clientY - offsetY) + 'px';
+        winElt.style.right = 'auto';
+        winElt.style.bottom = 'auto';
+        winElt.style.position = 'fixed';
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      document.body.style.userSelect = '';
+      winElt.style.zIndex = 1200;
+    });
+  });
+}
+
+// Minimise/restaure n'importe quelle fenêtre .window via le bouton _
+document.addEventListener('click', function(e){
+  if (e.target.classList.contains('window-min-btn')) {
+    const win = e.target.closest('.window');
+    const content = win.querySelector('.window-content');
+    const tit = win.querySelector('.window-title');
+    if (!win.classList.contains('minimized')) {
+      content.style.display = 'none';
+      win.classList.add('minimized');
+      e.target.textContent = tit.textContent + " ⬆";
+      e.target.style.fontSize = "1.1em";
+    } else {
+      content.style.display = '';
+      win.classList.remove('minimized');
+      e.target.textContent = '_';
+      e.target.style.fontSize = "";
+    }
+  }
+});
+
+// Si tu utilises des fenêtres créées dynamiquement (popups, alertes), appelle cette fonction APRÈS leur création :
+function makeWindowDraggable(winElt) {
+  const titleElt = winElt.querySelector('.window-titlebar');
+  if (!titleElt) return;
+  let isDragging = false, offsetX = 0, offsetY = 0;
+
+  titleElt.style.cursor = 'move';
+  titleElt.onmousedown = function(e) {
+    isDragging = true;
+    let rect = winElt.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    document.body.style.userSelect = 'none';
+    winElt.style.zIndex = 2000;
+  }
+  document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      winElt.style.left = (e.clientX - offsetX) + 'px';
+      winElt.style.top = (e.clientY - offsetY) + 'px';
+      winElt.style.right = 'auto';
+      winElt.style.bottom = 'auto';
+      winElt.style.position = 'fixed';
+    }
+  });
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+    document.body.style.userSelect = '';
+    winElt.style.zIndex = 1200;
+  });
+}
+
 // Fonction pour réinitialiser le jeu de morpion
 function resetMorpion() {
   board = ['', '', '', '', '', '', '', '', ''];
@@ -1579,6 +1665,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
