@@ -614,11 +614,6 @@ function playErrorSound(times, incrementErrorCounter = true) {
             if (count < times) {
                 setTimeout(play, 800);
             } else { // Une fois que tous les sons demandés ont été joués
-                if (incrementErrorCounter) {
-                    errorCounter++;
-                    console.log(`Erreur ${errorCounter}/${RESTART_ERROR_THRESHOLD}.`);
-                    if (errorCounter >= RESTART_ERROR_THRESHOLD) {
-                        triggerRestartSequence(); // Déclencher la séquence de redémarrage
                     }
                 }
             }
@@ -1532,6 +1527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
