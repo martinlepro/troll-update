@@ -871,14 +871,15 @@ function animateFakeCursors() {
 
 // À appeler à chaque changement de niveau de troll (par exemple dans activateTrollEffects)
 function activateFakeCursorsForLevel(level) {
-// N'affiche les curseurs qu'à partir du niveau 3 (après la MAJ)
-if (level < 3) {
-  document.getElementById('fake-cursors-container').innerHTML = '';
-  if (fakeCursorInterval) clearInterval(fakeCursorInterval);
-  return;
+  // N'affiche les curseurs qu'à partir du niveau 3 (après la MAJ)
+  if (level < 3) {
+    document.getElementById('fake-cursors-container').innerHTML = '';
+    if (fakeCursorInterval) clearInterval(fakeCursorInterval);
+    return;
+  }
+  let n = Math.max(0, level-2);
+  if (n > 0) spawnFakeCursors(n);
 }
-let n = Math.max(0, level-2);
-if (n > 0) spawnFakeCursors(n);
 
 function startRestartSpinnerSpeedLoop() {
     if (!spinningCircleElement) return;
@@ -1523,6 +1524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
