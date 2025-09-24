@@ -1,3 +1,7 @@
+window.onerror = function(msg, url, line, col, error) {
+  document.getElementById('debug').textContent =
+    "Erreur JS : " + msg + "\nLigne: " + line + "\n" + (error ? error.stack : "");
+};
 let trollLevel = 0;
 let progress = 0;
 let degoulinantText = null;
@@ -1589,6 +1593,7 @@ function showPong() {
 // Initialisation générale (à la toute fin de ton script, déjà présente, à garder)
 initializeTrollStartInteraction();
 makeAllWindowsDraggable();
+
 
 
 
