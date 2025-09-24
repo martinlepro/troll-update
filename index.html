@@ -6,13 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
-  <div id="explorer-fake" class="fixed-element" style="display:none;">
-  <div style="background:#005FA8;padding:10px;border-radius:5px;">
-    <h4>Explorateur - troll update</h4>
-    <div id="explorer-files"></div>
-  </div>
-  </div>
-  <canvas id="pong-canvas" width="600" height="350" style="display:none;position:fixed;top:20vh;left:50vw;transform:translateX(-50%);z-index:9000;background:#1a1a1a;border:2px solid white;"></canvas>
 </head>
 <body>
   <!-- Conteneur principal pour le mode plein écran -->
@@ -37,26 +30,45 @@
     <div id="status"></div>
 
     <!-- Matrix Rain -->
-    <div id="matrix-rain-container" class="fixed-element"></div>
+    <div id="matrix-rain-container" class="fixed-element window" style="display:none;">
+      <div class="window-titlebar">
+        <span class="window-title">matrix-rain.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <!-- Le contenu est généré dynamiquement -->
+      </div>
+    </div>
 
     <!-- Calculatrice (Haut Droite) -->
-    <div id="calculator-container" class="fixed-element" style="display:none;">
-      <h3>Calculatrice</h3>
-      <span class="close-button" data-target="calculator-container">&times;</span>
-      <input type="text" id="calc-display" disabled />
-      <div id="calc-buttons"></div>
+    <div id="calculator-container" class="fixed-element window" style="display:none;min-width:240px;">
+      <div class="window-titlebar">
+        <span class="window-title">calculatrice.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <h3>Calculatrice</h3>
+        <input type="text" id="calc-display" disabled />
+        <div id="calc-buttons"></div>
+      </div>
     </div>
 
     <!-- Morpion (Milieu Droite) -->
-    <div id="morpion-container" class="fixed-element" style="display:none;">
-      <h3>Jouez pendant que ça installe...</h3>
-      <span class="close-button" data-target="morpion-container">&times;</span>
-      <div id="board"></div>
-      <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
+    <div id="morpion-container" class="fixed-element window" style="display:none;min-width:240px;">
+      <div class="window-titlebar">
+        <span class="window-title">morpion.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <h3>Jouez pendant que ça installe...</h3>
+        <div id="board"></div>
+        <button id="reset-morpion-btn" class="morpion-button">Recommencer</button>
+        <div id="morpion-message"></div>
+      </div>
     </div>
 
     <!-- Popups (Haut Gauche) -->
-    <div id="popup-container" class="fixed-element"></div>
+    <div id="popup-container" class="fixed-element" style="z-index:1200;"></div>
 
     <!-- Barre de recherche troll -->
     <div id="search-bar-wrapper" style="display:none;">
@@ -65,29 +77,58 @@
     </div>
 
     <!-- Rickroll (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element" style="display:none;" autoplay loop muted>
+    <video id="rickroll-video" class="fixed-element window" style="display:none;" autoplay loop muted>
       <source src="rickroll.mp4" type="video/mp4">
     </video>
 
     <!-- Subway Surfer Video (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element" style="display:none;" autoplay loop muted>
+    <video id="subway-surfer-video" class="fixed-element window" style="display:none;" autoplay loop muted>
       <source src="subwaysurfer.mp4" type="video/mp4">
     </video>
 
-    <!-- Image troll (milieu écran) -->
-    <div id="image-troll" class="fixed-element" style="display:none;">
-      <p>Image trouvée sur votre ordinateur :</p>
-      <img src="trollface.png" alt="Trollface">
+    <!-- Image troll -->
+    <div id="image-troll" class="fixed-element window" style="display:none;">
+      <div class="window-titlebar">
+        <span class="window-title">trollface.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <p>Image trouvée sur votre ordinateur :</p>
+        <img src="trollface.png" alt="Trollface">
+      </div>
+    </div>
+
+    <!-- Explorateur fake -->
+    <div id="explorer-fake" class="fixed-element window" style="display:none;min-width:300px;">
+      <div class="window-titlebar">
+        <span class="window-title">Explorateur-de-fichier.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <h4>Explorateur - troll update</h4>
+        <div id="explorer-files"></div>
+      </div>
     </div>
 
     <!-- Conteneur pour les messages d'alerte personnalisés -->
-    <div id="custom-alert-container" class="fixed-element"></div>
+    <div id="custom-alert-container" class="fixed-element window" style="display:none;min-width:240px;">
+      <div class="window-titlebar">
+        <span class="window-title">alerte.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <!-- Message généré dynamiquement -->
+      </div>
+    </div>
 
     <!-- Spinner de redémarrage type Windows -->
     <div id="windows-restart-spinner" class="fixed-element" style="display:none;">
       <div class="spinning-circle"></div>
       <button id="stop-restart-btn">Arrêter</button>
     </div>
+
+    <!-- Canvas Pong -->
+    <canvas id="pong-canvas" width="600" height="350" style="display:none;position:fixed;top:20vh;left:50vw;transform:translateX(-50%);z-index:9000;background:#1a1a1a;border:2px solid white;"></canvas>
   </div>
 
   <!-- Bouton initial pour démarrer le troll (au centre) -->
@@ -108,5 +149,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
