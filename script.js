@@ -391,9 +391,7 @@ function activateTrollEffectForLevel(level) {
             break;
         case 9:
             console.log("Niveau 9: Comportement de la barre de recherche modifié.");
-            if (level >= 9) { // <= CORRECTION ICI
-                showPong();
-            }
+            showPong();
             break;
         case 10:
             rickrollVideo.style.display = 'block';
@@ -1525,6 +1523,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du troll
     initializeTrollStartInteraction();
 });
+
 
 
 
