@@ -1475,115 +1475,7 @@ function showFakeExplorer() {
 }
 // Appelle showFakeExplorer() quand tu veux (ex: niveau 12 ou bouton)
 
-// --- PONG (corrigé gestion listeners et restart) ---
 let pongStarted = false;
-let pongKeyListenersAdded = false;
-
-function showPong() {
-  const pongWindow = document.getElementById('pong-window');
-  const canvas = document.getElementById('pong-canvas');
-  const restartBtn = document.getElementById('pong-restart-btn');
-  if (pongStarted) return;
-  pongStarted = true;
-  pongWindow.style.display = 'block';
-  restartBtn.style.display = 'none';
-  makeWindowDraggable(pongWindow);
-
-  const ctx = canvas.getContext('2d');
-  let playerY = canvas.height / 2 - 35;
-  let botY = canvas.height / 2 - 35;
-  const paddleHeight = 70, paddleWidth = 10;
-  let ballX = canvas.width / 2, ballY = canvas.height / 2;
-  let ballSpeedX = -5, ballSpeedY = 4;
-  let up = false, down = false;
-  let scorePlayer = 0, scoreBot = 0;
-
-  // Gestion propre des listeners (évite les doublons)
-  function keydownHandler(e) {
-    if (e.key === "ArrowUp") up = true;
-    if (e.key === "ArrowDown") down = true;
-  }
-  function keyupHandler(e) {
-    if (e.key === "ArrowUp") up = false;
-    if (e.key === "ArrowDown") down = false;
-  }
-  if (!pongKeyListenersAdded) {
-    window.addEventListener('keydown', keydownHandler);
-    window.addEventListener('keyup', keyupHandler);
-    pongKeyListenersAdded = true;
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "white";
-    ctx.setLineDash([5, 5]);
-    ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = "lime";
-    ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
-    ctx.fillStyle = "red";
-    ctx.fillRect(canvas.width-20, botY, paddleWidth, paddleHeight);
-    ctx.beginPath();
-    ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
-    ctx.fillStyle = "white";
-    ctx.fill();
-    ctx.font = "24px monospace";
-    ctx.fillStyle = "white";
-    ctx.fillText(scorePlayer, canvas.width/2-60, 30);
-    ctx.fillText(scoreBot, canvas.width/2+40, 30);
-  }
-
-  function update() {
-    if (up) playerY -= 8;
-    if (down) playerY += 8;
-    playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
-    if (ballY > botY + paddleHeight/2) botY += 7 + Math.abs(ballSpeedX/2);
-    else if (ballY < botY + paddleHeight/2) botY -= 7 + Math.abs(ballSpeedX/2);
-    botY = Math.max(0, Math.min(canvas.height - paddleHeight, botY));
-    ballX += ballSpeedX; ballY += ballSpeedY;
-    if (ballY < 10 || ballY > canvas.height-10) ballSpeedY = -ballSpeedY;
-    if (ballX < 20 && ballY > playerY && ballY < playerY + paddleHeight) {
-      ballSpeedX = -Math.abs(ballSpeedX) - 1;
-      ballSpeedY += (Math.random() - 0.5) * 4;
-    }
-    if (ballX > canvas.width-30 && ballY > botY && ballY < botY + paddleHeight) {
-      ballSpeedX = Math.abs(ballSpeedX) + 1;
-      ballSpeedY += (Math.random() - 0.5) * 4;
-    }
-    if (ballX < 0) { scoreBot++; resetBall(); }
-    if (ballX > canvas.width) { scorePlayer++; resetBall(); }
-  }
-
-  function resetBall() {
-    ballX = canvas.width/2;
-    ballY = canvas.height/2;
-    ballSpeedX = -5 * (Math.random()<0.5 ? 1 : -1);
-    ballSpeedY = 4 * (Math.random()<0.5 ? 1 : -1);
-  }
-
-  function loop() {
-    update(); draw();
-    if (scoreBot >= 5) {
-      setTimeout(() => {
-        pongStarted = false;
-        restartBtn.style.display = 'block';
-        // Nettoie les listeners pour éviter empilement
-        window.removeEventListener('keydown', keydownHandler);
-        window.removeEventListener('keyup', keyupHandler);
-        pongKeyListenersAdded = false;
-      }, 100);
-      return;
-    }
-    requestAnimationFrame(loop);
-  }
-
-  restartBtn.onclick = () => {
-    restartBtn.style.display = 'none';
-    showPong();
-  };
-
-  resetBall();
-  loop();
-}
 
  function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1724,6 +1616,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeTrollStartInteraction();
   makeAllWindowsDraggable();
 });
+
 
 
 
