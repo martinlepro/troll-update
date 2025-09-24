@@ -106,6 +106,7 @@ document.addEventListener('click', function(e){
   if (e.target.classList.contains('window-min-btn')) {
     const win = e.target.closest('.window');
     const content = win.querySelector('.window-content');
+    if (!content) return;
     if (!win.classList.contains('minimized')) {
       content.style.display = 'none';
       win.classList.add('minimized');
@@ -640,12 +641,14 @@ function startMatrixRain() {
 
 
 function stopMatrixRain() {
-    if (matrixRainInterval) {
-        clearInterval(matrixRainInterval);
-        matrixRainInterval = null;
-    }
-    matrixRainContainer.style.display = 'none';
-    console.log("Matrix Rain arrêté.");
+  if (matrixRainInterval) {
+    clearInterval(matrixRainInterval);
+    matrixRainInterval = null;
+  }
+  matrixRainContainer.style.display = 'none';
+  // Optionnel : efface le contenu pour repartir propre
+  const content = matrixRainContainer.querySelector('.window-content');
+  if (content) content.textContent = '';
 }
 
 
@@ -1472,13 +1475,20 @@ function showFakeExplorer() {
 }
 // Appelle showFakeExplorer() quand tu veux (ex: niveau 12 ou bouton)
 
-// ---- PONG ----
-// Ajoute un bouton recommencer sous le canvas Pong
+// --- PONG (corrigé gestion listeners et restart) ---
 let pongStarted = false;
+let pongKeyListenersAdded = false;
+
 function showPong() {
+  const pongWindow = document.getElementById('pong-window');
+  const canvas = document.getElementById('pong-canvas');
+  const restartBtn = document.getElementById('pong-restart-btn');
   if (pongStarted) return;
   pongStarted = true;
-  const canvas = document.getElementById('pong-canvas');
+  pongWindow.style.display = 'block';
+  restartBtn.style.display = 'none';
+  makeWindowDraggable(pongWindow);
+
   const ctx = canvas.getContext('2d');
   let playerY = canvas.height / 2 - 35;
   let botY = canvas.height / 2 - 35;
@@ -1488,9 +1498,92 @@ function showPong() {
   let up = false, down = false;
   let scorePlayer = 0, scoreBot = 0;
 
-  canvas.style.display = 'block';
-  const pongRestartBtn = document.getElementById('pong-restart-btn');
-  if (pongRestartBtn) pongRestartBtn.style.display = 'none';
+  // Gestion propre des listeners (évite les doublons)
+  function keydownHandler(e) {
+    if (e.key === "ArrowUp") up = true;
+    if (e.key === "ArrowDown") down = true;
+  }
+  function keyupHandler(e) {
+    if (e.key === "ArrowUp") up = false;
+    if (e.key === "ArrowDown") down = false;
+  }
+  if (!pongKeyListenersAdded) {
+    window.addEventListener('keydown', keydownHandler);
+    window.addEventListener('keyup', keyupHandler);
+    pongKeyListenersAdded = true;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "white";
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "lime";
+    ctx.fillRect(10, playerY, paddleWidth, paddleHeight);
+    ctx.fillStyle = "red";
+    ctx.fillRect(canvas.width-20, botY, paddleWidth, paddleHeight);
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.font = "24px monospace";
+    ctx.fillStyle = "white";
+    ctx.fillText(scorePlayer, canvas.width/2-60, 30);
+    ctx.fillText(scoreBot, canvas.width/2+40, 30);
+  }
+
+  function update() {
+    if (up) playerY -= 8;
+    if (down) playerY += 8;
+    playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+    if (ballY > botY + paddleHeight/2) botY += 7 + Math.abs(ballSpeedX/2);
+    else if (ballY < botY + paddleHeight/2) botY -= 7 + Math.abs(ballSpeedX/2);
+    botY = Math.max(0, Math.min(canvas.height - paddleHeight, botY));
+    ballX += ballSpeedX; ballY += ballSpeedY;
+    if (ballY < 10 || ballY > canvas.height-10) ballSpeedY = -ballSpeedY;
+    if (ballX < 20 && ballY > playerY && ballY < playerY + paddleHeight) {
+      ballSpeedX = -Math.abs(ballSpeedX) - 1;
+      ballSpeedY += (Math.random() - 0.5) * 4;
+    }
+    if (ballX > canvas.width-30 && ballY > botY && ballY < botY + paddleHeight) {
+      ballSpeedX = Math.abs(ballSpeedX) + 1;
+      ballSpeedY += (Math.random() - 0.5) * 4;
+    }
+    if (ballX < 0) { scoreBot++; resetBall(); }
+    if (ballX > canvas.width) { scorePlayer++; resetBall(); }
+  }
+
+  function resetBall() {
+    ballX = canvas.width/2;
+    ballY = canvas.height/2;
+    ballSpeedX = -5 * (Math.random()<0.5 ? 1 : -1);
+    ballSpeedY = 4 * (Math.random()<0.5 ? 1 : -1);
+  }
+
+  function loop() {
+    update(); draw();
+    if (scoreBot >= 5) {
+      setTimeout(() => {
+        pongStarted = false;
+        restartBtn.style.display = 'block';
+        // Nettoie les listeners pour éviter empilement
+        window.removeEventListener('keydown', keydownHandler);
+        window.removeEventListener('keyup', keyupHandler);
+        pongKeyListenersAdded = false;
+      }, 100);
+      return;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  restartBtn.onclick = () => {
+    restartBtn.style.display = 'none';
+    showPong();
+  };
+
+  resetBall();
+  loop();
+}
 
  function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1597,8 +1690,28 @@ function showPong() {
   resetBall();
   loop();
 }
-// Ajoute cet event pour le bouton recommencer Pong
 document.addEventListener('DOMContentLoaded', () => {
+  // Barre de recherche et bouton
+  searchBar.addEventListener("input", handleSearchBarInputLive);
+  searchBar.addEventListener("keydown", handleSearchBarKeyDown);
+  submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
+
+  // Morpion reset
+  if (resetMorpionBtn) {
+    resetMorpionBtn.addEventListener("click", initMorpion);
+  }
+
+  // Démarrage troll
+  startTrollBtn.addEventListener("click", handleStartTrollButtonClick);
+
+  // Bouton annuler qui fuit
+  document.body.addEventListener('mousemove', moveFleeingButton);
+  fleeingCancelBtn.addEventListener('click', activateRickroll);
+
+  // Bouton annuler caché
+  realCancelBtnHidden.addEventListener('click', handleRealCancel);
+
+  // Bouton recommencer Pong
   const pongRestartBtn = document.getElementById('pong-restart-btn');
   if (pongRestartBtn) {
     pongRestartBtn.addEventListener('click', () => {
@@ -1606,35 +1719,10 @@ document.addEventListener('DOMContentLoaded', () => {
       showPong();
     });
   }
+
+  // Initialisation générale
+  initializeTrollStartInteraction();
   makeAllWindowsDraggable();
-
-// Enregistrement de tous les écouteurs d'événements après que le DOM est complètement chargé
-document.addEventListener('DOMContentLoaded', () => {
-    // Écouteurs pour la barre de recherche et le bouton de soumission
-    searchBar.addEventListener("input", handleSearchBarInputLive);
-    searchBar.addEventListener("keydown", handleSearchBarKeyDown);
-    submitSearchBtn.addEventListener("click", handleSubmitSearchClick);
-
-    // Écouteur d'événement pour le bouton de redémarrage du Morpion
-    if (resetMorpionBtn) {
-        resetMorpionBtn.addEventListener("click", initMorpion);
-    }
-
-    // Événements pour le bouton initial de démarrage
-    startTrollBtn.addEventListener("click", handleStartTrollButtonClick);
-
-    // Événements pour le bouton d'annulation qui fuit
-    document.body.addEventListener('mousemove', moveFleeingButton);
-    fleeingCancelBtn.addEventListener('click', activateRickroll);
-
-    // Événements pour le vrai bouton d'annulation caché
-    realCancelBtnHidden.addEventListener('click', handleRealCancel);
-
-    // Initialisation du troll
-    initializeTrollStartInteraction();
-
-    makeAllWindowsDraggable(); // <--- AJOUTE CETTE LIGNE ICI
-    
 });
 
 
