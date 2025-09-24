@@ -29,8 +29,8 @@
     </div>
     <div id="status"></div>
 
-    <!-- Matrix Rain -->
-    <div id="matrix-rain-container" class="fixed-element window" style="display:none;">
+    <!-- Matrix Rain (avec titre/barre de fenêtre) -->
+    <div id="matrix-rain-container" class="fixed-element window" style="display:none;min-width:220px;">
       <div class="window-titlebar">
         <span class="window-title">matrix-rain.exe</span>
         <span class="close-button window-min-btn">_</span>
@@ -128,7 +128,16 @@
     </div>
 
     <!-- Canvas Pong -->
-    <canvas id="pong-canvas" width="600" height="350" style="display:none;position:fixed;top:20vh;left:50vw;transform:translateX(-50%);z-index:9000;background:#1a1a1a;border:2px solid white;"></canvas>
+    <div id="pong-window" class="fixed-element window" style="display:none;min-width:600px;top:20vh;left:50vw;transform:translateX(-50%,0);z-index:9000;">
+      <div class="window-titlebar">
+        <span class="window-title">pong.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content" style="padding:0;">
+        <canvas id="pong-canvas" width="600" height="350" style="background:#1a1a1a;border:2px solid white;display:block;"></canvas>
+        <button id="pong-restart-btn" style="display:none;width:100%;font-size:1.5em;padding:10px 0;">Recommencer la partie</button>
+      </div>
+    </div>
   </div>
 
   <!-- Bouton initial pour démarrer le troll (au centre) -->
