@@ -1635,6 +1635,9 @@ function showPong() {
 initializeTrollStartInteraction();
 makeAllWindowsDraggable();
 
+if (startTrollBtn) {
+    startTrollBtn.addEventListener('click', handleStartTrollButtonClick);
+}
 
 
 
