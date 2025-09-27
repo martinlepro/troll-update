@@ -690,33 +690,74 @@ function playErrorSound(times, incrementErrorCounter = true) {
     console.log(`Son d'erreur demandé ${times} fois (compte errors: ${incrementErrorCounter}).`);
 }
 
-function makeWindowDraggable(winElt, titleElt) {
-  let isDragging = false, offsetX = 0, offsetY = 0;
+function makeWindowDraggable(winElt) {
+  // 1. On cherche la barre de titre à l'intérieur de l'élément de la fenêtre.
+  const titleElt = winElt.querySelector('.window-titlebar');
 
+  // 2. Si on ne trouve pas de barre de titre, on arrête la fonction ici
+  //    pour éviter l'erreur "Cannot read properties of undefined (reading 'style')".
+  if (!titleElt) {
+    console.warn("A window element is missing its titlebar ('.window-titlebar'). Dragging will not be enabled for this window:", winElt);
+    return; // Sort de la fonction sans activer le glisser-déposer
+  }
+
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Rend le curseur de la barre de titre "move" pour indiquer qu'elle est déplaçable.
   titleElt.style.cursor = 'move';
+
+  // Commence le glisser-déposer quand la souris est pressée sur la barre de titre.
   titleElt.addEventListener('mousedown', (e) => {
     isDragging = true;
-    let rect = winElt.getBoundingClientRect();
+
+    // Récupère la position actuelle de la fenêtre
+    const rect = winElt.getBoundingClientRect();
+
+    // Pour éviter un "saut" de la fenêtre au début du drag, on fixe sa position
+    // Si la fenêtre n'a pas déjà de "position: fixed", on l'ajoute
+    if (window.getComputedStyle(winElt).position !== 'fixed') {
+        winElt.style.position = "fixed";
+    }
+    winElt.style.top = rect.top + "px";
+    winElt.style.left = rect.left + "px";
+    winElt.style.right = 'auto'; // S'assurer que right/bottom ne créent pas de conflit
+    winElt.style.bottom = 'auto';
+
+    // Calcule le décalage entre le curseur et le coin supérieur gauche de la fenêtre
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
+
+    // Empêche la sélection de texte pendant le glisser-déposer
     document.body.style.userSelect = 'none';
-    winElt.style.zIndex = 2000; // Passe devant
+
+    // Met la fenêtre au premier plan (z-index plus élevé)
+    winElt.style.zIndex = 2000;
   });
 
+  // Déplace la fenêtre pendant le glisser-déposer
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
       winElt.style.left = (e.clientX - offsetX) + 'px';
       winElt.style.top = (e.clientY - offsetY) + 'px';
+      // S'assurer que 'right' et 'bottom' ne sont pas définis s'ils l'étaient,
+      // pour éviter des comportements inattendus avec 'left' et 'top'.
       winElt.style.right = 'auto';
       winElt.style.bottom = 'auto';
-      winElt.style.position = 'fixed';
+      winElt.style.position = 'fixed'; // S'assurer qu'elle reste en fixed
     }
   });
 
+  // Arrête le glisser-déposer quand le bouton de la souris est relâché
   document.addEventListener('mouseup', () => {
-    isDragging = false;
-    document.body.style.userSelect = '';
-    winElt.style.zIndex = 1200;
+    if (isDragging) { // Ne réagit que si un drag était en cours
+        isDragging = false;
+        // Restaure la sélection de texte
+        document.body.style.userSelect = '';
+        // Remet la fenêtre à son z-index par défaut (ou un z-index inférieur à celui de "glisser")
+        winElt.style.zIndex = 1200; // Ou une autre valeur par défaut pour tes fenêtres
+    }
   });
 }
 
@@ -1593,6 +1634,7 @@ function showPong() {
 // Initialisation générale (à la toute fin de ton script, déjà présente, à garder)
 initializeTrollStartInteraction();
 makeAllWindowsDraggable();
+
 
 
 
