@@ -77,15 +77,33 @@
       <button id="submit-search-btn" style="display:none;">Entrée</button>
     </div>
 
-    <!-- Rickroll (Bas Gauche) -->
-    <video id="rickroll-video" class="fixed-element window" style="display:none;" autoplay loop muted>
-      <source src="rickroll.mp4" type="video/mp4">
-    </video>
+    <!-- Rickroll (Bas Gauche) - MAINTENANT ENCAPSULÉ COMME UNE FENÊTRE DÉPLAÇABLE -->
+    <div id="rickroll-window-container" class="fixed-element window" style="display:none;">
+      <div class="window-titlebar">
+        <span class="window-title">rickroll.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <video id="rickroll-video" autoplay loop muted width="100%">
+          <source src="rickroll.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la balise vidéo.
+        </video>
+      </div>
+    </div>
 
-    <!-- Subway Surfer Video (Bas Droite) -->
-    <video id="subway-surfer-video" class="fixed-element window" style="display:none;" autoplay loop muted>
-      <source src="subwaysurfer.mp4" type="video/mp4">
-    </video>
+    <!-- Subway Surfer Video (Bas Droite) - MAINTENANT ENCAPSULÉ COMME UNE FENÊTRE DÉPLAÇABLE -->
+    <div id="subwaysurfer-window-container" class="fixed-element window" style="display:none;">
+      <div class="window-titlebar">
+        <span class="window-title">subwaysurfer.exe</span>
+        <span class="close-button window-min-btn">_</span>
+      </div>
+      <div class="window-content">
+        <video id="subway-surfer-video" autoplay loop muted width="100%">
+          <source src="subwaysurfer.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la balise vidéo.
+        </video>
+      </div>
+    </div>
 
     <!-- Image troll -->
     <div id="image-troll" class="fixed-element window" style="display:none;">
@@ -159,4 +177,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
